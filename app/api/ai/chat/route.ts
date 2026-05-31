@@ -147,7 +147,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       mentorName,
-      messages: chatMessages.map((msg) => ({
+      messages: chatMessages.map((msg: any) => ({
         id: msg.id,
         role: msg.role,
         content: msg.content,
