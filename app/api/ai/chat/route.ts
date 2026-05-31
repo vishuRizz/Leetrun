@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     try {
       console.log("Attempting chat completion using Groq (llama-3.1-8b-instant)...");
       const { callGroqChat } = await import("@/lib/ai/groq");
-      const groqHistory = previousMessages.map((msg) => ({
+      const groqHistory = previousMessages.map((msg: { role: string; content: string }) => ({
         role: msg.role === "assistant" ? "assistant" : "user",
         content: msg.content,
       }));
