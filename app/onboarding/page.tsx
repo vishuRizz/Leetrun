@@ -237,7 +237,7 @@ export default function OnboardingPage() {
               <div>
                 <label className="block text-muted-foreground text-sm font-medium mb-2">Full Name</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                  <User className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
                     value={fullName}
@@ -251,7 +251,7 @@ export default function OnboardingPage() {
               <div>
                 <label className="block text-muted-foreground text-sm font-medium mb-2">College Name</label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                  <Building className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
                     list="colleges-list"
@@ -273,7 +273,7 @@ export default function OnboardingPage() {
               <div>
                 <label className="block text-muted-foreground text-sm font-medium mb-2">Graduation Year</label>
                 <div className="relative">
-                  <GraduationCap className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                  <GraduationCap className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
                     type="number"
                     value={graduationYear}
@@ -299,7 +299,7 @@ export default function OnboardingPage() {
               <div>
                 <label className="block text-muted-foreground text-sm font-medium mb-2">Target Company</label>
                 <div className="relative">
-                  <Target className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                  <Target className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
                     value={targetCompany}
@@ -321,7 +321,7 @@ export default function OnboardingPage() {
                       className={`py-3 px-4 rounded-xl border text-sm font-semibold transition ${
                         timeline === t
                           ? "bg-primary/20 border-primary text-foreground"
-                          : "bg-slate-950/40 border-slate-800 text-muted-foreground hover:border-slate-700"
+                          : "bg-background/40 border-border text-muted-foreground hover:border-primary"
                       }`}
                     >
                       {t}
@@ -335,7 +335,7 @@ export default function OnboardingPage() {
                 <select
                   value={favoriteSeries}
                   onChange={(e) => setFavoriteSeries(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-lg p-2.5 text-sm text-white outline-none transition"
+                  className="w-full bg-background/60 border border-border focus:border-primary rounded-lg p-2.5 text-sm text-foreground outline-none transition"
                 >
                   <option value="FROM">FROM</option>
                   <option value="STRANGER_THINGS">Stranger Things</option>
@@ -363,7 +363,7 @@ export default function OnboardingPage() {
                 <label className="block text-muted-foreground text-sm font-medium mb-2">LeetCode Username</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Code className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                    <Code className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                     <input
                       type="text"
                       value={lcUsername}
@@ -395,7 +395,7 @@ export default function OnboardingPage() {
                   <CheckCircle className="w-5 h-5" /> Verified and linked Leetcode account successfully!
                 </div>
               ) : (
-                <div className="p-4 bg-slate-950/30 border border-slate-800/80 rounded-xl text-muted-foreground text-xs leading-relaxed">
+                <div className="p-4 bg-background/30 border border-border/80 rounded-xl text-muted-foreground text-xs leading-relaxed">
                   Tip: Make sure your Leetcode profile is set to public. If you don't have one, you can proceed by clicking Next below.
                 </div>
               )}
@@ -411,15 +411,15 @@ export default function OnboardingPage() {
                 <h1 className="text-2xl font-bold mb-1">Quick Assessment</h1>
                 <p className="text-muted-foreground text-sm">Let's check your DSA fundamentals.</p>
               </div>
-              <div className="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg text-amber-500 font-bold font-mono text-sm">
+              <div className="bg-background border border-border px-3 py-1.5 rounded-lg text-amber-500 font-bold font-mono text-sm">
                 {Math.floor(quizTimeLeft / 60)}:{(quizTimeLeft % 60).toString().padStart(2, "0")}
               </div>
             </div>
 
             <div className="space-y-6 max-h-[350px] overflow-y-auto pr-2">
               {ASSESSMENT_QUESTIONS.map((q, idx) => (
-                <div key={q.id} className="space-y-3 p-4 bg-slate-950/40 border border-slate-800/60 rounded-xl">
-                  <p className="font-medium text-sm text-slate-200">
+                <div key={q.id} className="space-y-3 p-4 bg-background/40 border border-border/60 rounded-xl">
+                  <p className="font-medium text-sm text-foreground">
                     Q{idx + 1}. {q.text}
                   </p>
                   <div className="grid gap-2">
@@ -436,7 +436,7 @@ export default function OnboardingPage() {
                         className={`text-left p-3 rounded-lg text-sm transition border ${
                           quizAnswers[q.id] === optIdx
                             ? "bg-primary/20 border-primary text-foreground"
-                            : "bg-slate-900 border-slate-850 text-muted-foreground hover:border-slate-700"
+                            : "bg-card border-border text-muted-foreground hover:border-primary"
                         }`}
                       >
                         {opt}
@@ -461,7 +461,7 @@ export default function OnboardingPage() {
               <div>
                 <label className="block text-muted-foreground text-sm font-medium mb-2">Mentor Name</label>
                 <div className="relative">
-                  <MessageCircle className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                  <MessageCircle className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
                     value={mentorName}
@@ -483,7 +483,7 @@ export default function OnboardingPage() {
                       className={`py-3 px-4 rounded-xl border text-sm font-semibold transition ${
                         mentorVibe === v
                           ? "bg-primary/20 border-primary text-foreground"
-                          : "bg-slate-950/40 border-slate-800 text-muted-foreground hover:border-slate-700"
+                          : "bg-background/40 border-border text-muted-foreground hover:border-primary"
                       }`}
                     >
                       {v}
@@ -514,11 +514,11 @@ export default function OnboardingPage() {
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                <div className="bg-card/60 border border-border p-4 rounded-xl">
                   <p className="text-xs text-muted-foreground font-medium mb-1">Assessment Score</p>
                   <p className="text-xl font-bold text-white">{quizAnswers ? Object.keys(quizAnswers).length : 0} / {ASSESSMENT_QUESTIONS.length}</p>
                 </div>
-                <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+                <div className="bg-card/60 border border-border p-4 rounded-xl">
                   <p className="text-xs text-muted-foreground font-medium mb-1">Target Company</p>
                   <p className="text-xl font-bold text-white">{targetCompany}</p>
                 </div>
@@ -551,7 +551,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleNext}
                 type="button"
-                className="bg-white text-slate-900 hover:bg-slate-100 px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-1.5"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-1.5"
               >
                 Next <ArrowRight className="w-4 h-4" />
               </button>

@@ -260,10 +260,10 @@ function SignupForm() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-800"></div>
+            <div className="w-full border-t border-border"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-slate-900 px-3 text-slate-500 font-medium">Or continue with</span>
+            <span className="bg-background px-3 text-muted-foreground font-medium">Or continue with</span>
           </div>
         </div>
 
@@ -271,9 +271,10 @@ function SignupForm() {
         <button
           onClick={handleGoogleLogin}
           type="button"
-          className="w-full py-2.5 bg-slate-950 hover:bg-slate-950/80 border border-slate-850 hover:border-slate-700 text-slate-200 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2"
+          disabled
+          className="w-full py-2.5 bg-background hover:bg-muted border border-border text-muted-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
         >
-          <Globe className="w-4 h-4 text-indigo-400" /> Google Signup
+          <Globe className="w-4 h-4 text-muted-foreground" /> Google Signup
         </button>
       </div>
     </main>

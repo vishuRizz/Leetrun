@@ -23,16 +23,8 @@ export async function POST(request: Request) {
 
     const inviterName = user.user_metadata?.fullName || "A friend";
     
-    // We construct the signup URL. If deployed, we'd use the actual hostname. 
-    // For now we'll construct it based on the request URL's origin, fallback to localhost.
-    let origin = "http://localhost:3000";
-    try {
-      const url = new URL(request.url);
-      origin = url.origin;
-    } catch (e) {
-      // ignore
-    }
-    const signupUrl = `${origin}/signup`;
+    // Use the deployed URL
+    const signupUrl = "https://leetrun.vercel.app/signup";
 
     const htmlContent = getInviteEmailHtml(inviterName, signupUrl);
 
