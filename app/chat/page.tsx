@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
-  Sparkles,
   Send,
   ArrowLeft,
   Loader2,
-  MessageSquare,
   Bot,
   User,
   Zap,
@@ -216,23 +215,21 @@ export default function ChatPage() {
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-lg">
+            <div className="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
               {mentorName[0]}
             </div>
             <div>
               <h1 className="font-bold text-sm text-foreground">{mentorName}</h1>
-              <span className="text-[10px] text-primary font-bold uppercase tracking-wider">
+              <span className="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold uppercase tracking-wider">
                 DSA Mentor
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
-          <span className="hidden sm:inline font-bold text-xs tracking-wider bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            CODERUN AI
-          </span>
+        <div className="flex items-center gap-1.5">
+          <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
+          <span className="hidden sm:inline font-bold text-xs tracking-wider text-foreground">LeetRun AI</span>
         </div>
       </nav>
 
@@ -311,7 +308,7 @@ export default function ChatPage() {
           )}
 
           {error && (
-            <div className="p-3 bg-red-950/30 border border-red-900/20 text-red-400 text-xs rounded-xl text-center">
+            <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-xl text-center">
               {error}
             </div>
           )}
@@ -358,7 +355,7 @@ export default function ChatPage() {
               onChange={(e) => setInputValue(e.target.value)}
               disabled={sending}
               placeholder={`Send message to ${mentorName}...`}
-              className="flex-1 bg-background border border-border focus:border-primary rounded-xl py-3 px-4 text-sm text-foreground placeholder-muted-foreground outline-none transition disabled:opacity-50"
+              className="flex-1 bg-background border border-border focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-foreground placeholder:text-muted-foreground outline-none transition disabled:opacity-50 font-sans"
             />
             <button
               type="submit"

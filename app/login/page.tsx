@@ -2,8 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, Mail, Lock, ShieldAlert, ArrowRight, Loader2, Globe } from "lucide-react";
+import { Mail, Lock, ShieldAlert, ArrowRight, Loader2, Globe } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 function LoginForm() {
@@ -71,32 +72,28 @@ function LoginForm() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 transition-colors">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
+    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 font-sans">
+      <div className="fixed inset-0 bg-gradient-to-br from-indigo-500/5 via-background to-cyan-500/5 pointer-events-none" />
 
-      <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-md relative z-10">
-        
+      <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-xl p-6 md:p-8 relative z-10">
+
         {/* Header Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-indigo-600/20">
-            <Sparkles className="w-6 h-6 text-white animate-pulse" />
-          </div>
-          <h1 className="text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            CODERUN
-          </h1>
-          <p className="text-muted-foreground text-xs mt-1 font-semibold uppercase tracking-widest">Sign In</p>
+          <Image src="/logo.png" alt="LeetRun" width={80} height={80} className="object-contain mb-2" />
+          <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mt-1">Sign In</p>
         </div>
 
-        {/* Message and Error alerts */}
+        {/* Error alert */}
         {error && (
-          <div className="mb-4 p-3 bg-red-950/40 border border-red-800/40 text-red-200 text-sm rounded-lg flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-red-400 flex-shrink-0" />
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-200 text-sm rounded-lg flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
+        {/* Success / message alert */}
         {message && (
-          <div className="mb-4 p-3 bg-emerald-950/40 border border-emerald-800/40 text-emerald-200 text-sm rounded-lg">
+          <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-200 text-sm rounded-lg">
             {message}
           </div>
         )}
@@ -108,12 +105,12 @@ function LoginForm() {
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-background border-border focus:border-primary rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder-slate-600 outline-none transition"
+                className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans text-sm"
                 placeholder="Enter email address"
                 required
               />
@@ -127,18 +124,18 @@ function LoginForm() {
               </label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-primary hover:text-primary/80 font-medium transition"
+                className="text-xs text-indigo-500 hover:text-indigo-400 font-medium transition"
               >
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-background border-border focus:border-primary rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder-slate-600 outline-none transition"
+                className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans text-sm"
                 placeholder="Enter password"
                 required
               />
@@ -148,7 +145,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
+            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
           >
             {loading ? (
               <>
@@ -164,8 +161,8 @@ function LoginForm() {
 
         {/* Redirect to signup */}
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Don't have an account?{" "}
-          <Link href="/signup" className="text-primary hover:text-primary/80 font-bold transition">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-indigo-500 hover:text-indigo-400 font-bold transition">
             Sign Up
           </Link>
         </p>
@@ -176,7 +173,7 @@ function LoginForm() {
             <div className="w-full border-t border-border"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-3 text-muted-foreground font-medium">Or continue with</span>
+            <span className="bg-card px-3 text-muted-foreground font-medium">Or continue with</span>
           </div>
         </div>
 
@@ -198,7 +195,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-2" />
         <p className="text-muted-foreground text-sm font-medium">Loading...</p>
       </div>
     }>

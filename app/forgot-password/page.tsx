@@ -2,8 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 function ForgotPasswordForm() {
   const router = useRouter();
@@ -90,32 +91,28 @@ function ForgotPasswordForm() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 transition-colors">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
+    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 font-sans transition-colors">
+      <div className="fixed inset-0 bg-gradient-to-br from-indigo-500/5 via-background to-cyan-500/5 pointer-events-none" />
 
-      <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-md relative z-10">
-        
+      <div className="w-full max-w-md bg-card border border-border rounded-2xl shadow-xl p-6 md:p-8 relative z-10">
+
         {/* Header Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-indigo-600/20">
-            <Sparkles className="w-6 h-6 text-white animate-pulse" />
-          </div>
-          <h1 className="text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            RESET PASSWORD
-          </h1>
-          <p className="text-muted-foreground text-xs mt-1">Recover access to your command center</p>
+          <Image src="/logo.png" alt="LeetRun" width={80} height={80} className="object-contain mb-2" />
+          <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mt-1">Reset Password</p>
         </div>
 
-        {/* Message and Error alerts */}
+        {/* Error alert */}
         {error && (
-          <div className="mb-4 p-3 bg-red-950/40 border border-red-800/40 text-red-200 text-sm rounded-lg flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-red-400 flex-shrink-0" />
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-200 text-sm rounded-lg flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
+        {/* Success / message alert */}
         {message && (
-          <div className="mb-4 p-3 bg-emerald-950/40 border border-emerald-800/40 text-emerald-200 text-sm rounded-lg">
+          <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-200 text-sm rounded-lg">
             {message}
           </div>
         )}
@@ -128,12 +125,12 @@ function ForgotPasswordForm() {
                 Registered Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-background border-border focus:border-primary rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder-slate-600 outline-none transition"
+                  className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans text-sm"
                   placeholder="Enter your email"
                   required
                 />
@@ -143,7 +140,7 @@ function ForgotPasswordForm() {
             <button
               type="submit"
               disabled={loading || !email}
-              className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
             >
               {loading ? (
                 <>
@@ -168,7 +165,7 @@ function ForgotPasswordForm() {
                 maxLength={6}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full bg-slate-950/60 border border-slate-800 focus:border-indigo-500 rounded-lg py-2.5 px-4 text-center font-bold text-xl tracking-widest text-white placeholder-slate-800 outline-none transition"
+                className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 px-4 text-center font-bold text-xl tracking-widest text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans"
                 placeholder="000000"
                 required
               />
@@ -179,12 +176,12 @@ function ForgotPasswordForm() {
                 New Password (min 6 chars)
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-background border-border focus:border-primary rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder-slate-600 outline-none transition"
+                  className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 pl-10 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans text-sm"
                   placeholder="Enter new password"
                   required
                 />
@@ -194,7 +191,7 @@ function ForgotPasswordForm() {
             <button
               type="submit"
               disabled={loading || otp.length !== 6 || newPassword.length < 6}
-              className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-bold text-sm transition flex items-center justify-center gap-1.5"
             >
               {loading ? (
                 <>
@@ -212,7 +209,7 @@ function ForgotPasswordForm() {
         {/* Redirect to login */}
         <p className="text-center text-xs text-muted-foreground mt-6">
           Remember your password?{" "}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-bold transition">
+          <Link href="/login" className="text-indigo-500 hover:text-indigo-400 font-bold transition">
             Log In
           </Link>
         </p>
@@ -226,7 +223,7 @@ export default function ForgotPasswordPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center">
         <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-2" />
-        <p className="text-slate-400 text-sm font-medium">Loading...</p>
+        <p className="text-muted-foreground text-sm font-medium">Loading...</p>
       </div>
     }>
       <ForgotPasswordForm />

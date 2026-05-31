@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Sparkles,
   ArrowLeft,
   Loader2,
   Trophy,
@@ -13,6 +12,7 @@ import {
   Search,
   CheckCircle,
 } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 interface RankingUser {
@@ -122,31 +122,29 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar Header */}
-      <nav className="border-b border-border/60 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+      <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/dashboard")}
-            className="p-2 text-muted-foreground hover:text-foreground bg-card border border-border hover:border-border rounded-lg transition"
+            className="p-2 text-muted-foreground hover:text-foreground bg-card border border-border hover:border-border/80 rounded-lg transition"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-indigo-400" />
+            <Trophy className="w-5 h-5 text-indigo-500" />
             <h1 className="font-extrabold text-lg text-foreground">Leaderboard</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
-          <span className="font-bold text-xs tracking-wider bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            CODERUN LEAGUE
-          </span>
+          <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
+          <span className="font-bold text-xs tracking-wider text-foreground">LeetRun</span>
         </div>
       </nav>
 
       {/* Grid container */}
       <main className="flex-1 max-w-4xl w-full mx-auto p-6 space-y-6">
-        
+
         {/* Top Filters Block */}
         <div className="bg-card/40 border border-border rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex bg-muted p-1 rounded-xl border border-border w-full sm:w-auto">
@@ -190,7 +188,7 @@ export default function LeaderboardPage() {
 
         {/* Add Friend Box (Only visible in Friends tab) */}
         {filter === "friends" && (
-          <div className="bg-card/30 border border-border rounded-2xl p-5 space-y-3">
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
             <h3 className="text-sm font-bold text-foreground">Send Friend Request</h3>
             <form onSubmit={handleSendFriendRequest} className="flex gap-2">
               <div className="relative flex-1">
@@ -200,38 +198,40 @@ export default function LeaderboardPage() {
                   value={friendEmail}
                   onChange={(e) => setFriendEmail(e.target.value)}
                   placeholder="Enter friend's registration email..."
-                  className="w-full bg-background border border-border focus:border-primary rounded-lg py-2 pl-9 pr-4 text-xs text-foreground placeholder-muted-foreground outline-none transition"
+                  className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg py-2.5 pl-9 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-colors font-sans text-sm"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={sendingRequest || !friendEmail}
-                className="bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground px-4 rounded-lg font-bold text-xs transition"
+                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 rounded-lg font-bold text-xs transition"
               >
                 {sendingRequest ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add Friend"}
               </button>
             </form>
             {friendMessage && (
-              <p className="text-emerald-400 text-xs flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> {friendMessage}</p>
+              <p className="text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-1">
+                <CheckCircle className="w-3.5 h-3.5" /> {friendMessage}
+              </p>
             )}
             {friendError && (
-              <p className="text-rose-400 text-xs">{friendError}</p>
+              <p className="text-red-600 dark:text-red-400 text-xs">{friendError}</p>
             )}
           </div>
         )}
 
         {/* Pending Friend Requests Inbox */}
         {filter === "friends" && pendingRequests.length > 0 && (
-          <div className="bg-card/30 border border-border rounded-2xl p-5 space-y-3">
-            <h3 className="text-sm font-bold text-indigo-400 flex items-center gap-1">
-              <Users className="w-4 h-4 text-indigo-400" /> Pending Friend Requests ({pendingRequests.length})
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+            <h3 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+              <Users className="w-4 h-4" /> Pending Friend Requests ({pendingRequests.length})
             </h3>
             <div className="grid gap-3">
               {pendingRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="flex items-center justify-between p-3.5 bg-card/60 border border-border rounded-xl text-xs"
+                  className="flex items-center justify-between p-3.5 bg-muted border border-border rounded-xl text-xs"
                 >
                   <div>
                     <h4 className="font-bold text-foreground">{req.fullName || req.email.split("@")[0]}</h4>
@@ -240,7 +240,7 @@ export default function LeaderboardPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleRespondToFriendRequest(req.id, true)}
-                      className="bg-indigo-600 hover:bg-indigo-500 text-foreground px-3 py-1.5 rounded-lg font-bold text-xs transition"
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-bold text-xs transition"
                     >
                       Accept
                     </button>
@@ -258,7 +258,7 @@ export default function LeaderboardPage() {
         )}
 
         {/* Leaderboard Table List */}
-        <div className="bg-card/20 border border-slate-850 rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
           {loading ? (
             <div className="p-20 text-center text-muted-foreground text-sm flex flex-col items-center justify-center">
               <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mb-2" />
@@ -269,14 +269,14 @@ export default function LeaderboardPage() {
               No ranks available. Add friends or verify Leetcode sync to trigger leaderboard listings.
             </div>
           ) : (
-            <div className="divide-y divide-slate-850/60">
+            <div className="divide-y divide-border">
               {rankings.map((user, idx) => {
                 const rank = idx + 1;
                 const isTopThree = rank <= 3;
                 return (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between p-4 hover:bg-card/10 transition"
+                    className="flex items-center justify-between p-4 hover:bg-muted/40 transition"
                   >
                     <div className="flex items-center gap-4">
                       {/* Rank indicator */}
@@ -285,26 +285,26 @@ export default function LeaderboardPage() {
                           rank === 1
                             ? "text-yellow-500 font-extrabold text-base"
                             : rank === 2
-                            ? "text-slate-300"
+                            ? "text-slate-400 dark:text-slate-300"
                             : rank === 3
                             ? "text-amber-600"
-                            : "text-slate-500"
+                            : "text-muted-foreground"
                         }`}
                       >
                         {rank}
                       </span>
 
                       {/* Avatar */}
-                      <div className="w-9 h-9 rounded-full bg-muted border border-slate-700 flex items-center justify-center font-bold text-xs uppercase text-slate-200">
+                      <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center font-bold text-xs uppercase text-foreground">
                         {user.fullName ? user.fullName[0] : user.email[0]}
                       </div>
 
                       {/* Name Details */}
                       <div>
-                        <h4 className="font-bold text-sm text-slate-100">
+                        <h4 className="font-bold text-sm text-foreground">
                           {user.fullName || user.email.split("@")[0]}
                         </h4>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-muted-foreground">
                           Level {Math.floor(user.totalXp / 100) + 1}
                         </span>
                       </div>
@@ -319,8 +319,8 @@ export default function LeaderboardPage() {
                         </div>
                       ) : (
                         <div className="text-right">
-                          <div className="font-bold text-slate-200 text-sm">{user.totalXp} XP</div>
-                          <div className="text-[9px] text-slate-500 uppercase tracking-widest">Score</div>
+                          <div className="font-bold text-foreground text-sm">{user.totalXp} XP</div>
+                          <div className="text-[9px] text-muted-foreground uppercase tracking-widest">Score</div>
                         </div>
                       )}
                     </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Flame,
   Award,
@@ -10,7 +11,6 @@ import {
   Brain,
   ShieldCheck,
   RotateCw,
-  Sparkles,
   ExternalLink,
   ChevronRight,
   MessageSquare,
@@ -186,9 +186,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center">
         <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-2" />
-        <p className="text-slate-400 text-sm">Loading your command center...</p>
+        <p className="text-muted-foreground text-sm">Loading your command center...</p>
       </div>
     );
   }
@@ -196,18 +196,16 @@ export default function Dashboard() {
   if (!data) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white flex flex-col transition-colors duration-150">
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-150">
       {/* Top Navbar */}
-      <nav className="border-b border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-500" />
-          <span className="font-extrabold text-xl tracking-wider bg-gradient-to-r from-indigo-600 to-indigo-400 dark:from-indigo-400 dark:to-cyan-400 bg-clip-text text-transparent mr-4">
-            CODERUN
-          </span>
-          <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-slate-500 dark:text-slate-400">
-            <button onClick={() => router.push("/leaderboard")} className="hover:text-slate-900 dark:hover:text-white transition cursor-pointer">Leaderboard</button>
-            <button onClick={() => router.push("/rooms")} className="hover:text-slate-900 dark:hover:text-white transition cursor-pointer">Lobbies</button>
-            <button onClick={() => router.push("/profile")} className="hover:text-slate-900 dark:hover:text-white transition cursor-pointer">Profile</button>
+          <Image src="/logo.png" alt="LeetRun" width={28} height={28} className="object-contain" />
+          <span className="font-black text-base tracking-wider text-foreground mr-4">LeetRun</span>
+          <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-muted-foreground">
+            <button onClick={() => router.push("/leaderboard")} className="hover:text-foreground transition cursor-pointer">Leaderboard</button>
+            <button onClick={() => router.push("/rooms")} className="hover:text-foreground transition cursor-pointer">Lobbies</button>
+            <button onClick={() => router.push("/profile")} className="hover:text-foreground transition cursor-pointer">Profile</button>
           </div>
         </div>
 
@@ -221,12 +219,12 @@ export default function Dashboard() {
             <Award className="w-4 h-4" />
             <span>Level {Math.floor(data.user.totalXp / 100) + 1}</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-full text-yellow-600 dark:text-yellow-500 font-bold text-sm shadow-sm dark:shadow-none">
+          <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-yellow-600 dark:text-yellow-500 font-bold text-sm">
             <CircleDollarSign className="w-4 h-4" />
             <span>{data.user.coins} Coins</span>
           </div>
           {data.user.plan === "PREMIUM" && (
-            <div className="flex items-center gap-1 bg-gradient-to-r from-yellow-500 to-amber-600 px-3 py-1.5 rounded-full text-slate-950 font-black text-xs border border-yellow-400/35 shadow-lg shadow-yellow-500/10 animate-pulse">
+            <div className="flex items-center gap-1 bg-gradient-to-r from-yellow-500 to-amber-600 px-3 py-1.5 rounded-full text-white font-black text-xs border border-yellow-400/35 shadow-lg shadow-yellow-500/10 animate-pulse">
               PRO
             </div>
           )}
@@ -268,7 +266,7 @@ export default function Dashboard() {
             <CardHeader className="pb-0">
 
             {/* Dynamic Tabs */}
-            <div className="flex border-b border-slate-800/80 mb-6 overflow-x-auto gap-2">
+            <div className="flex border-b border-border mb-6 overflow-x-auto gap-2">
               {[
                 { id: "daily", name: "Daily Quest", xp: `+${data.daily.xpReward} XP` },
                 { id: "weekly", name: "Weekly Quest", xp: `+${data.weekly.xpReward} XP` },
@@ -280,13 +278,13 @@ export default function Dashboard() {
                   type="button"
                   className={`pb-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap transition flex items-center gap-1.5 ${
                     activeTab === tab.id
-                      ? "border-indigo-500 text-indigo-400"
-                      : "border-transparent text-slate-400 hover:text-slate-200"
+                      ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {tab.name}
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                    activeTab === tab.id ? "bg-indigo-600/20 text-indigo-300" : "bg-slate-800 text-slate-500"
+                    activeTab === tab.id ? "bg-indigo-600/20 text-indigo-600 dark:text-indigo-300" : "bg-muted text-muted-foreground"
                   }`}>
                     {tab.xp}
                   </span>
@@ -301,17 +299,17 @@ export default function Dashboard() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <span className="text-xs text-indigo-400 font-bold tracking-wider uppercase">
+                      <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold tracking-wider uppercase">
                         {activeTab === "daily" ? "Daily accountability" : activeTab === "weekly" ? "Weekly Elite 5" : "Weakness reinforcement"}
                       </span>
                       <h2 className="text-2xl font-black mt-1">{currentChallenge.title}</h2>
                     </div>
-                    <span className="text-xs bg-slate-800 border border-slate-750 px-2.5 py-1 rounded-md text-slate-300 font-semibold uppercase">
+                    <span className="text-xs bg-muted border border-border px-2.5 py-1 rounded-md text-muted-foreground font-semibold uppercase">
                       {currentChallenge.difficulty}
                     </span>
                   </div>
 
-                  <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                  <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
                     {currentChallenge.description || "Your custom generated challenge."}
                   </p>
 
@@ -319,16 +317,16 @@ export default function Dashboard() {
                     {currentChallenge.problems.map((prob) => (
                       <div
                         key={prob.id}
-                        className="flex items-center justify-between p-4 bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-850 hover:border-slate-300 dark:hover:border-slate-750 rounded-xl transition"
+                        className="flex items-center justify-between p-4 bg-muted/30 border border-border hover:border-indigo-500/40 rounded-xl transition"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-850 dark:text-slate-100">{prob.problemName}</span>
-                            <span className="text-[10px] bg-slate-200 dark:bg-slate-850 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium">
+                            <span className="font-bold text-foreground">{prob.problemName}</span>
+                            <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">
                               {prob.topic}
                             </span>
                           </div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-muted-foreground">
                             Difficulty: <span className="text-emerald-600 dark:text-emerald-500 font-semibold">{prob.difficulty}</span>
                           </div>
                         </div>
@@ -357,16 +355,16 @@ export default function Dashboard() {
 
           {/* Quick stats details */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-850 rounded-xl p-4 flex flex-col justify-between shadow-sm dark:shadow-none">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Easy Solved</span>
+            <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-between">
+              <span className="text-xs text-muted-foreground font-medium">Easy Solved</span>
               <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2">{data.stats.easySolved}</span>
             </div>
-            <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-850 rounded-xl p-4 flex flex-col justify-between shadow-sm dark:shadow-none">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Medium Solved</span>
+            <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-between">
+              <span className="text-xs text-muted-foreground font-medium">Medium Solved</span>
               <span className="text-2xl font-black text-yellow-600 dark:text-yellow-500 mt-2">{data.stats.mediumSolved}</span>
             </div>
-            <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-850 rounded-xl p-4 flex flex-col justify-between shadow-sm dark:shadow-none">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Hard Solved</span>
+            <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-between">
+              <span className="text-xs text-muted-foreground font-medium">Hard Solved</span>
               <span className="text-2xl font-black text-rose-600 dark:text-rose-500 mt-2">{data.stats.hardSolved}</span>
             </div>
           </div>
@@ -375,19 +373,19 @@ export default function Dashboard() {
         {/* Right Column: AI Mentor Vibe & Social */}
         <section className="space-y-6">
           {/* AI Mentor Card */}
-          <div className="bg-white dark:bg-gradient-to-b dark:from-indigo-950/30 dark:to-slate-900/40 border border-slate-200 dark:border-indigo-900/20 hover:border-slate-300 dark:hover:border-indigo-900/40 rounded-2xl p-6 transition shadow-sm dark:shadow-none">
+          <div className="bg-card border border-border hover:border-indigo-500/40 rounded-2xl p-6 transition">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-600/30">
                 {data.mentor.name[0]}
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 dark:text-slate-100">{data.mentor.name}</h3>
+                <h3 className="font-bold text-foreground">{data.mentor.name}</h3>
                 <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Your AI Mentor</span>
               </div>
             </div>
 
-            <div className="bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-850 rounded-xl p-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4 relative">
-              "Congratulations on finishing your profile onboarding. Today we will start with simple Arrays and Strings Warm-up quests. Make sure you don't break your streak on day one!"
+            <div className="bg-muted/50 border border-border rounded-xl p-4 text-sm text-foreground leading-relaxed mb-4 relative">
+              &quot;Congratulations on finishing your profile onboarding. Today we will start with simple Arrays and Strings Warm-up quests. Make sure you don&apos;t break your streak on day one!&quot;
             </div>
 
             <button
@@ -399,22 +397,22 @@ export default function Dashboard() {
           </div>
 
           {/* Placement Goals / Info Card */}
-          <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-850 rounded-2xl p-6 shadow-sm dark:shadow-none">
+          <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Focus Intelligence
             </h3>
 
             <div className="space-y-4">
-              <div className="flex justify-between items-center text-sm border-b border-slate-200 dark:border-slate-850/60 pb-3">
-                <span className="text-slate-500 dark:text-slate-400">Target Company</span>
-                <span className="font-bold text-slate-800 dark:text-slate-100">{data.user.targetCompany}</span>
+              <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                <span className="text-muted-foreground">Target Company</span>
+                <span className="font-bold text-foreground">{data.user.targetCompany}</span>
               </div>
-              <div className="flex justify-between items-center text-sm border-b border-slate-200 dark:border-slate-850/60 pb-3">
-                <span className="text-slate-500 dark:text-slate-400">Weak Topic</span>
+              <div className="flex justify-between items-center text-sm border-b border-border pb-3">
+                <span className="text-muted-foreground">Weak Topic</span>
                 <span className="font-bold text-rose-600 dark:text-rose-400">{data.stats.weakestTopic || "None detected"}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Strongest Topic</span>
+                <span className="text-muted-foreground">Strongest Topic</span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">{data.stats.strongestTopic || "None detected"}</span>
               </div>
             </div>
@@ -422,11 +420,11 @@ export default function Dashboard() {
 
           {/* Premium Billing Upgrade Card */}
           {data.user.plan === "FREE" && (
-            <div className="bg-gradient-to-r from-indigo-50 via-white to-slate-50 dark:from-indigo-950/40 dark:via-indigo-900/10 dark:to-slate-900/40 border border-indigo-200 dark:border-indigo-500/20 rounded-2xl p-6 space-y-4 shadow-sm dark:shadow-none">
+            <div className="bg-gradient-to-r from-indigo-50 via-background to-background dark:from-indigo-950/40 dark:via-indigo-900/10 dark:to-card border border-indigo-200 dark:border-indigo-500/20 rounded-2xl p-6 space-y-4">
               <div>
-                <span className="text-[10px] text-yellow-600 dark:text-yellow-500 font-extrabold uppercase tracking-wider bg-yellow-100 dark:bg-yellow-950/30 border border-yellow-250 dark:border-yellow-500/20 px-2 py-0.5 rounded">UNLOCK ADVANCED</span>
-                <h3 className="font-extrabold text-md mt-1.5 text-slate-850 dark:text-slate-100 font-sans">Upgrade to CodeRun Premium</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">
+                <span className="text-[10px] text-yellow-600 dark:text-yellow-500 font-extrabold uppercase tracking-wider bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-500/20 px-2 py-0.5 rounded">UNLOCK ADVANCED</span>
+                <h3 className="font-extrabold text-md mt-1.5 text-foreground font-sans">Upgrade to LeetRun Premium</h3>
+                <p className="text-muted-foreground text-xs mt-1 leading-relaxed">
                   Gain access to the full placement suite, unlock premium dashboard analytics, and priority mentor advice.
                 </p>
               </div>
@@ -434,7 +432,7 @@ export default function Dashboard() {
               <button
                 onClick={handleUpgradePlan}
                 disabled={actionLoading}
-                className="w-full py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-450 hover:to-amber-550 disabled:from-slate-300 disabled:to-slate-400 dark:disabled:from-slate-800 dark:disabled:to-slate-850 text-slate-950 rounded-xl text-xs font-black transition shadow-lg shadow-yellow-500/10 flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-black transition shadow-lg shadow-yellow-500/10 flex items-center justify-center gap-2"
               >
                 {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Upgrade to Premium ($9)"}
               </button>

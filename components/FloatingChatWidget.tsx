@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Bot, User, Maximize2, Loader2, Sparkles, Volume2, Square } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Maximize2, Loader2, Volume2, Square } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -171,7 +171,7 @@ export function FloatingChatWidget() {
               <div>
                 <CardTitle className="text-sm">{mentorName}</CardTitle>
                 <div className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-indigo-400" /> AI Coach
+                  AI Coach
                 </div>
               </div>
             </div>
