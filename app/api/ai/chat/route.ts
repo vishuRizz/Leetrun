@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       console.warn("Groq chat completion failed, falling back to Gemini:", groqError);
       
       // Map DB messages to Gemini chat history format
-      const formattedHistory = previousMessages.map((msg) => ({
+      const formattedHistory = previousMessages.map((msg: { role: string; content: string }) => ({
         role: msg.role === "assistant" ? "model" : "user",
         parts: [{ text: msg.content }],
       }));
