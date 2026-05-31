@@ -12,7 +12,6 @@ import {
   Search,
   CheckCircle,
 } from "lucide-react";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 interface RankingUser {
@@ -123,22 +122,9 @@ export default function LeaderboardPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar Header */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="p-2 text-muted-foreground hover:text-foreground bg-card border border-border hover:border-border/80 rounded-lg transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-indigo-500" />
-            <h1 className="font-extrabold text-lg text-foreground">Leaderboard</h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
-          <span className="font-bold text-xs tracking-wider text-foreground">LeetRun</span>
+        <div className="flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-indigo-500" />
+          <h1 className="font-extrabold text-xl text-foreground">Leaderboard</h1>
         </div>
       </nav>
 

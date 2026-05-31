@@ -207,29 +207,16 @@ export default function ChatPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col h-screen transition-colors duration-150">
       {/* Navbar Header */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="p-2 text-muted-foreground hover:text-foreground bg-muted/50 border border-border rounded-lg transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-              {mentorName[0]}
-            </div>
-            <div>
-              <h1 className="font-bold text-sm text-foreground">{mentorName}</h1>
-              <span className="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold uppercase tracking-wider">
-                DSA Mentor
-              </span>
-            </div>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+            {mentorName[0]}
           </div>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
-          <span className="hidden sm:inline font-bold text-xs tracking-wider text-foreground">LeetRun AI</span>
+          <div>
+            <h1 className="font-bold text-sm text-foreground">{mentorName}</h1>
+            <span className="text-[10px] text-indigo-500 dark:text-indigo-400 font-bold uppercase tracking-wider">
+              DSA Mentor
+            </span>
+          </div>
         </div>
       </nav>
 

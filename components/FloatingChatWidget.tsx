@@ -26,10 +26,6 @@ export function FloatingChatWidget() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Hide widget on dedicated chat page
-  if (pathname === "/chat") {
-    return null;
-  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -158,6 +154,11 @@ export function FloatingChatWidget() {
       return { reply: content, suggestions: [] };
     }
   };
+
+  // Hide widget on dedicated chat page
+  if (pathname === "/chat") {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50">

@@ -14,11 +14,9 @@ import {
   ExternalLink,
   ChevronRight,
   MessageSquare,
-  LogOut,
 } from "lucide-react";
 import { InviteFriendModal } from "@/components/InviteFriendModal";
 import { createClient } from "@/lib/supabase/client";
-import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -200,56 +198,43 @@ export default function Dashboard() {
       {/* Top Navbar */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="LeetRun" width={28} height={28} className="object-contain" />
-          <span className="font-black text-base tracking-wider text-foreground mr-4">LeetRun</span>
-          <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-muted-foreground">
-            <button onClick={() => router.push("/leaderboard")} className="hover:text-foreground transition cursor-pointer">Leaderboard</button>
-            <button onClick={() => router.push("/rooms")} className="hover:text-foreground transition cursor-pointer">Lobbies</button>
-            <button onClick={() => router.push("/profile")} className="hover:text-foreground transition cursor-pointer">Profile</button>
-          </div>
+          <h1 className="font-black text-xl tracking-wider text-foreground">Dashboard</h1>
         </div>
 
-        {/* Stats Pills */}
-        <div className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-orange-600 dark:text-orange-500 font-bold text-sm">
-            <Flame className="w-4 h-4 fill-current" />
-            <span>{data.user.currentStreak} Day Streak</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-primary font-bold text-sm">
-            <Award className="w-4 h-4" />
-            <span>Level {Math.floor(data.user.totalXp / 100) + 1}</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-yellow-600 dark:text-yellow-500 font-bold text-sm">
-            <CircleDollarSign className="w-4 h-4" />
-            <span>{data.user.coins} Coins</span>
-          </div>
-          {data.user.plan === "PREMIUM" && (
-            <div className="flex items-center gap-1 bg-gradient-to-r from-yellow-500 to-amber-600 px-3 py-1.5 rounded-full text-white font-black text-xs border border-yellow-400/35 shadow-lg shadow-yellow-500/10 animate-pulse">
-              PRO
+        {/* Stats Pills & Actions */}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-orange-600 dark:text-orange-500 font-bold text-sm">
+              <Flame className="w-4 h-4 fill-current" />
+              <span>{data.user.currentStreak} Day Streak</span>
             </div>
-          )}
-        </div>
+            <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-primary font-bold text-sm">
+              <Award className="w-4 h-4" />
+              <span>Level {Math.floor(data.user.totalXp / 100) + 1}</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background border border-border px-3 py-1.5 rounded-full text-yellow-600 dark:text-yellow-500 font-bold text-sm">
+              <CircleDollarSign className="w-4 h-4" />
+              <span>{data.user.coins} Coins</span>
+            </div>
+            {data.user.plan === "PREMIUM" && (
+              <div className="flex items-center gap-1 bg-gradient-to-r from-yellow-500 to-amber-600 px-3 py-1.5 rounded-full text-white font-black text-xs border border-yellow-400/35 shadow-lg shadow-yellow-500/10 animate-pulse">
+                PRO
+              </div>
+            )}
+          </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3">
-          <InviteFriendModal />
-          <ThemeToggle />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleSync}
-            disabled={syncing}
-            title="Sync LeetCode"
-          >
-            <RotateCw className={`w-4 h-4 ${syncing ? "animate-spin text-primary" : ""}`} />
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleSignOut}
-            className="flex items-center gap-1.5"
-          >
-            <LogOut className="w-4 h-4" /> Logout
-          </Button>
+          <div className="flex items-center gap-3">
+            <InviteFriendModal />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSync}
+              disabled={syncing}
+              title="Sync LeetCode"
+            >
+              <RotateCw className={`w-4 h-4 ${syncing ? "animate-spin text-primary" : ""}`} />
+            </Button>
+          </div>
         </div>
       </nav>
 

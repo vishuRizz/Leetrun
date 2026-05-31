@@ -17,10 +17,11 @@ import {
   Languages,
   CheckCircle2,
   Sparkles,
+  Crown,
+  Medal,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import ThemeToggle from "@/components/ThemeToggle";
 
 interface ProfileData {
   fullName: string | null;
@@ -146,25 +147,9 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-150">
       {/* Top Navbar */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="p-2 text-muted-foreground hover:text-foreground bg-card border border-border hover:border-border/80 rounded-lg transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-indigo-500" />
-            <h1 className="font-extrabold text-lg text-foreground">User Profile</h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <div className="flex items-center gap-1.5">
-            <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
-            <span className="font-bold text-xs tracking-wider text-foreground">LeetRun</span>
-          </div>
+        <div className="flex items-center gap-2">
+          <Award className="w-5 h-5 text-indigo-500" />
+          <h1 className="font-extrabold text-xl text-foreground">User Profile</h1>
         </div>
       </nav>
 
@@ -206,7 +191,9 @@ export default function ProfilePage() {
                     ? "bg-yellow-50 dark:bg-yellow-950/30 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20"
                     : "bg-muted text-muted-foreground border-border"
                 }`}>
-                  {profile.plan === "PREMIUM" ? "👑 PREMIUM" : "FREE PLAN"}
+                  {profile.plan === "PREMIUM" ? (
+                    <span className="flex items-center gap-1.5"><Crown className="w-4 h-4" /> PREMIUM</span>
+                  ) : "FREE PLAN"}
                 </span>
               </div>
             </div>
@@ -336,7 +323,13 @@ export default function ProfilePage() {
                     key={b.id}
                     className="p-3 bg-muted border border-border rounded-xl text-center space-y-1.5 flex flex-col items-center justify-center hover:border-indigo-500/40 transition"
                   >
-                    <span className="text-2xl">{b.badge.icon || "🏆"}</span>
+                    <span className="text-indigo-500">
+                      {b.badge.icon ? (
+                        <span className="text-2xl">{b.badge.icon}</span>
+                      ) : (
+                        <Medal className="w-8 h-8" />
+                      )}
+                    </span>
                     <div>
                       <h4 className="font-extrabold text-[11px] text-foreground leading-tight">{b.badge.title}</h4>
                       <p className="text-[9px] text-muted-foreground mt-0.5 leading-tight">{b.badge.description}</p>

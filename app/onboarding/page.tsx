@@ -16,6 +16,15 @@ import {
   Loader2,
   Trophy,
   Star,
+  Hand,
+  Link,
+  Lightbulb,
+  Brain,
+  Bot,
+  PartyPopper,
+  Smile,
+  Dumbbell,
+  Laugh,
 } from "lucide-react";
 
 interface Question {
@@ -245,7 +254,7 @@ export default function OnboardingPage() {
             {step === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground mb-1">Welcome aboard! 👋</h1>
+                  <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Welcome aboard! <Hand className="w-6 h-6 text-indigo-500" /></h1>
                   <p className="text-muted-foreground text-sm">Let's start with a few basics to personalise your journey.</p>
                 </div>
 
@@ -311,7 +320,7 @@ export default function OnboardingPage() {
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground mb-1">Where are you headed? 🎯</h1>
+                  <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Where are you headed? <Target className="w-6 h-6 text-red-500" /></h1>
                   <p className="text-muted-foreground text-sm">Define your placement target and timeline so we can focus your prep.</p>
                 </div>
 
@@ -372,7 +381,7 @@ export default function OnboardingPage() {
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground mb-1">Connect LeetCode 🔗</h1>
+                  <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Connect LeetCode <Link className="w-6 h-6 text-blue-500" /></h1>
                   <p className="text-muted-foreground text-sm">
                     We'll sync your coding stats to calibrate your difficulty level.
                   </p>
@@ -419,7 +428,7 @@ export default function OnboardingPage() {
                     </div>
                   ) : (
                     <div className="p-4 bg-muted/50 border border-border rounded-xl text-muted-foreground text-xs leading-relaxed">
-                      💡 Make sure your LeetCode profile is public. Don't have one? You can skip by clicking <strong>Next</strong>.
+                      <Lightbulb className="w-4 h-4 inline mr-1 text-yellow-500" /> Make sure your LeetCode profile is public. Don't have one? You can skip by clicking <strong>Next</strong>.
                     </div>
                   )}
                 </div>
@@ -431,7 +440,7 @@ export default function OnboardingPage() {
               <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-foreground mb-1">Quick Assessment 🧠</h1>
+                    <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Quick Assessment <Brain className="w-6 h-6 text-pink-500" /></h1>
                     <p className="text-muted-foreground text-sm">5 DSA questions · 2 minutes</p>
                   </div>
                   <div className={`px-3 py-1.5 rounded-lg border font-bold font-mono text-sm ${
@@ -442,7 +451,6 @@ export default function OnboardingPage() {
                     {Math.floor(quizTimeLeft / 60)}:{(quizTimeLeft % 60).toString().padStart(2, "0")}
                   </div>
                 </div>
-
                 <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1 -mr-1">
                   {ASSESSMENT_QUESTIONS.map((q, idx) => (
                     <div key={q.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
@@ -479,7 +487,7 @@ export default function OnboardingPage() {
             {step === 5 && (
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground mb-1">Meet your AI Mentor 🤖</h1>
+                  <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Meet your AI Mentor <Bot className="w-6 h-6 text-indigo-500" /></h1>
                   <p className="text-muted-foreground text-sm">Customize the companion who will keep you accountable every day.</p>
                 </div>
 
@@ -502,22 +510,22 @@ export default function OnboardingPage() {
                     <label className={labelCls}>Mentor Personality</label>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { v: "Friendly", emoji: "😊" },
-                        { v: "Strict", emoji: "💪" },
-                        { v: "Funny", emoji: "😄" },
-                        { v: "Professional", emoji: "🎯" },
-                      ].map(({ v, emoji }) => (
+                        { v: "Friendly", icon: <Smile className="w-5 h-5 text-green-500" /> },
+                        { v: "Strict", icon: <Dumbbell className="w-5 h-5 text-orange-500" /> },
+                        { v: "Funny", icon: <Laugh className="w-5 h-5 text-yellow-500" /> },
+                        { v: "Professional", icon: <Target className="w-5 h-5 text-blue-500" /> },
+                      ].map(({ v, icon }) => (
                         <button
                           key={v}
                           onClick={() => setMentorVibe(v)}
                           type="button"
-                          className={`py-3 px-4 rounded-xl border text-sm font-semibold transition-all ${
+                          className={`py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                             mentorVibe === v
                               ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 dark:text-indigo-400"
                               : "bg-background border-border text-muted-foreground hover:border-indigo-400"
                           }`}
                         >
-                          {emoji} {v}
+                          {icon} {v}
                         </button>
                       ))}
                     </div>
@@ -534,7 +542,7 @@ export default function OnboardingPage() {
                   <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-600/20">
                     <Trophy className="w-8 h-8 text-white" />
                   </div>
-                  <h1 className="text-2xl font-black text-foreground mb-1">You're all set! 🎉</h1>
+                  <h1 className="flex items-center gap-2 text-2xl font-black text-foreground mb-1">You're all set! <PartyPopper className="w-6 h-6 text-yellow-500" /></h1>
                   <p className="text-muted-foreground text-sm">
                     Your profile is built. Here's how you scored.
                   </p>
