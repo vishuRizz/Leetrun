@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}));
     let username = body.username;
+    const force = Boolean(body.force);
 
     // If no username provided in the body, try to fetch from their existing profile
     if (!username) {
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       username = existingProfile.username;
     }
 
-    const profile = await syncUserProfile(user.id, username);
+    const profile = await syncUserProfile(user.id, username, { force });
     return NextResponse.json({ success: true, profile });
   } catch (error: any) {
     console.error("Error in /api/leetcode/sync:", error);

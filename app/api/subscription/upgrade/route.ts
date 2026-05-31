@@ -37,6 +37,7 @@ export async function POST(request: Request) {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1); // 1-month premium membership
+    const priceUsd = 0.2; // $0.20 / month
 
     await db.$transaction([
       // Update User table plan to PREMIUM
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
             paymentId: mockPaymentId,
             startDate,
             endDate,
+            priceUsd,
           },
         },
       }),

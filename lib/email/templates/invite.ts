@@ -3,7 +3,7 @@ export const getInviteEmailHtml = (inviterName: string, signupUrl: string) => `
 <html>
 <head>
   <meta charset="utf-8">
-  <title>You're invited to CodeRun</title>
+  <title>You're invited to LeetRun</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -92,7 +92,7 @@ export const getInviteEmailHtml = (inviterName: string, signupUrl: string) => `
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="logo">CODERUN</h1>
+      <h1 class="logo">LEETRUN</h1>
       <!-- TOP LINK -->
       <div style="margin-top: 15px; font-size: 12px;">
         <a href="${signupUrl}" class="link">Quick Sign Up</a>
@@ -100,17 +100,17 @@ export const getInviteEmailHtml = (inviterName: string, signupUrl: string) => `
     </div>
     
     <div class="content">
-      <h2 class="title">${inviterName} has invited you to join CodeRun!</h2>
+      <h2 class="title">${inviterName} has invited you to join LeetRun!</h2>
       
       <p>Hey there,</p>
-      <p>Your friend <strong>${inviterName}</strong> thinks you'd be a great fit for CodeRun, an intelligent platform designed to accelerate your Data Structures and Algorithms (DSA) preparation.</p>
+      <p>Your friend <strong>${inviterName}</strong> thinks you'd be a great fit for LeetRun, an intelligent platform designed to accelerate your Data Structures and Algorithms (DSA) preparation.</p>
       
       <!-- MIDDLE LINK (Button CTA) -->
       <div class="btn-container">
         <a href="${signupUrl}" class="btn">Accept Invitation & Join Now</a>
       </div>
 
-      <h3>Why join CodeRun?</h3>
+      <h3>Why join LeetRun?</h3>
       <ul class="benefits-list">
         <li class="benefit-item">
           <span class="benefit-icon">🧠</span>
@@ -135,8 +135,8 @@ export const getInviteEmailHtml = (inviterName: string, signupUrl: string) => `
     </div>
     
     <div class="footer">
-      <p>You received this email because ${inviterName} invited you to CodeRun.</p>
-      <p>&copy; ${new Date().getFullYear()} CodeRun Platform. All rights reserved.</p>
+      <p>You received this email because ${inviterName} invited you to LeetRun.</p>
+      <p>&copy; ${new Date().getFullYear()} LeetRun Platform. All rights reserved.</p>
     </div>
   </div>
 </body>

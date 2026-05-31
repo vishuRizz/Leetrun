@@ -391,7 +391,7 @@ export default function ProfilePage() {
                 }}
                 className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white px-6 py-2.5 rounded-xl text-xs font-black transition cursor-pointer"
               >
-                Upgrade to Premium ($9)
+                Upgrade to Premium ($0.20/mo)
               </button>
             )}
           </div>

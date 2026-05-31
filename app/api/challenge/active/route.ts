@@ -7,7 +7,6 @@ import {
   generateRevisionChallenge,
   verifyChallengeCompletion,
 } from "@/lib/services/challenge";
-import { syncUserProfile } from "@/lib/leetcode/service";
 import { ChallengeStatus, ChallengeType } from "@prisma/client";
 
 export async function GET(request: Request) {
@@ -21,14 +20,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 1. Sync Leetcode profile first to make sure we check completion
-    const profile = await db.leetcodeProfile.findUnique({
-      where: { userId: user.id },
-    });
-    if (profile) {
-      await syncUserProfile(user.id, profile.username).catch(() => {});
-      await verifyChallengeCompletion(user.id).catch(() => {});
-    }
+    // Verify completion against the data we already have (no external sync here —
+    // sync is owned by /api/leetcode/sync and is debounced server-side anyway).
+    await verifyChallengeCompletion(user.id).catch(() => {});
 
     // Orchestrate/Fetch each type of active challenge
     const getOrCreateChallenge = async (type: ChallengeType) => {
@@ -109,9 +103,11 @@ export async function GET(request: Request) {
       return active;
     };
 
-    const daily = await getOrCreateChallenge(ChallengeType.DAILY);
-    const weekly = await getOrCreateChallenge(ChallengeType.WEEKLY);
-    const revision = await getOrCreateChallenge(ChallengeType.REVISION);
+    const [daily, weekly, revision] = await Promise.all([
+      getOrCreateChallenge(ChallengeType.DAILY),
+      getOrCreateChallenge(ChallengeType.WEEKLY),
+      getOrCreateChallenge(ChallengeType.REVISION),
+    ]);
 
     return NextResponse.json({
       active: true,

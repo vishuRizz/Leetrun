@@ -15,8 +15,8 @@ export async function GET(request: Request) {
 
     for (const profile of profiles) {
       try {
-        // 1. Sync their profile & submissions
-        await syncUserProfile(profile.userId, profile.username);
+        // 1. Sync their profile & submissions (force-bypass cooldown for the cron).
+        await syncUserProfile(profile.userId, profile.username, { force: true });
         syncSuccessCount++;
 
         // 2. Check and verify active challenges

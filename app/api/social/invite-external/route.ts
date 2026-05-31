@@ -29,9 +29,9 @@ export async function POST(request: Request) {
     const htmlContent = getInviteEmailHtml(inviterName, signupUrl);
 
     const data = await resend.emails.send({
-      from: "CodeRun <onboarding@resend.dev>", // resend.dev allows sending to testing emails without a verified domain
+      from: "LeetRun <leetrun@vishu.codes>",
       to: [email],
-      subject: `${inviterName} has invited you to join CodeRun!`,
+      subject: `${inviterName} has invited you to join LeetRun!`,
       html: htmlContent,
     });
 

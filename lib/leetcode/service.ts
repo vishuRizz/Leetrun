@@ -33,36 +33,82 @@ export async function validateUsername(username: string): Promise<boolean> {
   }
 }
 
-export async function syncUserProfile(userId: string, username: string) {
+// In-process throttle: avoid duplicate concurrent syncs for the same user.
+const inflightSyncs = new Map<string, Promise<any>>();
+
+// How long a fresh sync is considered "hot" before we'll hit LeetCode again.
+const SYNC_COOLDOWN_MS = 2 * 60 * 1000; // 2 minutes
+
+export interface SyncOptions {
+  /** Skip the sync entirely if a recent one already happened. */
+  force?: boolean;
+}
+
+export async function syncUserProfile(
+  userId: string,
+  username: string,
+  options: SyncOptions = {}
+) {
   const trimmedUsername = username.trim();
-  
-  // 1. Fetch LeetCode progress stats
-  const statsData = await fetchLeetcodeStats(trimmedUsername);
-  if (!statsData || !statsData.matchedUser) {
-    throw new Error(`LeetCode user ${trimmedUsername} not found.`);
-  }
 
-  // 2. Fetch contest ranking details
-  let contestRating: number | null = null;
-  try {
-    const contestData = await fetchContestRanking(trimmedUsername);
-    if (contestData?.userContestRanking) {
-      contestRating = contestData.userContestRanking.rating;
-    }
-  } catch (err) {
-    console.warn("Failed to fetch contest ranking, skipping rating:", err);
-  }
+  // De-dupe concurrent calls for the same user.
+  const inflight = inflightSyncs.get(userId);
+  if (inflight) return inflight;
 
-  // 3. Fetch recent submissions
-  let recentSubmissions: any[] = [];
-  try {
-    const subsData = await fetchRecentSubmissions(trimmedUsername, 20);
-    if (subsData?.recentAcSubmissionList) {
-      recentSubmissions = subsData.recentAcSubmissionList;
+  const job = (async () => {
+    // 1. Cooldown short-circuit — return whatever's in the DB without hitting LeetCode.
+    if (!options.force) {
+      const existing = await db.leetcodeProfile.findUnique({
+        where: { userId },
+      });
+      if (
+        existing &&
+        existing.syncedAt &&
+        Date.now() - existing.syncedAt.getTime() < SYNC_COOLDOWN_MS
+      ) {
+        return existing;
+      }
     }
-  } catch (err) {
-    console.warn("Failed to fetch recent submissions:", err);
+
+    // 2. Hit LeetCode for stats, contest ranking, and recent submissions IN PARALLEL.
+    const [statsData, contestSettled, subsSettled] = await Promise.all([
+      fetchLeetcodeStats(trimmedUsername),
+      fetchContestRanking(trimmedUsername).catch((err) => {
+        console.warn("Failed to fetch contest ranking, skipping rating:", err);
+        return null;
+      }),
+      fetchRecentSubmissions(trimmedUsername, 20).catch((err) => {
+        console.warn("Failed to fetch recent submissions:", err);
+        return null;
+      }),
+    ]);
+
+    if (!statsData || !statsData.matchedUser) {
+      throw new Error(`LeetCode user ${trimmedUsername} not found.`);
+    }
+
+    const contestRating: number | null =
+      contestSettled?.userContestRanking?.rating ?? null;
+    const recentSubmissions: any[] = subsSettled?.recentAcSubmissionList || [];
+
+    return runSyncWrites(userId, trimmedUsername, statsData, contestRating, recentSubmissions);
+  })();
+
+  inflightSyncs.set(userId, job);
+  try {
+    return await job;
+  } finally {
+    inflightSyncs.delete(userId);
   }
+}
+
+async function runSyncWrites(
+  userId: string,
+  trimmedUsername: string,
+  statsData: any,
+  contestRating: number | null,
+  recentSubmissions: any[]
+) {
 
   const matchedUser = statsData.matchedUser;
   const profileStats = matchedUser.submitStats?.acSubmissionNum || [];
@@ -143,126 +189,134 @@ export async function syncUserProfile(userId: string, username: string) {
     return profile;
   });
 
-  // Save recent submissions and update topic performance outside transaction to avoid timeouts
-  for (const sub of recentSubmissions) {
-    const topic = classifyTopic(sub.titleSlug);
-    const guessedDifficulty = sub.titleSlug.length % 3 === 0 ? "HARD" : sub.titleSlug.length % 2 === 0 ? "MEDIUM" : "EASY";
-
-    // Save submission
-    await db.leetcodeSubmission.upsert({
-      where: { id: sub.id },
-      update: {},
-      create: {
-        id: sub.id,
-        profileId: profileResult.id,
-        title: sub.title,
-        slug: sub.titleSlug,
-        difficulty: guessedDifficulty,
-        topic,
-        submittedAt: new Date(parseInt(sub.timestamp) * 1000),
-      },
-    });
-
-    // Update TopicPerformance
-    const performance = await db.topicPerformance.findUnique({
-      where: {
-        userId_topic: {
-          userId,
+  // ---- Submissions: bulk insert in one go, skipping duplicates ----
+  if (recentSubmissions.length > 0) {
+    await db.leetcodeSubmission.createMany({
+      data: recentSubmissions.map((sub: any) => {
+        const topic = classifyTopic(sub.titleSlug);
+        const guessedDifficulty =
+          sub.titleSlug.length % 3 === 0
+            ? "HARD"
+            : sub.titleSlug.length % 2 === 0
+            ? "MEDIUM"
+            : "EASY";
+        return {
+          id: sub.id,
+          profileId: profileResult.id,
+          title: sub.title,
+          slug: sub.titleSlug,
+          difficulty: guessedDifficulty as any,
           topic,
-        },
-      },
+          submittedAt: new Date(parseInt(sub.timestamp) * 1000),
+        };
+      }),
+      skipDuplicates: true,
     });
-
-    if (!performance) {
-      await db.topicPerformance.create({
-        data: {
-          userId,
-          topic,
-          attempts: 1,
-          solved: 1,
-          failed: 0,
-          confidenceScore: 0.5,
-          masteryLevel: 0.1,
-        },
-      });
-    } else {
-      const newSolved = performance.solved + 1;
-      const newAttempts = performance.attempts + 1;
-      const confidenceScore = Math.min(1, newSolved / newAttempts);
-      await db.topicPerformance.update({
-        where: {
-          userId_topic: {
-            userId,
-            topic,
-          },
-        },
-        data: {
-          attempts: newAttempts,
-          solved: newSolved,
-          confidenceScore,
-          masteryLevel: Math.min(1.0, confidenceScore * 1.2),
-        },
-      });
-    }
   }
 
-  // Extract weak/strong topics based on updated performance
+  // ---- Topic performance: aggregate then batch upsert ----
+  // Aggregate locally so each unique topic results in a single DB upsert.
+  const topicDeltas = new Map<string, number>();
+  for (const sub of recentSubmissions) {
+    const topic = classifyTopic(sub.titleSlug);
+    topicDeltas.set(topic, (topicDeltas.get(topic) || 0) + 1);
+  }
+
+  if (topicDeltas.size > 0) {
+    const existingPerfs = await db.topicPerformance.findMany({
+      where: { userId, topic: { in: Array.from(topicDeltas.keys()) } },
+    });
+    const existingByTopic = new Map(existingPerfs.map((p) => [p.topic, p]));
+
+    await Promise.all(
+      Array.from(topicDeltas.entries()).map(([topic, delta]) => {
+        const perf = existingByTopic.get(topic);
+        if (!perf) {
+          return db.topicPerformance.create({
+            data: {
+              userId,
+              topic,
+              attempts: delta,
+              solved: delta,
+              failed: 0,
+              confidenceScore: 0.5,
+              masteryLevel: 0.1,
+            },
+          });
+        }
+        const newSolved = perf.solved + delta;
+        const newAttempts = perf.attempts + delta;
+        const confidenceScore = Math.min(1, newSolved / newAttempts);
+        return db.topicPerformance.update({
+          where: { userId_topic: { userId, topic } },
+          data: {
+            attempts: newAttempts,
+            solved: newSolved,
+            confidenceScore,
+            masteryLevel: Math.min(1.0, confidenceScore * 1.2),
+          },
+        });
+      })
+    );
+  }
+
+  // ---- Compute weak/strong topics and update derived data IN PARALLEL ----
   const performances = await db.topicPerformance.findMany({
     where: { userId },
     orderBy: { confidenceScore: "asc" },
+    select: { topic: true },
   });
 
   const weakestTopic = performances[0]?.topic || null;
   const strongestTopic = performances[performances.length - 1]?.topic || null;
 
-  // Update UserStats cached stats
-  await db.userStats.upsert({
-    where: { userId },
-    update: {
-      totalSolved,
-      easySolved,
-      mediumSolved,
-      hardSolved,
-      weakestTopic,
-      strongestTopic,
-      lastSyncedAt: new Date(),
-    },
-    create: {
-      userId,
-      totalSolved,
-      easySolved,
-      mediumSolved,
-      hardSolved,
-      weakestTopic,
-      strongestTopic,
-      lastSyncedAt: new Date(),
-    },
-  });
-
-  // Logging event
-  await db.userEvent.create({
-    data: {
-      userId,
-      eventType: "LEETCODE_SYNC",
-      metadata: {
-        username: trimmedUsername,
-        totalSolved,
-        ranking,
-      },
-    },
-  });
-
-  // Automatically check and award achievements/badges after successful sync
+  // Fire UserStats upsert, the event log, badges, and points recalculation in parallel.
   const { checkAndAwardBadges } = await import("../services/badges");
-  await checkAndAwardBadges(userId).catch((err) => {
-    console.error("Failed to evaluate badges during sync:", err);
-  });
+  const { recalculateUserUniversalPoints } = await import(
+    "../services/progression"
+  );
 
-  // Recalculate universal competency points
-  const { recalculateUserUniversalPoints } = await import("../services/progression");
-  await recalculateUserUniversalPoints(userId).catch((err) => {
-    console.error("Failed to recalculate universal points during sync:", err);
-  });
+  await Promise.all([
+    db.userStats.upsert({
+      where: { userId },
+      update: {
+        totalSolved,
+        easySolved,
+        mediumSolved,
+        hardSolved,
+        weakestTopic,
+        strongestTopic,
+        lastSyncedAt: new Date(),
+      },
+      create: {
+        userId,
+        totalSolved,
+        easySolved,
+        mediumSolved,
+        hardSolved,
+        weakestTopic,
+        strongestTopic,
+        lastSyncedAt: new Date(),
+      },
+    }),
+    db.userEvent.create({
+      data: {
+        userId,
+        eventType: "LEETCODE_SYNC",
+        metadata: {
+          username: trimmedUsername,
+          totalSolved,
+          ranking,
+        },
+      },
+    }),
+    checkAndAwardBadges(userId).catch((err) => {
+      console.error("Failed to evaluate badges during sync:", err);
+    }),
+    recalculateUserUniversalPoints(userId).catch((err) => {
+      console.error("Failed to recalculate universal points during sync:", err);
+    }),
+  ]);
 
   return profileResult;
 }
