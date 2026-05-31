@@ -1,0 +1,6880 @@
+{
+  "meta": {
+    "version": "1.0",
+    "totalQuestions": 231,
+    "sources": [
+      "Striver's SDE Sheet",
+      "Striver's A2Z DSA",
+      "Blind 75",
+      "NeetCode 150",
+      "Curated Important Questions"
+    ],
+    "topics": [
+      "Arrays",
+      "BST",
+      "Backtracking",
+      "Binary Search",
+      "Bit Manipulation",
+      "Design",
+      "Dynamic Programming",
+      "Graphs",
+      "Greedy",
+      "Heap",
+      "Intervals",
+      "Linked List",
+      "Math",
+      "Recursion",
+      "Sliding Window",
+      "Sorting",
+      "Stack",
+      "Strings",
+      "Trees",
+      "Trie",
+      "Two Pointers",
+      "Union Find"
+    ],
+    "difficulties": [
+      "EASY",
+      "MEDIUM",
+      "HARD"
+    ],
+    "levels": {
+      "1": "Beginner (0-50 problems solved, easy-only zone)",
+      "2": "Intermediate (50-250 problems solved, easy+medium zone)",
+      "3": "Advanced (250-400 problems solved, medium+hard zone)",
+      "4": "Expert (400+ problems solved, hard+interview simulation)"
+    },
+    "patterns": [
+      "0/1 Knapsack",
+      "1D DP",
+      "1D DP (Fibonacci)",
+      "1D DP / Patience Sorting",
+      "1D DP Circular",
+      "2D DP",
+      "2D DP / Combinatorics",
+      "2D DP with Obstacles",
+      "2D Knapsack",
+      "Auxiliary Stack",
+      "BFS",
+      "BFS Level Linking",
+      "BFS Level Order",
+      "BFS on Implicit Graph",
+      "BFS with Direction",
+      "BFS/DFS Grid Traversal",
+      "BFS/DFS Serialization",
+      "BFS/DFS with HashMap",
+      "BST Delete",
+      "BST Insert",
+      "BST Property",
+      "BST Search",
+      "Backtracking",
+      "Backtracking + DP",
+      "Backtracking / Bitmask",
+      "Backtracking Count",
+      "Backtracking with Constraints",
+      "Backtracking with Dedup",
+      "Bellman-Ford / Modified Dijkstra",
+      "Binary Search",
+      "Binary Search Boundaries",
+      "Binary Search on Answer",
+      "Binary Search on Matrix",
+      "Binary Search on Partition",
+      "Bit Counting",
+      "Bit Reversal",
+      "Border DFS",
+      "Boyer-Moore Extended",
+      "Boyer-Moore Voting",
+      "Carry Simulation",
+      "Circular Connection",
+      "Circular Greedy",
+      "Coloring / BFS",
+      "Constraint Backtracking",
+      "Construction",
+      "Controlled Inorder",
+      "DFS",
+      "DFS + Memoization",
+      "DFS + Same Tree",
+      "DFS Backtracking",
+      "DFS Backtracking on Grid",
+      "DFS Comparison",
+      "DFS Flatten",
+      "DFS Grid",
+      "DFS Height Check",
+      "DFS LCA",
+      "DFS Swap",
+      "DFS Traversal",
+      "DFS with Global Max",
+      "DFS with Running Max",
+      "DFS/BFS",
+      "DP + Bit",
+      "DP / Stack",
+      "DP Matching",
+      "Dijkstra",
+      "Direction Simulation",
+      "Divide & Conquer",
+      "Dutch National Flag",
+      "Expand Around Center",
+      "Fast Exponentiation",
+      "Fast/Slow + Reverse",
+      "Fast/Slow Pointers",
+      "Fixed Window",
+      "Fixed Window with Frequency",
+      "Floyd's Cycle Detection",
+      "Floyd-Warshall",
+      "Frequency Count",
+      "Frequency HashMap + DLL",
+      "Grade School Multiplication",
+      "Greedy + Heap",
+      "Greedy / DP",
+      "Greedy BFS",
+      "Greedy Matching",
+      "Greedy Simulation",
+      "Group Reversal",
+      "HashMap + Array",
+      "HashMap + Doubly Linked List",
+      "HashMap Cloning",
+      "HashMap Grouping",
+      "HashMap Lookup",
+      "HashSet Expansion",
+      "Heap + HashMap",
+      "Hierholzer's Algorithm",
+      "In-place Marking",
+      "Index Marking",
+      "Index as Hash",
+      "Inorder DFS",
+      "Interval DP",
+      "Interval DP / LCS",
+      "Interval Greedy",
+      "Interval Merge",
+      "Interval Scheduling",
+      "Iterative/Recursive Reversal",
+      "KMP",
+      "KMP / Brute Force",
+      "Kadane's Algorithm",
+      "Kadane's Variant",
+      "Kahn's Algorithm",
+      "Last Occurrence Greedy",
+      "Length Prefix Encoding",
+      "Linear Scan",
+      "Math",
+      "Merge",
+      "Merge Sort",
+      "Merge Sort / Quick Sort",
+      "Merge Sort on List",
+      "Min Heap",
+      "Min Heap / Binary Search",
+      "Min Heap / Divide & Conquer",
+      "Min Heap / Line Sweep",
+      "Min Heap of size K",
+      "Min/Max Count Greedy",
+      "Modified Binary Search",
+      "Monotonic Deque",
+      "Monotonic Stack",
+      "Monotonic Stack Circular",
+      "Multi-source BFS",
+      "Next Permutation",
+      "Parsing",
+      "Prefix Sum + HashMap",
+      "Prefix/Suffix Product",
+      "Prim's / Kruskal's MST",
+      "Queue Simulation",
+      "Range Validation",
+      "Rearrangement",
+      "Recursion",
+      "Recursive Construction",
+      "Reversal",
+      "Reverse BFS from Borders",
+      "Running Min/Max",
+      "Sentinel + Two Pointers",
+      "Sieve of Eratosthenes",
+      "Sliding Window",
+      "Sort + Two Pointers",
+      "Sorting",
+      "Stack Matching",
+      "Stack Parsing",
+      "Staircase Search",
+      "State Machine DP",
+      "Topological Sort",
+      "Topological Sort / Cycle Detection",
+      "Transpose + Reverse",
+      "Tree DP",
+      "Trie + DFS Backtracking",
+      "Trie Construction",
+      "Trie Lookup",
+      "Trie with Values",
+      "Trie with Wildcard",
+      "Two Heaps",
+      "Two Pass Greedy",
+      "Two Pointers",
+      "Two Pointers (Fast/Slow)",
+      "Two Pointers / Precompute",
+      "Two Stacks",
+      "Unbounded Knapsack",
+      "Unbounded Knapsack (Count)",
+      "Union Find",
+      "Union Find / DFS",
+      "Variable Window",
+      "Vertical Scan",
+      "XOR",
+      "XOR + AND Carry",
+      "XOR / Gauss Sum"
+    ]
+  },
+  "questions": [
+    {
+      "id": 1,
+      "lcNumber": 1,
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Facebook",
+        "Microsoft",
+        "Apple"
+      ],
+      "pattern": "HashMap Lookup",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 2,
+      "lcNumber": 26,
+      "title": "Remove Duplicates from Sorted Array",
+      "slug": "remove-duplicates-from-sorted-array",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 3,
+      "lcNumber": 53,
+      "title": "Maximum Subarray",
+      "slug": "maximum-subarray",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "DP",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Kadane's Algorithm",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 4,
+      "lcNumber": 56,
+      "title": "Merge Intervals",
+      "slug": "merge-intervals",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Facebook",
+        "Microsoft",
+        "Amazon"
+      ],
+      "pattern": "Interval Merge",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 5,
+      "lcNumber": 75,
+      "title": "Sort Colors",
+      "slug": "sort-colors",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Microsoft",
+        "Amazon"
+      ],
+      "pattern": "Dutch National Flag",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 6,
+      "lcNumber": 121,
+      "title": "Best Time to Buy and Sell Stock",
+      "slug": "best-time-to-buy-and-sell-stock",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft",
+        "Goldman Sachs"
+      ],
+      "pattern": "Running Min/Max",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 7,
+      "lcNumber": 169,
+      "title": "Majority Element",
+      "slug": "majority-element",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Sorting",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Boyer-Moore Voting",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 8,
+      "lcNumber": 189,
+      "title": "Rotate Array",
+      "slug": "rotate-array",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Microsoft",
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Reversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 9,
+      "lcNumber": 229,
+      "title": "Majority Element II",
+      "slug": "majority-element-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Boyer-Moore Extended",
+      "level": 2,
+      "prereqs": [
+        "majority-element"
+      ]
+    },
+    {
+      "id": 10,
+      "lcNumber": 238,
+      "title": "Product of Array Except Self",
+      "slug": "product-of-array-except-self",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Prefix Sum"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Microsoft",
+        "Google",
+        "Apple"
+      ],
+      "pattern": "Prefix/Suffix Product",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 11,
+      "lcNumber": 287,
+      "title": "Find the Duplicate Number",
+      "slug": "find-the-duplicate-number",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Floyd's Cycle Detection",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 12,
+      "lcNumber": 448,
+      "title": "Find All Numbers Disappeared in an Array",
+      "slug": "find-all-numbers-disappeared-in-an-array",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "HashSet"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Index Marking",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 13,
+      "lcNumber": 485,
+      "title": "Max Consecutive Ones",
+      "slug": "max-consecutive-ones",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google"
+      ],
+      "pattern": "Linear Scan",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 14,
+      "lcNumber": 560,
+      "title": "Subarray Sum Equals K",
+      "slug": "subarray-sum-equals-k",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "HashMap",
+        "Prefix Sum"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Facebook",
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Prefix Sum + HashMap",
+      "level": 2,
+      "prereqs": [
+        "two-sum"
+      ]
+    },
+    {
+      "id": 15,
+      "lcNumber": 31,
+      "title": "Next Permutation",
+      "slug": "next-permutation",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Next Permutation",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 16,
+      "lcNumber": 118,
+      "title": "Pascal's Triangle",
+      "slug": "pascals-triangle",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Apple"
+      ],
+      "pattern": "Construction",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 17,
+      "lcNumber": 54,
+      "title": "Spiral Matrix",
+      "slug": "spiral-matrix",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Matrix",
+        "Simulation"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Microsoft",
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Direction Simulation",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 18,
+      "lcNumber": 73,
+      "title": "Set Matrix Zeroes",
+      "slug": "set-matrix-zeroes",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "In-place Marking",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 19,
+      "lcNumber": 48,
+      "title": "Rotate Image",
+      "slug": "rotate-image",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Matrix",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Transpose + Reverse",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 20,
+      "lcNumber": 4,
+      "title": "Median of Two Sorted Arrays",
+      "slug": "median-of-two-sorted-arrays",
+      "difficulty": "HARD",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Binary Search",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Binary Search on Partition",
+      "level": 4,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 21,
+      "lcNumber": 128,
+      "title": "Longest Consecutive Sequence",
+      "slug": "longest-consecutive-sequence",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "HashSet"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Facebook"
+      ],
+      "pattern": "HashSet Expansion",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 22,
+      "lcNumber": 42,
+      "title": "Trapping Rain Water",
+      "slug": "trapping-rain-water",
+      "difficulty": "HARD",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Stack",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Two Pointers / Precompute",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 23,
+      "lcNumber": 84,
+      "title": "Largest Rectangle in Histogram",
+      "slug": "largest-rectangle-in-histogram",
+      "difficulty": "HARD",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Stack",
+        "Monotonic Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 4,
+      "prereqs": [
+        "stack"
+      ]
+    },
+    {
+      "id": 24,
+      "lcNumber": 11,
+      "title": "Container With Most Water",
+      "slug": "container-with-most-water",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Two Pointers",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 25,
+      "lcNumber": 15,
+      "title": "3Sum",
+      "slug": "3sum",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Sort + Two Pointers",
+      "level": 2,
+      "prereqs": [
+        "two-sum"
+      ]
+    },
+    {
+      "id": 26,
+      "lcNumber": 18,
+      "title": "4Sum",
+      "slug": "4sum",
+      "difficulty": "MEDIUM",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Two Pointers",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Sort + Two Pointers",
+      "level": 3,
+      "prereqs": [
+        "3sum"
+      ]
+    },
+    {
+      "id": 27,
+      "lcNumber": 41,
+      "title": "First Missing Positive",
+      "slug": "first-missing-positive",
+      "difficulty": "HARD",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "HashSet"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Index as Hash",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 28,
+      "lcNumber": 268,
+      "title": "Missing Number",
+      "slug": "missing-number",
+      "difficulty": "EASY",
+      "topic": "Arrays",
+      "tags": [
+        "Arrays",
+        "Math",
+        "Bit Manipulation"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "XOR / Gauss Sum",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 29,
+      "lcNumber": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "slug": "longest-substring-without-repeating-characters",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Sliding Window",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Sliding Window",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 30,
+      "lcNumber": 5,
+      "title": "Longest Palindromic Substring",
+      "slug": "longest-palindromic-substring",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "DP",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Expand Around Center",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 31,
+      "lcNumber": 20,
+      "title": "Valid Parentheses",
+      "slug": "valid-parentheses",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Stack Matching",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 32,
+      "lcNumber": 49,
+      "title": "Group Anagrams",
+      "slug": "group-anagrams",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "HashMap",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "HashMap Grouping",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 33,
+      "lcNumber": 76,
+      "title": "Minimum Window Substring",
+      "slug": "minimum-window-substring",
+      "difficulty": "HARD",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Sliding Window",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Sliding Window",
+      "level": 3,
+      "prereqs": [
+        "longest-substring-without-repeating-characters"
+      ]
+    },
+    {
+      "id": 34,
+      "lcNumber": 125,
+      "title": "Valid Palindrome",
+      "slug": "valid-palindrome",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Facebook",
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 35,
+      "lcNumber": 242,
+      "title": "Valid Anagram",
+      "slug": "valid-anagram",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "HashMap",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Frequency Count",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 36,
+      "lcNumber": 271,
+      "title": "Encode and Decode Strings",
+      "slug": "encode-and-decode-strings",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Design"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Length Prefix Encoding",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 37,
+      "lcNumber": 647,
+      "title": "Palindromic Substrings",
+      "slug": "palindromic-substrings",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "DP",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook"
+      ],
+      "pattern": "Expand Around Center",
+      "level": 2,
+      "prereqs": [
+        "longest-palindromic-substring"
+      ]
+    },
+    {
+      "id": 38,
+      "lcNumber": 8,
+      "title": "String to Integer (atoi)",
+      "slug": "string-to-integer-atoi",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Parsing",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 39,
+      "lcNumber": 28,
+      "title": "Find the Index of the First Occurrence in a String",
+      "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Two Pointers",
+        "KMP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "KMP / Brute Force",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 40,
+      "lcNumber": 14,
+      "title": "Longest Common Prefix",
+      "slug": "longest-common-prefix",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Trie"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Vertical Scan",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 41,
+      "lcNumber": 151,
+      "title": "Reverse Words in a String",
+      "slug": "reverse-words-in-a-string",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Microsoft",
+        "Amazon"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 42,
+      "lcNumber": 459,
+      "title": "Repeated Substring Pattern",
+      "slug": "repeated-substring-pattern",
+      "difficulty": "EASY",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "KMP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "KMP",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 43,
+      "lcNumber": 438,
+      "title": "Find All Anagrams in a String",
+      "slug": "find-all-anagrams-in-a-string",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "Sliding Window",
+        "HashMap"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Facebook",
+        "Amazon"
+      ],
+      "pattern": "Sliding Window",
+      "level": 2,
+      "prereqs": [
+        "valid-anagram"
+      ]
+    },
+    {
+      "id": 44,
+      "lcNumber": 1143,
+      "title": "Longest Common Subsequence",
+      "slug": "longest-common-subsequence",
+      "difficulty": "MEDIUM",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "2D DP",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 45,
+      "lcNumber": 10,
+      "title": "Regular Expression Matching",
+      "slug": "regular-expression-matching",
+      "difficulty": "HARD",
+      "topic": "Strings",
+      "tags": [
+        "Strings",
+        "DP",
+        "Recursion"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Facebook",
+        "Amazon"
+      ],
+      "pattern": "DP Matching",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 46,
+      "lcNumber": 912,
+      "title": "Sort an Array",
+      "slug": "sort-an-array",
+      "difficulty": "MEDIUM",
+      "topic": "Sorting",
+      "tags": [
+        "Sorting",
+        "Divide and Conquer",
+        "Heap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Merge Sort / Quick Sort",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 47,
+      "lcNumber": 315,
+      "title": "Count of Smaller Numbers After Self",
+      "slug": "count-of-smaller-numbers-after-self",
+      "difficulty": "HARD",
+      "topic": "Sorting",
+      "tags": [
+        "Sorting",
+        "Merge Sort",
+        "Binary Indexed Tree"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Amazon"
+      ],
+      "pattern": "Merge Sort",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 48,
+      "lcNumber": 493,
+      "title": "Reverse Pairs",
+      "slug": "reverse-pairs",
+      "difficulty": "HARD",
+      "topic": "Sorting",
+      "tags": [
+        "Sorting",
+        "Merge Sort",
+        "Binary Indexed Tree"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Merge Sort",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 49,
+      "lcNumber": 148,
+      "title": "Sort List",
+      "slug": "sort-list",
+      "difficulty": "MEDIUM",
+      "topic": "Sorting",
+      "tags": [
+        "Sorting",
+        "Linked List",
+        "Divide and Conquer",
+        "Merge Sort"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Merge Sort on List",
+      "level": 3,
+      "prereqs": [
+        "merge-sort"
+      ]
+    },
+    {
+      "id": 50,
+      "lcNumber": 704,
+      "title": "Binary Search",
+      "slug": "binary-search",
+      "difficulty": "EASY",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Binary Search",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 51,
+      "lcNumber": 33,
+      "title": "Search in Rotated Sorted Array",
+      "slug": "search-in-rotated-sorted-array",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Modified Binary Search",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 52,
+      "lcNumber": 34,
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "slug": "find-first-and-last-position-of-element-in-sorted-array",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Facebook"
+      ],
+      "pattern": "Binary Search Boundaries",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 53,
+      "lcNumber": 81,
+      "title": "Search in Rotated Sorted Array II",
+      "slug": "search-in-rotated-sorted-array-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Modified Binary Search",
+      "level": 2,
+      "prereqs": [
+        "search-in-rotated-sorted-array"
+      ]
+    },
+    {
+      "id": 54,
+      "lcNumber": 153,
+      "title": "Find Minimum in Rotated Sorted Array",
+      "slug": "find-minimum-in-rotated-sorted-array",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Binary Search",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 55,
+      "lcNumber": 162,
+      "title": "Find Peak Element",
+      "slug": "find-peak-element",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Facebook",
+        "Amazon"
+      ],
+      "pattern": "Binary Search",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 56,
+      "lcNumber": 74,
+      "title": "Search a 2D Matrix",
+      "slug": "search-a-2d-matrix",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Binary Search on Matrix",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 57,
+      "lcNumber": 240,
+      "title": "Search a 2D Matrix II",
+      "slug": "search-a-2d-matrix-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Matrix",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Amazon"
+      ],
+      "pattern": "Staircase Search",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 58,
+      "lcNumber": 410,
+      "title": "Split Array Largest Sum",
+      "slug": "split-array-largest-sum",
+      "difficulty": "HARD",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "DP",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Binary Search on Answer",
+      "level": 3,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 59,
+      "lcNumber": 875,
+      "title": "Koko Eating Bananas",
+      "slug": "koko-eating-bananas",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Binary Search on Answer",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 60,
+      "lcNumber": 1011,
+      "title": "Capacity to Ship Packages Within D Days",
+      "slug": "capacity-to-ship-packages-within-d-days",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Binary Search on Answer",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 61,
+      "lcNumber": 540,
+      "title": "Single Element in a Sorted Array",
+      "slug": "single-element-in-a-sorted-array",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Binary Search",
+      "level": 2,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 62,
+      "lcNumber": 302,
+      "title": "Aggressive Cows (GFG equivalent)",
+      "slug": "aggressive-cows",
+      "difficulty": "MEDIUM",
+      "topic": "Binary Search",
+      "tags": [
+        "Binary Search",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Binary Search on Answer",
+      "level": 3,
+      "prereqs": [
+        "binary-search"
+      ]
+    },
+    {
+      "id": 63,
+      "lcNumber": 206,
+      "title": "Reverse Linked List",
+      "slug": "reverse-linked-list",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "Apple"
+      ],
+      "pattern": "Iterative/Recursive Reversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 64,
+      "lcNumber": 21,
+      "title": "Merge Two Sorted Lists",
+      "slug": "merge-two-sorted-lists",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Merge",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 65,
+      "lcNumber": 141,
+      "title": "Linked List Cycle",
+      "slug": "linked-list-cycle",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "Floyd's"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Floyd's Cycle Detection",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 66,
+      "lcNumber": 142,
+      "title": "Linked List Cycle II",
+      "slug": "linked-list-cycle-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "Floyd's"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Floyd's Cycle Detection",
+      "level": 2,
+      "prereqs": [
+        "linked-list-cycle"
+      ]
+    },
+    {
+      "id": 67,
+      "lcNumber": 19,
+      "title": "Remove Nth Node From End of List",
+      "slug": "remove-nth-node-from-end-of-list",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Two Pointers (Fast/Slow)",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 68,
+      "lcNumber": 23,
+      "title": "Merge K Sorted Lists",
+      "slug": "merge-k-sorted-lists",
+      "difficulty": "HARD",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Heap",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Min Heap / Divide & Conquer",
+      "level": 3,
+      "prereqs": [
+        "merge-two-sorted-lists"
+      ]
+    },
+    {
+      "id": 69,
+      "lcNumber": 25,
+      "title": "Reverse Nodes in k-Group",
+      "slug": "reverse-nodes-in-k-group",
+      "difficulty": "HARD",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Group Reversal",
+      "level": 3,
+      "prereqs": [
+        "reverse-linked-list"
+      ]
+    },
+    {
+      "id": 70,
+      "lcNumber": 876,
+      "title": "Middle of the Linked List",
+      "slug": "middle-of-the-linked-list",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Fast/Slow Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 71,
+      "lcNumber": 234,
+      "title": "Palindrome Linked List",
+      "slug": "palindrome-linked-list",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Fast/Slow + Reverse",
+      "level": 2,
+      "prereqs": [
+        "reverse-linked-list"
+      ]
+    },
+    {
+      "id": 72,
+      "lcNumber": 160,
+      "title": "Intersection of Two Linked Lists",
+      "slug": "intersection-of-two-linked-lists",
+      "difficulty": "EASY",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers",
+        "HashSet"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Two Pointers",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 73,
+      "lcNumber": 328,
+      "title": "Odd Even Linked List",
+      "slug": "odd-even-linked-list",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Rearrangement",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 74,
+      "lcNumber": 430,
+      "title": "Flatten a Multilevel Doubly Linked List",
+      "slug": "flatten-a-multilevel-doubly-linked-list",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Microsoft",
+        "Amazon"
+      ],
+      "pattern": "DFS Flatten",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 75,
+      "lcNumber": 146,
+      "title": "LRU Cache",
+      "slug": "lru-cache",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "HashMap",
+        "Design"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "Oracle"
+      ],
+      "pattern": "HashMap + Doubly Linked List",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 76,
+      "lcNumber": 138,
+      "title": "Copy List with Random Pointer",
+      "slug": "copy-list-with-random-pointer",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "HashMap Cloning",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 77,
+      "lcNumber": 61,
+      "title": "Rotate List",
+      "slug": "rotate-list",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Circular Connection",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 78,
+      "lcNumber": 82,
+      "title": "Remove Duplicates from Sorted List II",
+      "slug": "remove-duplicates-from-sorted-list-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Linked List",
+      "tags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Sentinel + Two Pointers",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 79,
+      "lcNumber": 155,
+      "title": "Min Stack",
+      "slug": "min-stack",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Design"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Auxiliary Stack",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 80,
+      "lcNumber": 232,
+      "title": "Implement Queue using Stacks",
+      "slug": "implement-queue-using-stacks",
+      "difficulty": "EASY",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Queue",
+        "Design"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "Two Stacks",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 81,
+      "lcNumber": 225,
+      "title": "Implement Stack using Queues",
+      "slug": "implement-stack-using-queues",
+      "difficulty": "EASY",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Queue",
+        "Design"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Queue Simulation",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 82,
+      "lcNumber": 739,
+      "title": "Daily Temperatures",
+      "slug": "daily-temperatures",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Arrays",
+        "Monotonic Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 83,
+      "lcNumber": 853,
+      "title": "Car Fleet",
+      "slug": "car-fleet",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 84,
+      "lcNumber": 22,
+      "title": "Generate Parentheses",
+      "slug": "generate-parentheses",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Backtracking",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Backtracking",
+      "level": 2,
+      "prereqs": [
+        "valid-parentheses"
+      ]
+    },
+    {
+      "id": 85,
+      "lcNumber": 394,
+      "title": "Decode String",
+      "slug": "decode-string",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Strings",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Stack Parsing",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 86,
+      "lcNumber": 496,
+      "title": "Next Greater Element I",
+      "slug": "next-greater-element-i",
+      "difficulty": "EASY",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Arrays",
+        "Monotonic Stack",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 87,
+      "lcNumber": 503,
+      "title": "Next Greater Element II",
+      "slug": "next-greater-element-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Arrays",
+        "Monotonic Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Monotonic Stack Circular",
+      "level": 2,
+      "prereqs": [
+        "next-greater-element-i"
+      ]
+    },
+    {
+      "id": 88,
+      "lcNumber": 901,
+      "title": "Online Stock Span",
+      "slug": "online-stock-span",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Design",
+        "Monotonic Stack"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Goldman Sachs"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 89,
+      "lcNumber": 907,
+      "title": "Sum of Subarray Minimums",
+      "slug": "sum-of-subarray-minimums",
+      "difficulty": "MEDIUM",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Arrays",
+        "Monotonic Stack",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Monotonic Stack",
+      "level": 3,
+      "prereqs": [
+        "largest-rectangle-in-histogram"
+      ]
+    },
+    {
+      "id": 90,
+      "lcNumber": 239,
+      "title": "Sliding Window Maximum",
+      "slug": "sliding-window-maximum",
+      "difficulty": "HARD",
+      "topic": "Stack",
+      "tags": [
+        "Stack",
+        "Queue",
+        "Sliding Window",
+        "Deque",
+        "Monotonic Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Monotonic Deque",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 91,
+      "lcNumber": 94,
+      "title": "Binary Tree Inorder Traversal",
+      "slug": "binary-tree-inorder-traversal",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Stack",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "DFS Traversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 92,
+      "lcNumber": 144,
+      "title": "Binary Tree Preorder Traversal",
+      "slug": "binary-tree-preorder-traversal",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Stack",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "DFS Traversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 93,
+      "lcNumber": 145,
+      "title": "Binary Tree Postorder Traversal",
+      "slug": "binary-tree-postorder-traversal",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Stack",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "DFS Traversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 94,
+      "lcNumber": 102,
+      "title": "Binary Tree Level Order Traversal",
+      "slug": "binary-tree-level-order-traversal",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BFS",
+        "Queue"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "BFS",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 95,
+      "lcNumber": 104,
+      "title": "Maximum Depth of Binary Tree",
+      "slug": "maximum-depth-of-binary-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "LinkedIn"
+      ],
+      "pattern": "DFS/BFS",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 96,
+      "lcNumber": 543,
+      "title": "Diameter of Binary Tree",
+      "slug": "diameter-of-binary-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "DFS with Global Max",
+      "level": 2,
+      "prereqs": [
+        "maximum-depth-of-binary-tree"
+      ]
+    },
+    {
+      "id": 97,
+      "lcNumber": 110,
+      "title": "Balanced Binary Tree",
+      "slug": "balanced-binary-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "DFS Height Check",
+      "level": 2,
+      "prereqs": [
+        "maximum-depth-of-binary-tree"
+      ]
+    },
+    {
+      "id": 98,
+      "lcNumber": 100,
+      "title": "Same Tree",
+      "slug": "same-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "DFS Comparison",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 99,
+      "lcNumber": 226,
+      "title": "Invert Binary Tree",
+      "slug": "invert-binary-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "Apple"
+      ],
+      "pattern": "DFS Swap",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 100,
+      "lcNumber": 572,
+      "title": "Subtree of Another Tree",
+      "slug": "subtree-of-another-tree",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Recursion",
+        "Hashing"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Google"
+      ],
+      "pattern": "DFS + Same Tree",
+      "level": 2,
+      "prereqs": [
+        "same-tree"
+      ]
+    },
+    {
+      "id": 101,
+      "lcNumber": 235,
+      "title": "Lowest Common Ancestor of BST",
+      "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BST",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "BST Property",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 102,
+      "lcNumber": 236,
+      "title": "Lowest Common Ancestor of Binary Tree",
+      "slug": "lowest-common-ancestor-of-a-binary-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "DFS LCA",
+      "level": 3,
+      "prereqs": [
+        "lowest-common-ancestor-of-a-binary-search-tree"
+      ]
+    },
+    {
+      "id": 103,
+      "lcNumber": 124,
+      "title": "Binary Tree Maximum Path Sum",
+      "slug": "binary-tree-maximum-path-sum",
+      "difficulty": "HARD",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "DP",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "DFS with Global Max",
+      "level": 3,
+      "prereqs": [
+        "diameter-of-binary-tree"
+      ]
+    },
+    {
+      "id": 104,
+      "lcNumber": 297,
+      "title": "Serialize and Deserialize Binary Tree",
+      "slug": "serialize-and-deserialize-binary-tree",
+      "difficulty": "HARD",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS",
+        "Design"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "BFS/DFS Serialization",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 105,
+      "lcNumber": 98,
+      "title": "Validate Binary Search Tree",
+      "slug": "validate-binary-search-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BST",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Range Validation",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 106,
+      "lcNumber": 230,
+      "title": "Kth Smallest Element in a BST",
+      "slug": "kth-smallest-element-in-a-bst",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BST",
+        "DFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Inorder DFS",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 107,
+      "lcNumber": 105,
+      "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+      "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "HashMap",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Recursive Construction",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 108,
+      "lcNumber": 199,
+      "title": "Binary Tree Right Side View",
+      "slug": "binary-tree-right-side-view",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BFS",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Facebook",
+        "Google"
+      ],
+      "pattern": "BFS Level Order",
+      "level": 2,
+      "prereqs": [
+        "binary-tree-level-order-traversal"
+      ]
+    },
+    {
+      "id": 109,
+      "lcNumber": 112,
+      "title": "Path Sum",
+      "slug": "path-sum",
+      "difficulty": "EASY",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "DFS",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 110,
+      "lcNumber": 113,
+      "title": "Path Sum II",
+      "slug": "path-sum-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "Backtracking"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google"
+      ],
+      "pattern": "DFS Backtracking",
+      "level": 2,
+      "prereqs": [
+        "path-sum"
+      ]
+    },
+    {
+      "id": 111,
+      "lcNumber": 103,
+      "title": "Binary Tree Zigzag Level Order Traversal",
+      "slug": "binary-tree-zigzag-level-order-traversal",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BFS",
+        "Deque"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "BFS with Direction",
+      "level": 2,
+      "prereqs": [
+        "binary-tree-level-order-traversal"
+      ]
+    },
+    {
+      "id": 112,
+      "lcNumber": 116,
+      "title": "Populating Next Right Pointers in Each Node",
+      "slug": "populating-next-right-pointers-in-each-node",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "BFS",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "BFS Level Linking",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 113,
+      "lcNumber": 337,
+      "title": "House Robber III",
+      "slug": "house-robber-iii",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DP",
+        "DFS"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Tree DP",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 114,
+      "lcNumber": 1448,
+      "title": "Count Good Nodes in Binary Tree",
+      "slug": "count-good-nodes-in-binary-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Trees",
+      "tags": [
+        "Trees",
+        "DFS",
+        "BFS"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "DFS with Running Max",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 115,
+      "lcNumber": 700,
+      "title": "Search in a Binary Search Tree",
+      "slug": "search-in-a-binary-search-tree",
+      "difficulty": "EASY",
+      "topic": "BST",
+      "tags": [
+        "BST",
+        "Trees",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "BST Search",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 116,
+      "lcNumber": 701,
+      "title": "Insert into a Binary Search Tree",
+      "slug": "insert-into-a-binary-search-tree",
+      "difficulty": "MEDIUM",
+      "topic": "BST",
+      "tags": [
+        "BST",
+        "Trees",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "BST Insert",
+      "level": 2,
+      "prereqs": [
+        "search-in-a-binary-search-tree"
+      ]
+    },
+    {
+      "id": 117,
+      "lcNumber": 450,
+      "title": "Delete Node in a BST",
+      "slug": "delete-node-in-a-bst",
+      "difficulty": "MEDIUM",
+      "topic": "BST",
+      "tags": [
+        "BST",
+        "Trees",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "BST Delete",
+      "level": 2,
+      "prereqs": [
+        "search-in-a-binary-search-tree"
+      ]
+    },
+    {
+      "id": 118,
+      "lcNumber": 173,
+      "title": "Binary Search Tree Iterator",
+      "slug": "binary-search-tree-iterator",
+      "difficulty": "MEDIUM",
+      "topic": "BST",
+      "tags": [
+        "BST",
+        "Trees",
+        "Design",
+        "Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Facebook",
+        "Amazon"
+      ],
+      "pattern": "Controlled Inorder",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 119,
+      "lcNumber": 215,
+      "title": "Kth Largest Element in an Array",
+      "slug": "kth-largest-element-in-an-array",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Arrays",
+        "Sorting",
+        "Quickselect"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Min Heap of size K",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 120,
+      "lcNumber": 703,
+      "title": "Kth Largest Element in a Stream",
+      "slug": "kth-largest-element-in-a-stream",
+      "difficulty": "EASY",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Design",
+        "BST"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Min Heap",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 121,
+      "lcNumber": 295,
+      "title": "Find Median from Data Stream",
+      "slug": "find-median-from-data-stream",
+      "difficulty": "HARD",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Design",
+        "Two Heaps"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Two Heaps",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 122,
+      "lcNumber": 347,
+      "title": "Top K Frequent Elements",
+      "slug": "top-k-frequent-elements",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Arrays",
+        "HashMap",
+        "Sorting",
+        "Bucket Sort"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Heap + HashMap",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 123,
+      "lcNumber": 373,
+      "title": "Find K Pairs with Smallest Sums",
+      "slug": "find-k-pairs-with-smallest-sums",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Min Heap",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 124,
+      "lcNumber": 378,
+      "title": "Kth Smallest Element in a Sorted Matrix",
+      "slug": "kth-smallest-element-in-a-sorted-matrix",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Matrix",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google",
+        "Amazon"
+      ],
+      "pattern": "Min Heap / Binary Search",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 125,
+      "lcNumber": 621,
+      "title": "Task Scheduler",
+      "slug": "task-scheduler",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Arrays",
+        "Greedy",
+        "Queue"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Greedy + Heap",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 126,
+      "lcNumber": 355,
+      "title": "Design Twitter",
+      "slug": "design-twitter",
+      "difficulty": "MEDIUM",
+      "topic": "Heap",
+      "tags": [
+        "Heap",
+        "Design",
+        "HashMap",
+        "Linked List"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Twitter",
+        "Amazon"
+      ],
+      "pattern": "Heap + HashMap",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 127,
+      "lcNumber": 200,
+      "title": "Number of Islands",
+      "slug": "number-of-islands",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Union Find",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "Bloomberg"
+      ],
+      "pattern": "BFS/DFS Grid Traversal",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 128,
+      "lcNumber": 695,
+      "title": "Max Area of Island",
+      "slug": "max-area-of-island",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "DFS Grid",
+      "level": 2,
+      "prereqs": [
+        "number-of-islands"
+      ]
+    },
+    {
+      "id": 129,
+      "lcNumber": 133,
+      "title": "Clone Graph",
+      "slug": "clone-graph",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "BFS/DFS with HashMap",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 130,
+      "lcNumber": 207,
+      "title": "Course Schedule",
+      "slug": "course-schedule",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Topological Sort",
+        "Cycle Detection"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Topological Sort / Cycle Detection",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 131,
+      "lcNumber": 210,
+      "title": "Course Schedule II",
+      "slug": "course-schedule-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Topological Sort"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Kahn's Algorithm",
+      "level": 2,
+      "prereqs": [
+        "course-schedule"
+      ]
+    },
+    {
+      "id": 132,
+      "lcNumber": 417,
+      "title": "Pacific Atlantic Water Flow",
+      "slug": "pacific-atlantic-water-flow",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Reverse BFS from Borders",
+      "level": 3,
+      "prereqs": [
+        "number-of-islands"
+      ]
+    },
+    {
+      "id": 133,
+      "lcNumber": 130,
+      "title": "Surrounded Regions",
+      "slug": "surrounded-regions",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Union Find",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Border DFS",
+      "level": 2,
+      "prereqs": [
+        "number-of-islands"
+      ]
+    },
+    {
+      "id": 134,
+      "lcNumber": 994,
+      "title": "Rotting Oranges",
+      "slug": "rotting-oranges",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Multi-source BFS",
+      "level": 2,
+      "prereqs": [
+        "number-of-islands"
+      ]
+    },
+    {
+      "id": 135,
+      "lcNumber": 286,
+      "title": "Walls and Gates",
+      "slug": "walls-and-gates",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "Matrix"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Facebook",
+        "Google"
+      ],
+      "pattern": "Multi-source BFS",
+      "level": 2,
+      "prereqs": [
+        "rotting-oranges"
+      ]
+    },
+    {
+      "id": 136,
+      "lcNumber": 684,
+      "title": "Redundant Connection",
+      "slug": "redundant-connection",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "Union Find",
+        "DFS",
+        "BFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Union Find",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 137,
+      "lcNumber": 785,
+      "title": "Is Graph Bipartite?",
+      "slug": "is-graph-bipartite",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Union Find"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Coloring / BFS",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 138,
+      "lcNumber": 743,
+      "title": "Network Delay Time",
+      "slug": "network-delay-time",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "Dijkstra",
+        "Heap",
+        "Shortest Path"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Dijkstra",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 139,
+      "lcNumber": 787,
+      "title": "Cheapest Flights Within K Stops",
+      "slug": "cheapest-flights-within-k-stops",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "Bellman-Ford",
+        "BFS",
+        "DP",
+        "Heap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Airbnb"
+      ],
+      "pattern": "Bellman-Ford / Modified Dijkstra",
+      "level": 3,
+      "prereqs": [
+        "network-delay-time"
+      ]
+    },
+    {
+      "id": 140,
+      "lcNumber": 1584,
+      "title": "Min Cost to Connect All Points",
+      "slug": "min-cost-to-connect-all-points",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "MST",
+        "Prim",
+        "Kruskal",
+        "Union Find"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Prim's / Kruskal's MST",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 141,
+      "lcNumber": 127,
+      "title": "Word Ladder",
+      "slug": "word-ladder",
+      "difficulty": "HARD",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "BFS on Implicit Graph",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 142,
+      "lcNumber": 269,
+      "title": "Alien Dictionary",
+      "slug": "alien-dictionary",
+      "difficulty": "HARD",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "Topological Sort",
+        "BFS",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Airbnb"
+      ],
+      "pattern": "Topological Sort",
+      "level": 4,
+      "prereqs": [
+        "course-schedule-ii"
+      ]
+    },
+    {
+      "id": 143,
+      "lcNumber": 332,
+      "title": "Reconstruct Itinerary",
+      "slug": "reconstruct-itinerary",
+      "difficulty": "HARD",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "DFS",
+        "Euler Path",
+        "Backtracking"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon"
+      ],
+      "pattern": "Hierholzer's Algorithm",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 144,
+      "lcNumber": 1334,
+      "title": "Find the City With the Smallest Number of Neighbors at a Threshold Distance",
+      "slug": "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "Floyd-Warshall",
+        "Shortest Path",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Floyd-Warshall",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 145,
+      "lcNumber": 329,
+      "title": "Longest Increasing Path in a Matrix",
+      "slug": "longest-increasing-path-in-a-matrix",
+      "difficulty": "HARD",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "DFS",
+        "DP",
+        "Memoization",
+        "Topological Sort"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon",
+        "Facebook"
+      ],
+      "pattern": "DFS + Memoization",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 146,
+      "lcNumber": 261,
+      "title": "Graph Valid Tree",
+      "slug": "graph-valid-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Union Find"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Facebook",
+        "LinkedIn"
+      ],
+      "pattern": "Union Find / DFS",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 147,
+      "lcNumber": 323,
+      "title": "Number of Connected Components in an Undirected Graph",
+      "slug": "number-of-connected-components-in-an-undirected-graph",
+      "difficulty": "MEDIUM",
+      "topic": "Graphs",
+      "tags": [
+        "Graphs",
+        "BFS",
+        "DFS",
+        "Union Find"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "LinkedIn"
+      ],
+      "pattern": "Union Find / DFS",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 148,
+      "lcNumber": 70,
+      "title": "Climbing Stairs",
+      "slug": "climbing-stairs",
+      "difficulty": "EASY",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Math",
+        "Memoization"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Apple"
+      ],
+      "pattern": "1D DP (Fibonacci)",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 149,
+      "lcNumber": 198,
+      "title": "House Robber",
+      "slug": "house-robber",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Airbnb"
+      ],
+      "pattern": "1D DP",
+      "level": 2,
+      "prereqs": [
+        "climbing-stairs"
+      ]
+    },
+    {
+      "id": 150,
+      "lcNumber": 213,
+      "title": "House Robber II",
+      "slug": "house-robber-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "1D DP Circular",
+      "level": 2,
+      "prereqs": [
+        "house-robber"
+      ]
+    },
+    {
+      "id": 151,
+      "lcNumber": 322,
+      "title": "Coin Change",
+      "slug": "coin-change",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "BFS",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Unbounded Knapsack",
+      "level": 2,
+      "prereqs": [
+        "climbing-stairs"
+      ]
+    },
+    {
+      "id": 152,
+      "lcNumber": 518,
+      "title": "Coin Change II",
+      "slug": "coin-change-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Unbounded Knapsack (Count)",
+      "level": 2,
+      "prereqs": [
+        "coin-change"
+      ]
+    },
+    {
+      "id": 153,
+      "lcNumber": 300,
+      "title": "Longest Increasing Subsequence",
+      "slug": "longest-increasing-subsequence",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Binary Search",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "1D DP / Patience Sorting",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 154,
+      "lcNumber": 416,
+      "title": "Partition Equal Subset Sum",
+      "slug": "partition-equal-subset-sum",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "0/1 Knapsack",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 155,
+      "lcNumber": 139,
+      "title": "Word Break",
+      "slug": "word-break",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Trie",
+        "Memoization",
+        "BFS"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "1D DP",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 156,
+      "lcNumber": 309,
+      "title": "Best Time to Buy and Sell Stock with Cooldown",
+      "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "State Machine DP",
+      "level": 3,
+      "prereqs": [
+        "best-time-to-buy-and-sell-stock"
+      ]
+    },
+    {
+      "id": 157,
+      "lcNumber": 714,
+      "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+      "slug": "best-time-to-buy-and-sell-stock-with-transaction-fee",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Goldman Sachs"
+      ],
+      "pattern": "State Machine DP",
+      "level": 3,
+      "prereqs": [
+        "best-time-to-buy-and-sell-stock-with-cooldown"
+      ]
+    },
+    {
+      "id": 158,
+      "lcNumber": 123,
+      "title": "Best Time to Buy and Sell Stock III",
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Goldman Sachs"
+      ],
+      "pattern": "State Machine DP",
+      "level": 3,
+      "prereqs": [
+        "best-time-to-buy-and-sell-stock-with-cooldown"
+      ]
+    },
+    {
+      "id": 159,
+      "lcNumber": 188,
+      "title": "Best Time to Buy and Sell Stock IV",
+      "slug": "best-time-to-buy-and-sell-stock-iv",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Goldman Sachs"
+      ],
+      "pattern": "State Machine DP",
+      "level": 4,
+      "prereqs": [
+        "best-time-to-buy-and-sell-stock-iii"
+      ]
+    },
+    {
+      "id": 160,
+      "lcNumber": 72,
+      "title": "Edit Distance",
+      "slug": "edit-distance",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "2D DP",
+      "level": 3,
+      "prereqs": [
+        "longest-common-subsequence"
+      ]
+    },
+    {
+      "id": 161,
+      "lcNumber": 312,
+      "title": "Burst Balloons",
+      "slug": "burst-balloons",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Divide and Conquer"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Google",
+        "Amazon"
+      ],
+      "pattern": "Interval DP",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 162,
+      "lcNumber": 62,
+      "title": "Unique Paths",
+      "slug": "unique-paths",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Math",
+        "Combinatorics"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "2D DP / Combinatorics",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 163,
+      "lcNumber": 63,
+      "title": "Unique Paths II",
+      "slug": "unique-paths-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Matrix"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "2D DP with Obstacles",
+      "level": 2,
+      "prereqs": [
+        "unique-paths"
+      ]
+    },
+    {
+      "id": 164,
+      "lcNumber": 55,
+      "title": "Jump Game",
+      "slug": "jump-game",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Greedy / DP",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 165,
+      "lcNumber": 45,
+      "title": "Jump Game II",
+      "slug": "jump-game-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Greedy"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Greedy BFS",
+      "level": 2,
+      "prereqs": [
+        "jump-game"
+      ]
+    },
+    {
+      "id": 166,
+      "lcNumber": 91,
+      "title": "Decode Ways",
+      "slug": "decode-ways",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "1D DP",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 167,
+      "lcNumber": 746,
+      "title": "Min Cost Climbing Stairs",
+      "slug": "min-cost-climbing-stairs",
+      "difficulty": "EASY",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "1D DP",
+      "level": 1,
+      "prereqs": [
+        "climbing-stairs"
+      ]
+    },
+    {
+      "id": 168,
+      "lcNumber": 152,
+      "title": "Maximum Product Subarray",
+      "slug": "maximum-product-subarray",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook",
+        "LinkedIn"
+      ],
+      "pattern": "Kadane's Variant",
+      "level": 2,
+      "prereqs": [
+        "maximum-subarray"
+      ]
+    },
+    {
+      "id": 169,
+      "lcNumber": 1049,
+      "title": "Last Stone Weight II",
+      "slug": "last-stone-weight-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "0/1 Knapsack",
+      "level": 3,
+      "prereqs": [
+        "partition-equal-subset-sum"
+      ]
+    },
+    {
+      "id": 170,
+      "lcNumber": 494,
+      "title": "Target Sum",
+      "slug": "target-sum",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays",
+        "Backtracking"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "0/1 Knapsack",
+      "level": 2,
+      "prereqs": [
+        "partition-equal-subset-sum"
+      ]
+    },
+    {
+      "id": 171,
+      "lcNumber": 474,
+      "title": "Ones and Zeroes",
+      "slug": "ones-and-zeroes",
+      "difficulty": "MEDIUM",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google"
+      ],
+      "pattern": "2D Knapsack",
+      "level": 3,
+      "prereqs": [
+        "partition-equal-subset-sum"
+      ]
+    },
+    {
+      "id": 172,
+      "lcNumber": 115,
+      "title": "Distinct Subsequences",
+      "slug": "distinct-subsequences",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "2D DP",
+      "level": 3,
+      "prereqs": [
+        "longest-common-subsequence"
+      ]
+    },
+    {
+      "id": 173,
+      "lcNumber": 32,
+      "title": "Longest Valid Parentheses",
+      "slug": "longest-valid-parentheses",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Strings",
+        "Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "DP / Stack",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 174,
+      "lcNumber": 1312,
+      "title": "Minimum Insertion Steps to Make a String Palindrome",
+      "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Interval DP / LCS",
+      "level": 4,
+      "prereqs": [
+        "longest-common-subsequence"
+      ]
+    },
+    {
+      "id": 175,
+      "lcNumber": 1335,
+      "title": "Minimum Difficulty of a Job Schedule",
+      "slug": "minimum-difficulty-of-a-job-schedule",
+      "difficulty": "HARD",
+      "topic": "Dynamic Programming",
+      "tags": [
+        "DP",
+        "Arrays"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "2D DP",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 176,
+      "lcNumber": 455,
+      "title": "Assign Cookies",
+      "slug": "assign-cookies",
+      "difficulty": "EASY",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Greedy Matching",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 177,
+      "lcNumber": 135,
+      "title": "Candy",
+      "slug": "candy",
+      "difficulty": "HARD",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Two Pass Greedy",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 178,
+      "lcNumber": 134,
+      "title": "Gas Station",
+      "slug": "gas-station",
+      "difficulty": "MEDIUM",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Circular Greedy",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 179,
+      "lcNumber": 435,
+      "title": "Non-overlapping Intervals",
+      "slug": "non-overlapping-intervals",
+      "difficulty": "MEDIUM",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Interval Scheduling",
+      "level": 2,
+      "prereqs": [
+        "merge-intervals"
+      ]
+    },
+    {
+      "id": 180,
+      "lcNumber": 452,
+      "title": "Minimum Number of Arrows to Burst Balloons",
+      "slug": "minimum-number-of-arrows-to-burst-balloons",
+      "difficulty": "MEDIUM",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Interval Greedy",
+      "level": 2,
+      "prereqs": [
+        "non-overlapping-intervals"
+      ]
+    },
+    {
+      "id": 181,
+      "lcNumber": 763,
+      "title": "Partition Labels",
+      "slug": "partition-labels",
+      "difficulty": "MEDIUM",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Strings",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Last Occurrence Greedy",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 182,
+      "lcNumber": 678,
+      "title": "Valid Parenthesis String",
+      "slug": "valid-parenthesis-string",
+      "difficulty": "MEDIUM",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Strings",
+        "DP",
+        "Stack"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Min/Max Count Greedy",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 183,
+      "lcNumber": 860,
+      "title": "Lemonade Change",
+      "slug": "lemonade-change",
+      "difficulty": "EASY",
+      "topic": "Greedy",
+      "tags": [
+        "Greedy",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Greedy Simulation",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 184,
+      "lcNumber": 46,
+      "title": "Permutations",
+      "slug": "permutations",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Backtracking",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 185,
+      "lcNumber": 47,
+      "title": "Permutations II",
+      "slug": "permutations-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Backtracking with Dedup",
+      "level": 2,
+      "prereqs": [
+        "permutations"
+      ]
+    },
+    {
+      "id": 186,
+      "lcNumber": 78,
+      "title": "Subsets",
+      "slug": "subsets",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Bit Manipulation"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Backtracking / Bitmask",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 187,
+      "lcNumber": 90,
+      "title": "Subsets II",
+      "slug": "subsets-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Bit Manipulation"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Backtracking with Dedup",
+      "level": 2,
+      "prereqs": [
+        "subsets"
+      ]
+    },
+    {
+      "id": 188,
+      "lcNumber": 39,
+      "title": "Combination Sum",
+      "slug": "combination-sum",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Backtracking",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 189,
+      "lcNumber": 40,
+      "title": "Combination Sum II",
+      "slug": "combination-sum-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Arrays",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Backtracking with Dedup",
+      "level": 2,
+      "prereqs": [
+        "combination-sum"
+      ]
+    },
+    {
+      "id": 190,
+      "lcNumber": 131,
+      "title": "Palindrome Partitioning",
+      "slug": "palindrome-partitioning",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Strings",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Backtracking + DP",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 191,
+      "lcNumber": 79,
+      "title": "Word Search",
+      "slug": "word-search",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Matrix",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "DFS Backtracking on Grid",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 192,
+      "lcNumber": 212,
+      "title": "Word Search II",
+      "slug": "word-search-ii",
+      "difficulty": "HARD",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Trie",
+        "Matrix",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Trie + DFS Backtracking",
+      "level": 4,
+      "prereqs": [
+        "word-search"
+      ]
+    },
+    {
+      "id": 193,
+      "lcNumber": 51,
+      "title": "N-Queens",
+      "slug": "n-queens",
+      "difficulty": "HARD",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Backtracking with Constraints",
+      "level": 3,
+      "prereqs": [
+        "permutations"
+      ]
+    },
+    {
+      "id": 194,
+      "lcNumber": 52,
+      "title": "N-Queens II",
+      "slug": "n-queens-ii",
+      "difficulty": "HARD",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Backtracking Count",
+      "level": 3,
+      "prereqs": [
+        "n-queens"
+      ]
+    },
+    {
+      "id": 195,
+      "lcNumber": 37,
+      "title": "Sudoku Solver",
+      "slug": "sudoku-solver",
+      "difficulty": "HARD",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Matrix",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Constraint Backtracking",
+      "level": 4,
+      "prereqs": []
+    },
+    {
+      "id": 196,
+      "lcNumber": 17,
+      "title": "Letter Combinations of a Phone Number",
+      "slug": "letter-combinations-of-a-phone-number",
+      "difficulty": "MEDIUM",
+      "topic": "Backtracking",
+      "tags": [
+        "Backtracking",
+        "Strings",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "Backtracking",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 197,
+      "lcNumber": 208,
+      "title": "Implement Trie (Prefix Tree)",
+      "slug": "implement-trie-prefix-tree",
+      "difficulty": "MEDIUM",
+      "topic": "Trie",
+      "tags": [
+        "Trie",
+        "Design",
+        "Strings"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Trie Construction",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 198,
+      "lcNumber": 211,
+      "title": "Design Add and Search Words Data Structure",
+      "slug": "design-add-and-search-words-data-structure",
+      "difficulty": "MEDIUM",
+      "topic": "Trie",
+      "tags": [
+        "Trie",
+        "Design",
+        "Strings",
+        "DFS"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Trie with Wildcard",
+      "level": 3,
+      "prereqs": [
+        "implement-trie-prefix-tree"
+      ]
+    },
+    {
+      "id": 199,
+      "lcNumber": 648,
+      "title": "Replace Words",
+      "slug": "replace-words",
+      "difficulty": "MEDIUM",
+      "topic": "Trie",
+      "tags": [
+        "Trie",
+        "Strings",
+        "HashMap"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Trie Lookup",
+      "level": 2,
+      "prereqs": [
+        "implement-trie-prefix-tree"
+      ]
+    },
+    {
+      "id": 200,
+      "lcNumber": 677,
+      "title": "Map Sum Pairs",
+      "slug": "map-sum-pairs",
+      "difficulty": "MEDIUM",
+      "topic": "Trie",
+      "tags": [
+        "Trie",
+        "Design",
+        "HashMap"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google"
+      ],
+      "pattern": "Trie with Values",
+      "level": 2,
+      "prereqs": [
+        "implement-trie-prefix-tree"
+      ]
+    },
+    {
+      "id": 201,
+      "lcNumber": 191,
+      "title": "Number of 1 Bits",
+      "slug": "number-of-1-bits",
+      "difficulty": "EASY",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Bit Counting",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 202,
+      "lcNumber": 338,
+      "title": "Counting Bits",
+      "slug": "counting-bits",
+      "difficulty": "EASY",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "DP",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "DP + Bit",
+      "level": 1,
+      "prereqs": [
+        "number-of-1-bits"
+      ]
+    },
+    {
+      "id": 203,
+      "lcNumber": 190,
+      "title": "Reverse Bits",
+      "slug": "reverse-bits",
+      "difficulty": "EASY",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Divide and Conquer"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Apple"
+      ],
+      "pattern": "Bit Reversal",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 204,
+      "lcNumber": 371,
+      "title": "Sum of Two Integers",
+      "slug": "sum-of-two-integers",
+      "difficulty": "MEDIUM",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "XOR + AND Carry",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 205,
+      "lcNumber": 136,
+      "title": "Single Number",
+      "slug": "single-number",
+      "difficulty": "EASY",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "XOR",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 206,
+      "lcNumber": 137,
+      "title": "Single Number II",
+      "slug": "single-number-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Bit Counting",
+      "level": 3,
+      "prereqs": [
+        "single-number"
+      ]
+    },
+    {
+      "id": 207,
+      "lcNumber": 7,
+      "title": "Reverse Integer",
+      "slug": "reverse-integer",
+      "difficulty": "MEDIUM",
+      "topic": "Bit Manipulation",
+      "tags": [
+        "Bit Manipulation",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Math",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 208,
+      "lcNumber": 643,
+      "title": "Maximum Average Subarray I",
+      "slug": "maximum-average-subarray-i",
+      "difficulty": "EASY",
+      "topic": "Sliding Window",
+      "tags": [
+        "Sliding Window",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Fixed Window",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 209,
+      "lcNumber": 1004,
+      "title": "Max Consecutive Ones III",
+      "slug": "max-consecutive-ones-iii",
+      "difficulty": "MEDIUM",
+      "topic": "Sliding Window",
+      "tags": [
+        "Sliding Window",
+        "Arrays",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Variable Window",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 210,
+      "lcNumber": 424,
+      "title": "Longest Repeating Character Replacement",
+      "slug": "longest-repeating-character-replacement",
+      "difficulty": "MEDIUM",
+      "topic": "Sliding Window",
+      "tags": [
+        "Sliding Window",
+        "Strings",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Variable Window",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 211,
+      "lcNumber": 567,
+      "title": "Permutation in String",
+      "slug": "permutation-in-string",
+      "difficulty": "MEDIUM",
+      "topic": "Sliding Window",
+      "tags": [
+        "Sliding Window",
+        "Strings",
+        "HashMap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Fixed Window with Frequency",
+      "level": 2,
+      "prereqs": [
+        "valid-anagram"
+      ]
+    },
+    {
+      "id": 212,
+      "lcNumber": 209,
+      "title": "Minimum Size Subarray Sum",
+      "slug": "minimum-size-subarray-sum",
+      "difficulty": "MEDIUM",
+      "topic": "Sliding Window",
+      "tags": [
+        "Sliding Window",
+        "Arrays",
+        "Binary Search",
+        "Prefix Sum"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Variable Window",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 213,
+      "lcNumber": 167,
+      "title": "Two Sum II - Input Array Is Sorted",
+      "slug": "two-sum-ii-input-array-is-sorted",
+      "difficulty": "MEDIUM",
+      "topic": "Two Pointers",
+      "tags": [
+        "Two Pointers",
+        "Arrays",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": [
+        "two-sum"
+      ]
+    },
+    {
+      "id": 214,
+      "lcNumber": 392,
+      "title": "Is Subsequence",
+      "slug": "is-subsequence",
+      "difficulty": "EASY",
+      "topic": "Two Pointers",
+      "tags": [
+        "Two Pointers",
+        "Strings",
+        "DP"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 215,
+      "lcNumber": 344,
+      "title": "Reverse String",
+      "slug": "reverse-string",
+      "difficulty": "EASY",
+      "topic": "Two Pointers",
+      "tags": [
+        "Two Pointers",
+        "Strings",
+        "Recursion"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Microsoft"
+      ],
+      "pattern": "Two Pointers",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 216,
+      "lcNumber": 202,
+      "title": "Happy Number",
+      "slug": "happy-number",
+      "difficulty": "EASY",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "HashSet",
+        "Two Pointers"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Floyd's Cycle Detection",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 217,
+      "lcNumber": 66,
+      "title": "Plus One",
+      "slug": "plus-one",
+      "difficulty": "EASY",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Carry Simulation",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 218,
+      "lcNumber": 50,
+      "title": "Pow(x, n)",
+      "slug": "powx-n",
+      "difficulty": "MEDIUM",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Recursion",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft",
+        "Facebook"
+      ],
+      "pattern": "Fast Exponentiation",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 219,
+      "lcNumber": 204,
+      "title": "Count Primes",
+      "slug": "count-primes",
+      "difficulty": "MEDIUM",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Arrays"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Sieve of Eratosthenes",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 220,
+      "lcNumber": 43,
+      "title": "Multiply Strings",
+      "slug": "multiply-strings",
+      "difficulty": "MEDIUM",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Strings",
+        "Simulation"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Grade School Multiplication",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 221,
+      "lcNumber": 69,
+      "title": "Sqrt(x)",
+      "slug": "sqrtx",
+      "difficulty": "EASY",
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Binary Search"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Binary Search",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 222,
+      "lcNumber": 547,
+      "title": "Number of Provinces",
+      "slug": "number-of-provinces",
+      "difficulty": "MEDIUM",
+      "topic": "Union Find",
+      "tags": [
+        "Union Find",
+        "DFS",
+        "BFS",
+        "Graphs"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Union Find",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 223,
+      "lcNumber": 1319,
+      "title": "Number of Operations to Make Network Connected",
+      "slug": "number-of-operations-to-make-network-connected",
+      "difficulty": "MEDIUM",
+      "topic": "Union Find",
+      "tags": [
+        "Union Find",
+        "BFS",
+        "DFS",
+        "Graphs"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Union Find",
+      "level": 2,
+      "prereqs": [
+        "number-of-provinces"
+      ]
+    },
+    {
+      "id": 224,
+      "lcNumber": 990,
+      "title": "Satisfiability of Equality Equations",
+      "slug": "satisfiability-of-equality-equations",
+      "difficulty": "MEDIUM",
+      "topic": "Union Find",
+      "tags": [
+        "Union Find",
+        "Graphs",
+        "Strings"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Google"
+      ],
+      "pattern": "Union Find",
+      "level": 2,
+      "prereqs": []
+    },
+    {
+      "id": 225,
+      "lcNumber": 57,
+      "title": "Insert Interval",
+      "slug": "insert-interval",
+      "difficulty": "MEDIUM",
+      "topic": "Intervals",
+      "tags": [
+        "Intervals",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": true,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook"
+      ],
+      "pattern": "Linear Scan",
+      "level": 2,
+      "prereqs": [
+        "merge-intervals"
+      ]
+    },
+    {
+      "id": 226,
+      "lcNumber": 252,
+      "title": "Meeting Rooms",
+      "slug": "meeting-rooms",
+      "difficulty": "EASY",
+      "topic": "Intervals",
+      "tags": [
+        "Intervals",
+        "Arrays",
+        "Sorting"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Facebook",
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Sorting",
+      "level": 1,
+      "prereqs": []
+    },
+    {
+      "id": 227,
+      "lcNumber": 253,
+      "title": "Meeting Rooms II",
+      "slug": "meeting-rooms-ii",
+      "difficulty": "MEDIUM",
+      "topic": "Intervals",
+      "tags": [
+        "Intervals",
+        "Arrays",
+        "Sorting",
+        "Heap"
+      ],
+      "isStriver": false,
+      "isBlind75": true,
+      "isNeetCode150": true,
+      "companies": [
+        "Facebook",
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Min Heap / Line Sweep",
+      "level": 2,
+      "prereqs": [
+        "meeting-rooms"
+      ]
+    },
+    {
+      "id": 228,
+      "lcNumber": 380,
+      "title": "Insert Delete GetRandom O(1)",
+      "slug": "insert-delete-getrandom-o1",
+      "difficulty": "MEDIUM",
+      "topic": "Design",
+      "tags": [
+        "Design",
+        "HashMap",
+        "Arrays",
+        "Math"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": true,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Facebook",
+        "Microsoft"
+      ],
+      "pattern": "HashMap + Array",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 229,
+      "lcNumber": 460,
+      "title": "LFU Cache",
+      "slug": "lfu-cache",
+      "difficulty": "HARD",
+      "topic": "Design",
+      "tags": [
+        "Design",
+        "HashMap",
+        "Linked List",
+        "Heap"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google",
+        "Microsoft"
+      ],
+      "pattern": "Frequency HashMap + DLL",
+      "level": 4,
+      "prereqs": [
+        "lru-cache"
+      ]
+    },
+    {
+      "id": 230,
+      "lcNumber": 241,
+      "title": "Different Ways to Add Parentheses",
+      "slug": "different-ways-to-add-parentheses",
+      "difficulty": "MEDIUM",
+      "topic": "Recursion",
+      "tags": [
+        "Recursion",
+        "Divide and Conquer",
+        "DP",
+        "Memoization"
+      ],
+      "isStriver": false,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon",
+        "Google"
+      ],
+      "pattern": "Divide & Conquer",
+      "level": 3,
+      "prereqs": []
+    },
+    {
+      "id": 231,
+      "lcNumber": 779,
+      "title": "K-th Symbol in Grammar",
+      "slug": "k-th-symbol-in-grammar",
+      "difficulty": "MEDIUM",
+      "topic": "Recursion",
+      "tags": [
+        "Recursion",
+        "Math",
+        "Bit Manipulation"
+      ],
+      "isStriver": true,
+      "isBlind75": false,
+      "isNeetCode150": false,
+      "companies": [
+        "Amazon"
+      ],
+      "pattern": "Recursion",
+      "level": 2,
+      "prereqs": []
+    }
+  ],
+  "topicGroups": {
+    "Arrays": {
+      "easy": [
+        1,
+        26,
+        121,
+        169,
+        448,
+        485,
+        118,
+        268
+      ],
+      "medium": [
+        53,
+        56,
+        75,
+        189,
+        229,
+        238,
+        287,
+        560,
+        31,
+        54,
+        73,
+        48,
+        128,
+        11,
+        15,
+        18
+      ],
+      "hard": [
+        4,
+        42,
+        84,
+        41
+      ],
+      "striverOnly": [
+        1,
+        26,
+        53,
+        56,
+        75,
+        121,
+        169,
+        189,
+        229,
+        238,
+        287,
+        485,
+        560,
+        31,
+        118,
+        54,
+        73,
+        48,
+        4,
+        128,
+        42,
+        84,
+        11,
+        15,
+        18,
+        41,
+        268
+      ],
+      "blind75": [
+        1,
+        53,
+        56,
+        121,
+        238,
+        287,
+        48,
+        4,
+        128,
+        42,
+        84,
+        11,
+        15
+      ],
+      "neetcode150": [
+        1,
+        26,
+        53,
+        56,
+        75,
+        121,
+        169,
+        189,
+        238,
+        287,
+        118,
+        54,
+        73,
+        48,
+        4,
+        128,
+        42,
+        84,
+        11,
+        15,
+        41
+      ]
+    },
+    "Strings": {
+      "easy": [
+        20,
+        125,
+        242,
+        28,
+        14,
+        459
+      ],
+      "medium": [
+        3,
+        5,
+        49,
+        271,
+        647,
+        8,
+        151,
+        438,
+        1143
+      ],
+      "hard": [
+        76,
+        10
+      ],
+      "striverOnly": [
+        3,
+        5,
+        20,
+        49,
+        76,
+        125,
+        242,
+        647,
+        8,
+        28,
+        14,
+        151,
+        459,
+        1143
+      ],
+      "blind75": [
+        3,
+        5,
+        20,
+        49,
+        76,
+        125,
+        242,
+        271,
+        647,
+        1143,
+        10
+      ],
+      "neetcode150": [
+        3,
+        5,
+        20,
+        49,
+        76,
+        125,
+        242,
+        271,
+        647,
+        1143,
+        10
+      ]
+    },
+    "Sorting": {
+      "easy": [],
+      "medium": [
+        912,
+        148
+      ],
+      "hard": [
+        315,
+        493
+      ],
+      "striverOnly": [
+        912,
+        315,
+        493,
+        148
+      ],
+      "blind75": [
+        148
+      ],
+      "neetcode150": [
+        148
+      ]
+    },
+    "Binary Search": {
+      "easy": [
+        704
+      ],
+      "medium": [
+        33,
+        34,
+        81,
+        153,
+        162,
+        74,
+        240,
+        875,
+        1011,
+        540,
+        302
+      ],
+      "hard": [
+        410
+      ],
+      "striverOnly": [
+        704,
+        33,
+        34,
+        81,
+        153,
+        162,
+        74,
+        240,
+        410,
+        875,
+        1011,
+        540,
+        302
+      ],
+      "blind75": [
+        33,
+        153,
+        74
+      ],
+      "neetcode150": [
+        704,
+        33,
+        34,
+        153,
+        162,
+        74,
+        875
+      ]
+    },
+    "Linked List": {
+      "easy": [
+        206,
+        21,
+        141,
+        876,
+        234,
+        160
+      ],
+      "medium": [
+        142,
+        19,
+        328,
+        430,
+        146,
+        138,
+        61,
+        82
+      ],
+      "hard": [
+        23,
+        25
+      ],
+      "striverOnly": [
+        206,
+        21,
+        141,
+        142,
+        19,
+        23,
+        25,
+        876,
+        234,
+        160,
+        328,
+        430,
+        146,
+        138,
+        61,
+        82
+      ],
+      "blind75": [
+        206,
+        21,
+        141,
+        19,
+        23,
+        25,
+        146,
+        138
+      ],
+      "neetcode150": [
+        206,
+        21,
+        141,
+        142,
+        19,
+        23,
+        25,
+        146,
+        138
+      ]
+    },
+    "Stack": {
+      "easy": [
+        232,
+        225,
+        496
+      ],
+      "medium": [
+        155,
+        739,
+        853,
+        22,
+        394,
+        503,
+        901,
+        907
+      ],
+      "hard": [
+        239
+      ],
+      "striverOnly": [
+        155,
+        232,
+        225,
+        739,
+        22,
+        394,
+        496,
+        503,
+        907,
+        239
+      ],
+      "blind75": [
+        155,
+        22
+      ],
+      "neetcode150": [
+        155,
+        232,
+        739,
+        853,
+        22,
+        239
+      ]
+    },
+    "Trees": {
+      "easy": [
+        94,
+        144,
+        145,
+        104,
+        543,
+        110,
+        100,
+        226,
+        572,
+        112
+      ],
+      "medium": [
+        102,
+        235,
+        236,
+        98,
+        230,
+        105,
+        199,
+        113,
+        103,
+        116,
+        337,
+        1448
+      ],
+      "hard": [
+        124,
+        297
+      ],
+      "striverOnly": [
+        94,
+        144,
+        145,
+        102,
+        104,
+        543,
+        110,
+        100,
+        226,
+        572,
+        235,
+        236,
+        124,
+        297,
+        98,
+        230,
+        105,
+        199,
+        112,
+        113,
+        103,
+        116
+      ],
+      "blind75": [
+        102,
+        104,
+        543,
+        110,
+        100,
+        226,
+        572,
+        235,
+        236,
+        124,
+        297,
+        98,
+        230,
+        105
+      ],
+      "neetcode150": [
+        94,
+        102,
+        104,
+        543,
+        110,
+        100,
+        226,
+        572,
+        235,
+        236,
+        124,
+        297,
+        98,
+        230,
+        105,
+        199,
+        337,
+        1448
+      ]
+    },
+    "BST": {
+      "easy": [
+        700
+      ],
+      "medium": [
+        701,
+        450,
+        173
+      ],
+      "hard": [],
+      "striverOnly": [
+        700,
+        701,
+        450,
+        173
+      ],
+      "blind75": [],
+      "neetcode150": []
+    },
+    "Heap": {
+      "easy": [
+        703
+      ],
+      "medium": [
+        215,
+        347,
+        373,
+        378,
+        621,
+        355
+      ],
+      "hard": [
+        295
+      ],
+      "striverOnly": [
+        215,
+        703,
+        295,
+        347,
+        373,
+        378,
+        621
+      ],
+      "blind75": [
+        215,
+        295,
+        347
+      ],
+      "neetcode150": [
+        215,
+        703,
+        295,
+        347,
+        621,
+        355
+      ]
+    },
+    "Graphs": {
+      "easy": [],
+      "medium": [
+        200,
+        695,
+        133,
+        207,
+        210,
+        417,
+        130,
+        994,
+        286,
+        684,
+        785,
+        743,
+        787,
+        1584,
+        1334,
+        261,
+        323
+      ],
+      "hard": [
+        127,
+        269,
+        332,
+        329
+      ],
+      "striverOnly": [
+        200,
+        695,
+        133,
+        207,
+        210,
+        417,
+        130,
+        994,
+        684,
+        785,
+        743,
+        787,
+        1584,
+        127,
+        269,
+        332,
+        1334
+      ],
+      "blind75": [
+        200,
+        133,
+        207,
+        417,
+        130,
+        127,
+        269,
+        261,
+        323
+      ],
+      "neetcode150": [
+        200,
+        695,
+        133,
+        207,
+        210,
+        417,
+        130,
+        994,
+        286,
+        684,
+        743,
+        787,
+        1584,
+        127,
+        269,
+        332,
+        329,
+        261,
+        323
+      ]
+    },
+    "Dynamic Programming": {
+      "easy": [
+        70,
+        746
+      ],
+      "medium": [
+        198,
+        213,
+        322,
+        518,
+        300,
+        416,
+        139,
+        309,
+        714,
+        72,
+        62,
+        63,
+        55,
+        45,
+        91,
+        152,
+        1049,
+        494,
+        474
+      ],
+      "hard": [
+        123,
+        188,
+        312,
+        115,
+        32,
+        1312,
+        1335
+      ],
+      "striverOnly": [
+        70,
+        198,
+        213,
+        322,
+        518,
+        300,
+        416,
+        139,
+        309,
+        714,
+        123,
+        188,
+        72,
+        62,
+        63,
+        55,
+        45,
+        91,
+        152,
+        494,
+        115,
+        32,
+        1312
+      ],
+      "blind75": [
+        70,
+        198,
+        213,
+        322,
+        300,
+        416,
+        139,
+        72,
+        62,
+        55,
+        91,
+        152
+      ],
+      "neetcode150": [
+        70,
+        198,
+        213,
+        322,
+        518,
+        300,
+        416,
+        139,
+        309,
+        714,
+        72,
+        312,
+        62,
+        55,
+        45,
+        91,
+        746,
+        152,
+        1049,
+        494,
+        115
+      ]
+    },
+    "Greedy": {
+      "easy": [
+        455,
+        860
+      ],
+      "medium": [
+        134,
+        435,
+        452,
+        763,
+        678
+      ],
+      "hard": [
+        135
+      ],
+      "striverOnly": [
+        455,
+        135,
+        134,
+        435,
+        452,
+        763,
+        678,
+        860
+      ],
+      "blind75": [
+        435
+      ],
+      "neetcode150": [
+        134,
+        435,
+        452,
+        763,
+        678
+      ]
+    },
+    "Backtracking": {
+      "easy": [],
+      "medium": [
+        46,
+        47,
+        78,
+        90,
+        39,
+        40,
+        131,
+        79,
+        17
+      ],
+      "hard": [
+        212,
+        51,
+        52,
+        37
+      ],
+      "striverOnly": [
+        46,
+        47,
+        78,
+        90,
+        39,
+        40,
+        131,
+        79,
+        212,
+        51,
+        52,
+        37,
+        17
+      ],
+      "blind75": [
+        78,
+        39,
+        131,
+        79,
+        51
+      ],
+      "neetcode150": [
+        46,
+        78,
+        90,
+        39,
+        40,
+        131,
+        79,
+        212,
+        51,
+        17
+      ]
+    },
+    "Trie": {
+      "easy": [],
+      "medium": [
+        208,
+        211,
+        648,
+        677
+      ],
+      "hard": [],
+      "striverOnly": [
+        208,
+        211
+      ],
+      "blind75": [
+        208,
+        211
+      ],
+      "neetcode150": [
+        208,
+        211
+      ]
+    },
+    "Bit Manipulation": {
+      "easy": [
+        191,
+        338,
+        190,
+        136
+      ],
+      "medium": [
+        371,
+        137,
+        7
+      ],
+      "hard": [],
+      "striverOnly": [
+        191,
+        338,
+        190,
+        371,
+        136,
+        137,
+        7
+      ],
+      "blind75": [
+        191,
+        338,
+        190,
+        371
+      ],
+      "neetcode150": [
+        191,
+        338,
+        190,
+        371,
+        136
+      ]
+    },
+    "Sliding Window": {
+      "easy": [
+        643
+      ],
+      "medium": [
+        1004,
+        424,
+        567,
+        209
+      ],
+      "hard": [],
+      "striverOnly": [
+        643,
+        1004,
+        424,
+        567,
+        209
+      ],
+      "blind75": [
+        424
+      ],
+      "neetcode150": [
+        1004,
+        424,
+        567
+      ]
+    },
+    "Two Pointers": {
+      "easy": [
+        392,
+        344
+      ],
+      "medium": [
+        167
+      ],
+      "hard": [],
+      "striverOnly": [
+        167,
+        392,
+        344
+      ],
+      "blind75": [],
+      "neetcode150": [
+        167,
+        392
+      ]
+    },
+    "Math": {
+      "easy": [
+        202,
+        66,
+        69
+      ],
+      "medium": [
+        50,
+        204,
+        43
+      ],
+      "hard": [],
+      "striverOnly": [
+        202,
+        66,
+        50,
+        204,
+        43,
+        69
+      ],
+      "blind75": [],
+      "neetcode150": [
+        202,
+        50
+      ]
+    },
+    "Union Find": {
+      "easy": [],
+      "medium": [
+        547,
+        1319,
+        990
+      ],
+      "hard": [],
+      "striverOnly": [
+        547,
+        1319
+      ],
+      "blind75": [],
+      "neetcode150": []
+    },
+    "Intervals": {
+      "easy": [
+        252
+      ],
+      "medium": [
+        57,
+        253
+      ],
+      "hard": [],
+      "striverOnly": [
+        57
+      ],
+      "blind75": [
+        57,
+        252,
+        253
+      ],
+      "neetcode150": [
+        57,
+        252,
+        253
+      ]
+    },
+    "Design": {
+      "easy": [],
+      "medium": [
+        380
+      ],
+      "hard": [
+        460
+      ],
+      "striverOnly": [
+        380,
+        460
+      ],
+      "blind75": [],
+      "neetcode150": [
+        380
+      ]
+    },
+    "Recursion": {
+      "easy": [],
+      "medium": [
+        241,
+        779
+      ],
+      "hard": [],
+      "striverOnly": [
+        779
+      ],
+      "blind75": [],
+      "neetcode150": []
+    }
+  },
+  "recommendationConfig": {
+    "levelWeights": {
+      "BEGINNER": {
+        "EASY": 0.7,
+        "MEDIUM": 0.3,
+        "HARD": 0.0
+      },
+      "INTERMEDIATE": {
+        "EASY": 0.3,
+        "MEDIUM": 0.6,
+        "HARD": 0.1
+      },
+      "ADVANCED": {
+        "EASY": 0.1,
+        "MEDIUM": 0.5,
+        "HARD": 0.4
+      }
+    },
+    "weakTopicBoost": 1.5,
+    "striverPriorityBoost": 1.3,
+    "blind75Boost": 1.2,
+    "neetcode150Boost": 1.15,
+    "targetCompanyBoost": {
+      "Google": 1.4,
+      "Facebook": 1.35,
+      "Amazon": 1.3,
+      "Microsoft": 1.25,
+      "Apple": 1.2
+    },
+    "questRecommendationLogic": {
+      "description": "For each user, fetch their TopicPerformance array. Sort topics by confidenceScore ASC to find weak topics. Apply weakTopicBoost to questions in those topics. Filter by userLevel and preferredDifficulty. Apply company boost if targetCompany set. Sort by (boost * isStriver + isBlind75 + isNeetCode150) DESC. Return top N unsolved questions.",
+      "dailyQuestFormula": {
+        "BEGINNER": "2 EASY from weakest topic + 1 EASY from random topic",
+        "INTERMEDIATE": "1 MEDIUM from weakest topic + 1 MEDIUM from target topic + 1 EASY revision",
+        "ADVANCED": "2 MEDIUM from weak topics + 1 HARD if streakDays > 7"
+      }
+    }
+  }
+}

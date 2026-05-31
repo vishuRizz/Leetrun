@@ -1,0 +1,382 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum UserLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ChallengeType {
+  DAILY
+  WEEKLY
+  REVISION
+  FRIEND
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum BadgeType {
+  STREAK
+  TOPIC
+  LEVEL
+  SOCIAL
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+}
+
+enum Provider {
+  GOOGLE
+  EMAIL
+}
+
+enum AIProvider {
+  OPENAI
+  GEMINI
+  CUSTOM
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  fullName          String?
+  avatarUrl         String?
+  collegeName       String?
+  graduationYear    Int?
+  targetCompany     String?
+  favoriteSeries    String?   @default("NARUTO")
+  level             UserLevel @default(BEGINNER)
+  onboardingDone    Boolean @default(false)
+  totalXp           Int @default(0)
+  coins             Int @default(0)
+  currentStreak     Int @default(0)
+  longestStreak     Int @default(0)
+  plan              SubscriptionPlan @default(FREE)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  preferences       UserPreference?
+  stats             UserStats?
+  leetcodeProfile   LeetcodeProfile?
+  userChallenges    UserChallenge[]
+  badges            UserBadge[]
+  aiCompanion       AICompanion?
+  aiConversations   AIConversation[]
+  roomMemberships   RoomMember[]
+  events            UserEvent[]
+  subscriptions     Subscription[]
+  xpLogs            XPLog[]
+  topicPerformances TopicPerformance[]
+  
+  friendshipsRequester Friendship[] @relation("FriendshipsRequested")
+  friendshipsReceiver  Friendship[] @relation("FriendshipsReceived")
+  
+  createdRooms         ChallengeRoom[] @relation("CreatedRooms")
+  
+  roomInvitesSent      RoomInvite[] @relation("InvitesSent")
+  roomInvitesReceived  RoomInvite[] @relation("InvitesReceived")
+  
+  roomChallengesProgress RoomChallengeProgress[]
+
+  @@index([email])
+}
+
+model UserPreference {
+  id                    String @id @default(cuid())
+  userId                String @unique
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredDifficulty   Difficulty @default(EASY)
+  dailyQuestionTarget   Int @default(2)
+  emailReminderEnabled  Boolean @default(true)
+  reminderTime          String?
+  aiProvider            AIProvider @default(OPENAI)
+  mentorName            String @default("Buddy")
+  createdAt             DateTime @default(now())
+}
+
+model UserStats {
+  id                   String @id @default(cuid())
+  userId               String @unique
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalSolved          Int @default(0)
+  easySolved           Int @default(0)
+  mediumSolved         Int @default(0)
+  hardSolved           Int @default(0)
+  consistencyScore     Float @default(0)
+  strongestTopic       String?
+  weakestTopic         String?
+  weeklySolved         Int @default(0)
+  challengeCompletion  Float @default(0)
+  lastSyncedAt         DateTime?
+}
+
+model LeetcodeProfile {
+  id                   String @id @default(cuid())
+  userId               String @unique
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username             String @unique
+  ranking              Int?
+  reputation           Int?
+  contestRating        Float?
+  totalSolved          Int @default(0)
+  easySolved           Int @default(0)
+  mediumSolved         Int @default(0)
+  hardSolved           Int @default(0)
+  acceptanceRate       Float?
+  submissionCalendar   String?
+  syncedAt             DateTime?
+  submissions          LeetcodeSubmission[]
+  languageStats        LeetcodeLanguageStat[]
+}
+
+model LeetcodeSubmission {
+  id                String @id @default(cuid())
+  profileId         String
+  profile           LeetcodeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title             String
+  slug              String
+  difficulty        Difficulty
+  topic             String?
+  submittedAt       DateTime
+  createdAt         DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model LeetcodeLanguageStat {
+  id         String @id @default(cuid())
+  profileId  String
+  profile    LeetcodeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  language   String
+  solved     Int
+}
+
+model TopicPerformance {
+  id                  String @id @default(cuid())
+  userId              String
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic               String
+  attempts            Int @default(0)
+  solved              Int @default(0)
+  failed              Int @default(0)
+  confidenceScore     Float @default(0)
+  averageSolveTime    Float?
+  masteryLevel        Float @default(0)
+  updatedAt           DateTime @updatedAt
+
+  @@unique([userId, topic])
+}
+
+model Challenge {
+  id                String @id @default(cuid())
+  title             String
+  description       String?
+  type              ChallengeType
+  difficulty        Difficulty
+  xpReward          Int @default(50)
+  createdAt         DateTime @default(now())
+  problems          ChallengeProblem[]
+  userChallenges    UserChallenge[]
+  roomChallenges    RoomChallenge[]
+}
+
+model ChallengeProblem {
+  id                String @id @default(cuid())
+  challengeId       String
+  challenge         Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  problemName       String
+  problemSlug       String
+  difficulty        Difficulty
+  topic             String
+}
+
+model UserChallenge {
+  id               String @id @default(cuid())
+  userId           String
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId      String
+  challenge        Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  status           ChallengeStatus @default(PENDING)
+  progress         Int @default(0)
+  assignedAt       DateTime @default(now())
+  completedAt      DateTime?
+}
+
+model XPLog {
+  id               String @id @default(cuid())
+  userId           String
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount           Int
+  reason           String
+  createdAt        DateTime @default(now())
+}
+
+model Badge {
+  id              String @id @default(cuid())
+  title           String
+  description     String
+  icon            String
+  type            BadgeType
+  users           UserBadge[]
+}
+
+model UserBadge {
+  id              String @id @default(cuid())
+  userId          String
+  badgeId         String
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge           Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  unlockedAt      DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model AICompanion {
+  id                 String @id @default(cuid())
+  userId             String @unique
+  user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  personalityPrompt  String
+  createdAt          DateTime @default(now())
+}
+
+model AIConversation {
+  id               String @id @default(cuid())
+  userId           String
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String?
+  createdAt        DateTime @default(now())
+  messages         AIMessage[]
+}
+
+model AIMessage {
+  id                String @id @default(cuid())
+  conversationId    String
+  conversation      AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role              String
+  content           String @db.Text
+  createdAt         DateTime @default(now())
+}
+
+model Friendship {
+  id             String @id @default(cuid())
+  requesterId    String
+  receiverId     String
+  requester      User @relation("FriendshipsRequested", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver       User @relation("FriendshipsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  accepted       Boolean @default(false)
+  createdAt      DateTime @default(now())
+
+  @@unique([requesterId, receiverId])
+}
+
+model ChallengeRoom {
+  id               String @id @default(cuid())
+  name             String
+  roomCode         String @unique
+  creatorId        String
+  creator          User @relation("CreatedRooms", fields: [creatorId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  members          RoomMember[]
+  roomChallenges   RoomChallenge[]
+  invites          RoomInvite[]
+}
+
+model RoomMember {
+  id               String @id @default(cuid())
+  roomId           String
+  userId           String
+  room             ChallengeRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt         DateTime @default(now())
+}
+
+model RoomChallenge {
+  id               String @id @default(cuid())
+  roomId           String
+  room             ChallengeRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  challengeId      String
+  challenge        Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  deadline         DateTime?
+  createdAt        DateTime @default(now())
+  progress         RoomChallengeProgress[]
+}
+
+model RoomChallengeProgress {
+  id              String @id @default(cuid())
+  roomChallengeId String
+  roomChallenge   RoomChallenge @relation(fields: [roomChallengeId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completed       Boolean @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+
+  @@unique([roomChallengeId, userId])
+}
+
+model RoomInvite {
+  id              String @id @default(cuid())
+  roomId          String
+  room            ChallengeRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User @relation("InvitesSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId      String
+  receiver        User @relation("InvitesReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  accepted        Boolean @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model Subscription {
+  id                String @id @default(cuid())
+  userId            String
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  razorpayPaymentId String?
+  active            Boolean @default(false)
+  startDate         DateTime?
+  endDate           DateTime?
+  createdAt         DateTime @default(now())
+}
+
+model UserEvent {
+  id               String @id @default(cuid())
+  userId           String
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventType        String
+  metadata         Json?
+  createdAt        DateTime @default(now())
+}
+
+enum OtpType {
+  SIGNUP
+  PASSWORD_RESET
+}
+
+model OtpVerification {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  otp         String
+  tokenHash   String?
+  type        OtpType  @default(SIGNUP)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+}
