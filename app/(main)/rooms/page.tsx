@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   ArrowLeft,
@@ -91,8 +91,12 @@ interface LeaderboardEntry {
   lastActivity: string | null;
 }
 
-export default function RoomsPage() {
+// useSearchParams (used inside this component for the deep-link
+// `?roomId=...` shortcut) requires a Suspense boundary in Next.js 16
+// when the route is prerendered. We export a thin Suspense wrapper below.
+function RoomsPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
@@ -388,6 +392,18 @@ export default function RoomsPage() {
       return () => clearInterval(interval);
     }
   }, [activeRoomId]);
+
+  // Deep-link support: if the URL is `/rooms?roomId=<id>` (e.g. from the sidebar
+  // lobby shortcut), pre-select that lobby as soon as the joined list is loaded
+  // and confirms membership.
+  useEffect(() => {
+    const target = searchParams.get("roomId");
+    if (!target) return;
+    if (activeRoomId === target) return;
+    if (joinedRooms.some((r) => r.id === target)) {
+      setActiveRoomId(target);
+    }
+  }, [searchParams, joinedRooms, activeRoomId]);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1175,5 +1191,19 @@ export default function RoomsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function RoomsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      }
+    >
+      <RoomsPageInner />
+    </Suspense>
   );
 }

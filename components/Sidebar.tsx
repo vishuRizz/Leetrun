@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   BarChart3,
   Bot,
@@ -16,10 +16,49 @@ import {
 import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 
+interface JoinedRoom {
+  id: string;
+  name: string;
+  roomCode: string;
+}
+
 export function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
+
+  const [joinedLobbies, setJoinedLobbies] = useState<JoinedRoom[]>([]);
+
+  // Fetch the user's joined lobbies once on mount so we can show shortcuts
+  // in the sidebar. Errors are silently swallowed — if the call fails the
+  // section just renders empty, which is acceptable for a nav affordance.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/room/list");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active && Array.isArray(data?.rooms)) {
+          setJoinedLobbies(
+            data.rooms.map((r: any) => ({
+              id: r.id,
+              name: r.name,
+              roomCode: r.roomCode,
+            }))
+          );
+        }
+      } catch {
+        /* noop */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // Re-fetch whenever the user navigates to /rooms so the list stays
+    // in sync after create/leave/join actions there.
+  }, [pathname]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -34,6 +73,11 @@ export function Sidebar() {
     { name: "Profile", href: "/profile", icon: User },
     { name: "AI Coach", href: "/chat", icon: Bot },
   ];
+
+  // The currently-open lobby (if we're on /rooms?roomId=...), used to
+  // highlight the matching entry below.
+  const activeRoomIdInUrl =
+    pathname.startsWith("/rooms") ? searchParams.get("roomId") : null;
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 w-16 hover:w-64 group overflow-hidden whitespace-nowrap shadow-lg shadow-black/5">
@@ -74,6 +118,56 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Joined lobbies — quick shortcuts to jump into any room.
+           When the sidebar is collapsed only initial-letter chips are
+           visible; on hover the room name + code expand. */}
+        {joinedLobbies.length > 0 && (
+          <div className="mt-4 pt-3 border-t border-border/40 flex flex-col gap-0.5">
+            <div
+              className="px-2 mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate"
+              aria-hidden="true"
+            >
+              Lobbies
+            </div>
+            {joinedLobbies.map((room) => {
+              const href = `/rooms?roomId=${room.id}`;
+              const isActive = activeRoomIdInUrl === room.id;
+              const initial = (room.name || room.roomCode || "?")
+                .trim()
+                .charAt(0)
+                .toUpperCase();
+              return (
+                <Link
+                  key={room.id}
+                  href={href}
+                  title={`${room.name} · ${room.roomCode}`}
+                  className={`flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors shrink-0 ${
+                    isActive
+                      ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <span
+                    className={`w-5 h-5 shrink-0 rounded-md flex items-center justify-center text-[10px] font-black font-mono ${
+                      isActive
+                        ? "bg-indigo-500/20 text-indigo-600 dark:text-indigo-300"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {initial}
+                  </span>
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[12px] min-w-0 flex-1 flex flex-col leading-tight">
+                    <span className="truncate font-medium">{room.name}</span>
+                    <span className="truncate font-mono text-[9.5px] text-muted-foreground/80">
+                      #{room.roomCode}
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </nav>
 
       {/* Footer Actions */}

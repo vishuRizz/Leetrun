@@ -1,6 +1,15 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { FounderGiftModal } from "@/components/FounderGiftModal";
+
+// Minimal placeholder shown while the real Sidebar (which reads
+// useSearchParams to highlight the active lobby) is being hydrated.
+// Matches the collapsed sidebar's width so the page never jumps.
+function SidebarFallback() {
+  return (
+    <aside className="fixed left-0 top-0 bottom-0 z-50 w-16 bg-card border-r border-border" />
+  );
+}
 
 export default function MainLayout({
   children,
@@ -9,7 +18,9 @@ export default function MainLayout({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      <Sidebar />
+      <Suspense fallback={<SidebarFallback />}>
+        <Sidebar />
+      </Suspense>
       {/*
         The sidebar is fixed and w-16 when collapsed. We add pl-16 to the
         main wrapper so content isn't hidden behind the collapsed sidebar.
