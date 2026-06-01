@@ -1284,7 +1284,7 @@ function RoomsPageInner() {
                             <span className="text-[10px] font-mono w-5 text-center text-muted-foreground">
                               {medal || `#${entry.rank}`}
                             </span>
-                            {entry.isHost && <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
+                            {entry.rank === 1 && <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
                             <span className="text-xs font-semibold text-foreground truncate">
                               {entry.fullName || entry.email.split("@")[0]}
                               {isMe && <span className="text-[10px] text-indigo-400 ml-1">(you)</span>}
