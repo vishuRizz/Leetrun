@@ -724,6 +724,185 @@ export async function getLobbyLeaderboard(roomId: string) {
   return ranked.map((r, idx) => ({ ...r, rank: idx + 1 }));
 }
 
+/**
+ * Build a comprehensive leaderboard view for the dedicated detail page:
+ *   - lobby metadata
+ *   - full rankings (same shape as getLobbyLeaderboard)
+ *   - activity timeline of every member action on every host-added question
+ *     (verified / pre-solved / claimed), most recent first
+ *
+ * One big query plan — fetches the room, members, all progress, and the
+ * related challenge/problem metadata in parallel where possible.
+ */
+export async function getLobbyLeaderboardDetail(roomId: string) {
+  const [leaderboard, room, progress] = await Promise.all([
+    getLobbyLeaderboard(roomId),
+    db.challengeRoom.findUnique({
+      where: { id: roomId },
+      select: {
+        id: true,
+        name: true,
+        roomCode: true,
+        creatorId: true,
+        createdAt: true,
+        members: { select: { userId: true } },
+      },
+    }),
+    db.roomChallengeProgress.findMany({
+      where: { roomChallenge: { roomId } },
+      orderBy: [
+        { verifiedAt: "desc" },
+        { claimedAt: "desc" },
+        { completedAt: "desc" },
+        { createdAt: "desc" },
+      ],
+      select: {
+        userId: true,
+        completed: true,
+        completedAt: true,
+        claimed: true,
+        claimedAt: true,
+        verified: true,
+        verifiedAt: true,
+        markedPreSolved: true,
+        xpAwarded: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+        roomChallenge: {
+          select: {
+            id: true,
+            isHostQuestion: true,
+            problemNumber: true,
+            challenge: {
+              select: {
+                title: true,
+                difficulty: true,
+                xpReward: true,
+                problems: {
+                  select: {
+                    problemName: true,
+                    problemSlug: true,
+                    topic: true,
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  if (!room) throw new Error("Lobby not found.");
+
+  type ActivityKind = "verified" | "preSolved" | "claimed" | "completed";
+  type ActivityEvent = {
+    id: string; // synthetic: `${userId}:${roomChallengeId}:${kind}`
+    kind: ActivityKind;
+    at: Date;
+    userId: string;
+    userName: string;
+    userEmail: string;
+    roomChallengeId: string;
+    problemTitle: string;
+    problemSlug: string | null;
+    problemNumber: number | null;
+    difficulty: string;
+    topic: string | null;
+    xpAwarded: number;
+    isHostQuestion: boolean;
+  };
+
+  // One progress row can fan out into multiple activity events (claimed,
+  // then verified, etc.). We surface each one separately so the timeline
+  // shows the full story.
+  const events: ActivityEvent[] = [];
+  for (const p of progress) {
+    const rc = p.roomChallenge;
+    if (!rc) continue;
+    const problem = rc.challenge?.problems?.[0];
+    const base = {
+      userId: p.userId,
+      userName: p.user?.fullName || p.user?.email?.split("@")[0] || "Member",
+      userEmail: p.user?.email || "",
+      roomChallengeId: rc.id,
+      problemTitle: rc.challenge?.title || problem?.problemName || "Untitled problem",
+      problemSlug: problem?.problemSlug ?? null,
+      problemNumber: rc.problemNumber ?? null,
+      difficulty: rc.challenge?.difficulty || "EASY",
+      topic: problem?.topic ?? null,
+      xpAwarded: p.xpAwarded || 0,
+      isHostQuestion: !!rc.isHostQuestion,
+    };
+    if (p.verifiedAt) {
+      events.push({
+        ...base,
+        id: `${p.userId}:${rc.id}:verified`,
+        kind: "verified",
+        at: p.verifiedAt,
+      });
+    }
+    if (p.markedPreSolved && p.completedAt) {
+      events.push({
+        ...base,
+        id: `${p.userId}:${rc.id}:preSolved`,
+        kind: "preSolved",
+        at: p.completedAt,
+        xpAwarded: 0,
+      });
+    }
+    if (p.claimed && !p.verified && p.claimedAt) {
+      // Only emit a "claimed" event if it hasn't been superseded by a verify.
+      events.push({
+        ...base,
+        id: `${p.userId}:${rc.id}:claimed`,
+        kind: "claimed",
+        at: p.claimedAt,
+        xpAwarded: 0,
+      });
+    }
+    // Auto-completed (bank-generated, completed by sync) without explicit
+    // verify or claim — fall back to completedAt so the timeline still has
+    // a row.
+    if (
+      p.completed &&
+      !p.verified &&
+      !p.markedPreSolved &&
+      !p.claimed &&
+      p.completedAt
+    ) {
+      events.push({
+        ...base,
+        id: `${p.userId}:${rc.id}:completed`,
+        kind: "completed",
+        at: p.completedAt,
+      });
+    }
+  }
+
+  events.sort((a, b) => b.at.getTime() - a.at.getTime());
+
+  return {
+    meta: {
+      id: room.id,
+      name: room.name,
+      roomCode: room.roomCode,
+      creatorId: room.creatorId,
+      createdAt: room.createdAt,
+      memberCount: room.members.length,
+    },
+    leaderboard,
+    activity: events,
+  };
+}
+
 export async function respondToRoomInvite(userId: string, inviteId: string, accept: boolean) {
   const invite = await db.roomInvite.findUnique({
     where: { id: inviteId },

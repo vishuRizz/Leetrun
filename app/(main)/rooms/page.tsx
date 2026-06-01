@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowLeft,
   Loader2,
@@ -23,6 +24,8 @@ import {
   ShieldCheck,
   Trash2,
   RotateCcw,
+  X,
+  ArrowUpRight,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -140,6 +143,13 @@ function RoomsPageInner() {
   // Per-room leaderboard + per-question action loading state
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [progressBusyId, setProgressBusyId] = useState<string | null>(null);
+
+  // Settings drawer (host controls + invite + members + leave)
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Active questions tab — "todo" (default) or "done". Only one bucket is
+  // visible at a time so the page stays focused.
+  const [questionTab, setQuestionTab] = useState<"todo" | "done">("todo");
   const [progressMsg, setProgressMsg] = useState<{ id: string; text: string; type: "ok" | "err" } | null>(null);
 
   const fetchInvites = async () => {
@@ -405,6 +415,22 @@ function RoomsPageInner() {
     }
   }, [searchParams, joinedRooms, activeRoomId]);
 
+  // Close the settings drawer when there's no active lobby anymore
+  // (e.g. user leaves the room while drawer is open).
+  useEffect(() => {
+    if (!activeRoomId) setShowSettings(false);
+  }, [activeRoomId]);
+
+  // Esc-key closes the settings drawer.
+  useEffect(() => {
+    if (!showSettings) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowSettings(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showSettings]);
+
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomName.trim()) return;
@@ -490,6 +516,7 @@ function RoomsPageInner() {
     try {
       const res = await fetch(`/api/room/details?roomId=${activeRoomId}`, { method: "DELETE" });
       if (res.ok) {
+        setShowSettings(false);
         setActiveRoomId(null);
         setRoomDetails(null);
         setRoomChallenges([]);
@@ -677,39 +704,60 @@ function RoomsPageInner() {
               <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
                 
                 {/* Active challenge headers */}
-                <div className="flex items-center justify-between border-b border-border/60 pb-4">
-                  <div>
+                <div className="flex items-center justify-between border-b border-border/60 pb-4 gap-3">
+                  <div className="min-w-0">
                     <span className="text-xs text-indigo-400 font-bold uppercase tracking-wider">Active Challenges</span>
-                    <h2 className="text-xl font-black mt-1 text-foreground">Lobby Task Board</h2>
+                    <h2 className="text-xl font-black mt-1 text-foreground truncate">Lobby Task Board</h2>
                   </div>
-                  
-                  {roomDetails && (
-                    <div className="text-right">
-                      <div className="text-xs text-muted-foreground">Room Code</div>
-                      <div className="font-extrabold text-indigo-400 font-mono tracking-widest text-sm flex items-center gap-1.5 mt-0.5">
-                        {roomDetails.roomCode}
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(roomDetails.roomCode);
-                          }} 
-                          className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
-                          title="Copy Code"
-                        >
-                          <Clipboard className="w-3.5 h-3.5" />
-                        </button>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    {roomDetails && (
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground">Room Code</div>
+                        <div className="font-extrabold text-indigo-400 font-mono tracking-widest text-sm flex items-center gap-1.5 mt-0.5">
+                          {roomDetails.roomCode}
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(roomDetails.roomCode);
+                            }}
+                            className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                            title="Copy Code"
+                          >
+                            <Clipboard className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    <button
+                      onClick={() => setShowSettings(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"
+                      title="Lobby settings: host controls, invites, members, leave"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span className="hidden sm:inline">Settings</span>
+                    </button>
+                  </div>
                 </div>
 
-                {roomChallenges.length === 0 ? (
-                  <div className="p-16 text-center text-muted-foreground border border-dashed border-border rounded-xl text-sm">
-                    No questions yet. Ask the host to paste a LeetCode link in the
-                    "Add LeetCode Question" panel, or generate a topic batch.
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {roomChallenges.map((rc) => {
+                {(() => {
+                  if (roomChallenges.length === 0) {
+                    return (
+                      <div className="p-16 text-center text-muted-foreground border border-dashed border-border rounded-xl text-sm">
+                        No questions yet. Ask the host to paste a LeetCode link in the
+                        "Add LeetCode Question" panel, or generate a topic batch.
+                      </div>
+                    );
+                  }
+                  // Bucket questions by the current user's progress: things I
+                  // still need to act on vs things I've already finished. Both
+                  // verified/preSolved and bank-auto-completed count as "done".
+                  const myDone = (rc: RoomChallenge) => {
+                    const me = rc.progress.find((p) => p.userId === currentUser?.id);
+                    return !!(me?.verified || me?.markedPreSolved || me?.completed);
+                  };
+                  const pendingList = roomChallenges.filter((rc) => !myDone(rc));
+                  const doneList = roomChallenges.filter(myDone);
+                  const renderCard = (rc: RoomChallenge) => {
                       const myProgress = rc.progress.find(
                         (p) => p.userId === currentUser?.id
                       );
@@ -934,9 +982,80 @@ function RoomsPageInner() {
                           </div>
                         </div>
                       );
-                    })}
-                  </div>
-                )}
+                    };
+                  const activeList = questionTab === "todo" ? pendingList : doneList;
+                  return (
+                    <div className="space-y-5">
+                      {/* Tab bar — two equal columns, only one list visible at a time.
+                          Counts on each tab so users see what's in the other bucket
+                          without switching. */}
+                      <div
+                        role="tablist"
+                        aria-label="Filter questions by status"
+                        className="grid grid-cols-2 gap-2 p-1 bg-muted/40 border border-border rounded-xl"
+                      >
+                        {([
+                          { key: "todo", label: "To do", count: pendingList.length },
+                          { key: "done", label: "Done", count: doneList.length },
+                        ] as const).map((tab) => {
+                          const isActive = questionTab === tab.key;
+                          return (
+                            <button
+                              key={tab.key}
+                              role="tab"
+                              aria-selected={isActive}
+                              onClick={() => setQuestionTab(tab.key)}
+                              className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition ${
+                                isActive
+                                  ? "bg-card text-foreground shadow-sm border border-border"
+                                  : "text-muted-foreground hover:text-foreground"
+                              }`}
+                            >
+                              <span>{tab.label}</span>
+                              <span
+                                className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                                  isActive
+                                    ? "bg-indigo-500/10 text-indigo-500 dark:text-indigo-300"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {tab.count}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Active bucket. Empty-states are bucket-specific so the
+                          page never sits on a blank panel. */}
+                      <div role="tabpanel">
+                        {activeList.length === 0 ? (
+                          questionTab === "todo" ? (
+                            <div className="p-8 text-center border border-dashed border-emerald-500/30 bg-emerald-500/5 rounded-xl">
+                              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                All caught up — great work.
+                              </p>
+                              <p className="text-[10.5px] text-muted-foreground mt-1">
+                                Wait for the host to add more, or generate a fresh batch from Settings.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="p-8 text-center border border-dashed border-border rounded-xl">
+                              <p className="text-xs font-bold text-foreground">
+                                Nothing finished yet.
+                              </p>
+                              <p className="text-[10.5px] text-muted-foreground mt-1">
+                                Solve a question and click Verify to see it land here.
+                              </p>
+                            </div>
+                          )
+                        ) : (
+                          <div className="space-y-6">{activeList.map(renderCard)}</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -1014,9 +1133,21 @@ function RoomsPageInner() {
 
               {/* Lobby Leaderboard — visible to all members */}
               <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-yellow-500" /> Lobby Leaderboard
-                </h3>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-yellow-500" /> Lobby Leaderboard
+                  </h3>
+                  {activeRoomId && (
+                    <Link
+                      href={`/rooms/${activeRoomId}/leaderboard`}
+                      className="inline-flex items-center gap-1 text-[10.5px] font-bold text-indigo-500 hover:text-indigo-400 transition"
+                      title="Open the full leaderboard with charts, rankings and activity history"
+                    >
+                      Open
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  )}
+                </div>
                 {leaderboard.length === 0 ? (
                   <p className="text-[11px] text-muted-foreground">No XP earned yet. Solve a question and click Verify to appear here.</p>
                 ) : (
@@ -1058,138 +1189,234 @@ function RoomsPageInner() {
                 )}
               </div>
 
-              {/* Host Settings (Visible if creatorId === currentUser.id) */}
-              {roomDetails && currentUser && roomDetails.creatorId === currentUser.id && (
-                <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+              {/* Member count + settings shortcut.
+                  Host controls, invites, members list and Leave button have
+                  moved into the Settings drawer to declutter the page. */}
+              {roomDetails && (
+                <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-indigo-400" /> Host Controls: Generate challenge
+                    <Users className="w-4 h-4 text-indigo-400" /> Members
+                    <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+                      {roomDetails.members.length}
+                    </span>
                   </h3>
-                  
-                  <form onSubmit={handleAssignChallenge} className="space-y-4">
+                  <div className="flex -space-x-2 overflow-hidden">
+                    {roomDetails.members.slice(0, 6).map((m) => (
+                      <div
+                        key={m.id}
+                        title={m.user.fullName || m.user.email.split("@")[0]}
+                        className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+                      >
+                        {(m.user.fullName || m.user.email).charAt(0).toUpperCase()}
+                      </div>
+                    ))}
+                    {roomDetails.members.length > 6 && (
+                      <div className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                        +{roomDetails.members.length - 6}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setShowSettings(true)}
+                    className="w-full py-2 bg-muted hover:bg-muted/70 text-foreground border border-border rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                    Lobby settings &amp; invites
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </main>
+
+      {/* Slide-in settings drawer ─ host controls, invites, members, leave.
+          Lives outside <main> so it can overlay the whole page. */}
+      {showSettings && roomDetails && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowSettings(false)}
+            aria-hidden="true"
+          />
+          {/* Panel */}
+          <aside
+            className="fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-card border-l border-border shadow-2xl flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Lobby settings"
+          >
+            <header className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+              <div className="min-w-0">
+                <h2 className="font-black text-base text-foreground truncate">
+                  {roomDetails.name}
+                </h2>
+                <p className="text-[10.5px] font-mono text-muted-foreground">
+                  Lobby settings · #{roomDetails.roomCode}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                title="Close settings"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </header>
+
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              {/* Host controls — only the host sees this. */}
+              {currentUser && roomDetails.creatorId === currentUser.id && (
+                <section className="bg-muted/30 border border-border rounded-xl p-4 space-y-3">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    <Settings className="w-4 h-4 text-indigo-400" />
+                    Host controls
+                  </h3>
+                  <p className="text-[10.5px] text-muted-foreground -mt-1">
+                    Auto-generate a topic batch from the question bank.
+                  </p>
+                  <form onSubmit={handleAssignChallenge} className="space-y-3">
                     <div>
-                      <label className="block text-muted-foreground text-xs font-semibold mb-2">Topic</label>
+                      <label className="block text-muted-foreground text-[10.5px] font-bold uppercase tracking-wider mb-1">Topic</label>
                       <select
                         value={assignTopic}
                         onChange={(e) => setAssignTopic(e.target.value)}
-                        className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-sans"
+                        className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition"
                       >
                         {["Arrays", "Strings", "Binary Search", "Trees", "Graph", "DP"].map((t) => (
                           <option key={t} value={t}>{t}</option>
                         ))}
                       </select>
                     </div>
-
-                    <div>
-                      <label className="block text-muted-foreground text-xs font-semibold mb-2">Difficulty</label>
-                      <select
-                        value={assignDifficulty}
-                        onChange={(e) => setAssignDifficulty(e.target.value)}
-                        className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-sans"
-                      >
-                        {["EASY", "MEDIUM", "HARD"].map((d) => (
-                          <option key={d} value={d}>{d}</option>
-                        ))}
-                      </select>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-muted-foreground text-[10.5px] font-bold uppercase tracking-wider mb-1">Difficulty</label>
+                        <select
+                          value={assignDifficulty}
+                          onChange={(e) => setAssignDifficulty(e.target.value)}
+                          className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition"
+                        >
+                          {["EASY", "MEDIUM", "HARD"].map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-muted-foreground text-[10.5px] font-bold uppercase tracking-wider mb-1">Count</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={5}
+                          value={assignCount}
+                          onChange={(e) => setAssignCount(Number(e.target.value))}
+                          className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-mono"
+                        />
+                      </div>
                     </div>
-
-                    <div>
-                      <label className="block text-muted-foreground text-xs font-semibold mb-2">Question Count</label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={5}
-                        value={assignCount}
-                        onChange={(e) => setAssignCount(Number(e.target.value))}
-                        className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-sans"
-                      />
-                    </div>
-
                     <button
                       type="submit"
                       disabled={assignLoading}
                       className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white rounded-lg font-bold text-xs transition"
                     >
-                      {assignLoading ? "Generating..." : "Generate Lobby Challenge"}
+                      {assignLoading ? "Generating…" : "Generate lobby challenge"}
                     </button>
                   </form>
-                </div>
+                </section>
               )}
 
-              {/* Invite Friends Sidebar Card */}
-              {roomDetails && (
-                <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
-                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                    <Users className="w-4 h-4 text-indigo-400" /> Invite Friends
-                  </h3>
-                  
-                  {friends.length === 0 ? (
-                    <p className="text-muted-foreground text-xs">No friends found. Add friends on the leaderboard page to invite them!</p>
-                  ) : (
-                    <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
-                      {friends.map((friend) => {
-                        const isAlreadyMember = roomDetails.members.some((m) => m.user.id === friend.id);
-                        return (
-                          <div key={friend.id} className="flex items-center justify-between p-2 bg-muted/30 border border-border rounded-lg text-xs">
-                            <span className="text-foreground">{friend.fullName || friend.email.split("@")[0]}</span>
-                            <button
-                              onClick={() => handleSendInvite(friend.id)}
-                              disabled={isAlreadyMember}
-                              className={`px-2 py-1 rounded font-bold text-[10px] transition ${
-                                isAlreadyMember
-                                  ? "bg-muted text-muted-foreground cursor-not-allowed border border-border"
-                                  : "bg-indigo-600 hover:bg-indigo-500 text-white"
-                              }`}
-                            >
-                              {isAlreadyMember ? "Member" : "Invite"}
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {inviteSuccessMsg && <p className="text-emerald-600 dark:text-emerald-400 text-[10px] mt-1">{inviteSuccessMsg}</p>}
-                  {inviteErrorMsg && <p className="text-rose-600 dark:text-rose-400 text-[10px] mt-1">{inviteErrorMsg}</p>}
-                </div>
-              )}
-
-              {/* Lobby Members List */}
-              <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
-                <h3 className="font-bold text-md mb-2 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-indigo-400" /> Lobby Members
+              {/* Invite friends */}
+              <section className="bg-muted/30 border border-border rounded-xl p-4 space-y-3">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Users className="w-4 h-4 text-indigo-400" /> Invite friends
                 </h3>
-                
-                {roomDetails && (
-                  <div className="divide-y divide-border/60">
-                    {roomDetails.members.map((m) => (
-                      <div key={m.id} className="flex items-center justify-between py-2.5">
-                        <div className="flex items-center gap-2">
-                          {roomDetails.creatorId === m.user.id ? (
-                            <Crown className="w-4 h-4 text-yellow-500" />
-                          ) : (
-                            <div className="w-4 h-4" />
-                          )}
-                          <span className="text-sm font-semibold text-foreground">
-                            {m.user.fullName || m.user.email.split("@")[0]}
+                {friends.length === 0 ? (
+                  <p className="text-muted-foreground text-xs">
+                    No friends yet. Add some from the Leaderboard tab to invite them here.
+                  </p>
+                ) : (
+                  <div className="max-h-52 overflow-y-auto space-y-2 pr-1">
+                    {friends.map((friend) => {
+                      const isAlreadyMember = roomDetails.members.some((m) => m.user.id === friend.id);
+                      return (
+                        <div
+                          key={friend.id}
+                          className="flex items-center justify-between p-2 bg-background border border-border rounded-lg text-xs"
+                        >
+                          <span className="text-foreground truncate">
+                            {friend.fullName || friend.email.split("@")[0]}
                           </span>
+                          <button
+                            onClick={() => handleSendInvite(friend.id)}
+                            disabled={isAlreadyMember}
+                            className={`px-2 py-1 rounded font-bold text-[10px] transition shrink-0 ${
+                              isAlreadyMember
+                                ? "bg-muted text-muted-foreground cursor-not-allowed border border-border"
+                                : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                            }`}
+                          >
+                            {isAlreadyMember ? "Member" : "Invite"}
+                          </button>
                         </div>
-                        <span className="text-xs text-muted-foreground">Streak: {m.user.currentStreak}d</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
+                {inviteSuccessMsg && (
+                  <p className="text-emerald-600 dark:text-emerald-400 text-[10px] font-medium">{inviteSuccessMsg}</p>
+                )}
+                {inviteErrorMsg && (
+                  <p className="text-rose-600 dark:text-rose-400 text-[10px] font-medium">{inviteErrorMsg}</p>
+                )}
+              </section>
 
+              {/* Members list */}
+              <section className="bg-muted/30 border border-border rounded-xl p-4 space-y-2">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Users className="w-4 h-4 text-indigo-400" /> Members
+                  <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+                    {roomDetails.members.length}
+                  </span>
+                </h3>
+                <div className="divide-y divide-border/60">
+                  {roomDetails.members.map((m) => (
+                    <div key={m.id} className="flex items-center justify-between py-2.5">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {roomDetails.creatorId === m.user.id ? (
+                          <Crown className="w-4 h-4 text-yellow-500 shrink-0" />
+                        ) : (
+                          <div className="w-4 h-4 shrink-0" />
+                        )}
+                        <span className="text-sm font-semibold text-foreground truncate">
+                          {m.user.fullName || m.user.email.split("@")[0]}
+                        </span>
+                      </div>
+                      <span className="text-[10.5px] text-muted-foreground shrink-0">
+                        🔥 {m.user.currentStreak}d
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Danger zone — leave lobby */}
+              <section className="bg-rose-50/50 dark:bg-rose-950/10 border border-rose-200 dark:border-rose-900/30 rounded-xl p-4 space-y-2">
+                <h3 className="font-bold text-sm text-rose-600 dark:text-rose-400">Danger zone</h3>
+                <p className="text-[10.5px] text-muted-foreground">
+                  Leaving the lobby removes you from all current and future questions.
+                  Your earned XP stays in your account.
+                </p>
                 <button
                   onClick={handleLeaveRoom}
-                  className="w-full py-2 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/20 hover:border-red-300 dark:hover:border-red-900/50 rounded-xl text-xs font-bold transition mt-4"
+                  className="w-full py-2 bg-rose-100 dark:bg-rose-950/30 hover:bg-rose-200 dark:hover:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-900/50 rounded-lg text-xs font-bold transition"
                 >
-                  Leave Lobby Room
+                  Leave lobby
                 </button>
-              </div>
+              </section>
             </div>
-          </>
-        )}
-      </main>
+          </aside>
+        </>
+      )}
     </div>
   );
 }
