@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 export default function LandingNavbar() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function LandingNavbar() {
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => router.push('/')}
           >
-            <Image src="/logo.png" alt="LeetRun" width={24} height={24} className="object-contain" />
+            <Logo width={24} height={24} variant="dark" />
             <span className="text-white font-bold text-lg tracking-wide">LeetRun</span>
           </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import {
   User,
   GraduationCap,
@@ -234,7 +234,7 @@ export default function OnboardingPage() {
             {step < 6 && (
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <Image src="/logo.png" alt="LeetRun" width={32} height={32} className="object-contain" />
+                  <Logo width={32} height={32} />
                   <span className="font-black text-base tracking-wider text-foreground">LeetRun</span>
                 </div>
                 <span className="text-muted-foreground text-xs font-semibold bg-muted px-3 py-1 rounded-full">

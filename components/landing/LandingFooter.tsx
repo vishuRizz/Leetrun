@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Logo from '@/components/Logo';
 
 const LandingFooter = () => {
   return (
@@ -15,7 +16,7 @@ const LandingFooter = () => {
           {/* Logo and Tagline */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <Image src="/logo.png" alt="LeetRun" width={28} height={28} className="object-contain" />
+              <Logo width={28} height={28} variant="dark" />
               <span className="text-2xl font-bold">LeetRun</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">

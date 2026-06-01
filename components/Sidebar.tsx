@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Logo from "./Logo";
 import {
   BarChart3,
   Bot,
@@ -83,13 +83,7 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 w-16 hover:w-64 group overflow-hidden whitespace-nowrap shadow-lg shadow-black/5">
       {/* Top Logo Section */}
       <div className="h-16 flex items-center px-4 border-b border-border/50 shrink-0">
-        <Image
-          src="/logo.png"
-          alt="LeetRun"
-          width={28}
-          height={28}
-          className="object-contain shrink-0"
-        />
+        <Logo width={28} height={28} className="shrink-0" />
         <span className="font-heading font-black text-base tracking-wider text-foreground ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           LeetRun
         </span>

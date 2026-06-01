@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Logo from '@/components/Logo';
 
 export default function HeroSection() {
   const router = useRouter();
@@ -72,7 +73,7 @@ export default function HeroSection() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white border border-gray-200 dark:bg-[#141414] dark:border-gray-800 shadow-sm"
           >
-            <Image src="/logo.png" alt="LeetRun" width={20} height={20} className="object-contain" />
+            <Logo width={20} height={20} />
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">LeetRun — DSA Placement Prep</span>
           </motion.div>
 

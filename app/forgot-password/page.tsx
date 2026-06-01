@@ -4,7 +4,7 @@ import React, { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 
 function ForgotPasswordForm() {
   const router = useRouter();
@@ -98,7 +98,7 @@ function ForgotPasswordForm() {
 
         {/* Header Logo */}
         <div className="flex flex-col items-center mb-8">
-          <Image src="/logo.png" alt="LeetRun" width={80} height={80} className="object-contain mb-2" />
+          <Logo width={80} height={80} className="mb-2" />
           <p className="text-muted-foreground text-xs font-semibold uppercase tracking-widest mt-1">Reset Password</p>
         </div>
 
