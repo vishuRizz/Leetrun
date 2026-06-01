@@ -74,7 +74,7 @@ export default function HeroSection() {
             className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white border border-gray-200 dark:bg-[#141414] dark:border-gray-800 shadow-sm"
           >
             <Logo width={20} height={20} />
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">LeetRun — DSA Placement Prep</span>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">LeetRun - DSA Placement Prep</span>
           </motion.div>
 
           <motion.h1

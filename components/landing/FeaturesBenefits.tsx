@@ -54,7 +54,7 @@ export default function FeaturesBenefits() {
               Savage AI Mentor
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-              Your AI mentor doesn't coddle you. Low solve count? Broken streak? It will roast you into getting back on track — Gigachad energy included.
+              Your AI mentor doesn't coddle you. Low solve count? Broken streak? It will roast you into getting back on track Gigachad energy included.
             </p>
             <div className="flex justify-center">
               <Brain className="w-24 h-24 text-indigo-500" />
@@ -159,7 +159,7 @@ export default function FeaturesBenefits() {
               Series-Themed<br />Mentorship.
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              Choose your vibe — Naruto, One Piece, or Stranger Things. Your AI mentor channels their wisdom to keep you coding.
+              Choose your vibe Naruto, One Piece, or Stranger Things. Your AI mentor channels their wisdom to keep you coding.
             </p>
             <div className="p-3 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
               <div className="text-xs text-gray-500 mb-2">Mentor Themes</div>
