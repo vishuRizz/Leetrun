@@ -1496,23 +1496,33 @@ function RoomsPageInner() {
                   </span>
                 </h3>
                 <div className="divide-y divide-border/60">
-                  {roomDetails.members.map((m) => (
-                    <div key={m.id} className="flex items-center justify-between py-2.5">
-                      <div className="flex items-center gap-2 min-w-0">
-                        {roomDetails.creatorId === m.user.id ? (
-                          <Crown className="w-4 h-4 text-yellow-500 shrink-0" />
-                        ) : (
-                          <div className="w-4 h-4 shrink-0" />
-                        )}
-                        <span className="text-sm font-semibold text-foreground truncate">
-                          {m.user.fullName || m.user.email.split("@")[0]}
+                  {roomDetails.members.map((m) => {
+                    const isLeader =
+                      leaderboard.find((e) => e.rank === 1)?.userId === m.user.id;
+                    const isHost = roomDetails.creatorId === m.user.id;
+                    return (
+                      <div key={m.id} className="flex items-center justify-between py-2.5">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {isLeader ? (
+                            <Crown className="w-4 h-4 text-yellow-500 shrink-0" />
+                          ) : (
+                            <div className="w-4 h-4 shrink-0" />
+                          )}
+                          <span className="text-sm font-semibold text-foreground truncate">
+                            {m.user.fullName || m.user.email.split("@")[0]}
+                          </span>
+                          {isHost && (
+                            <span className="text-[9px] uppercase tracking-wider font-bold text-indigo-500 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded shrink-0">
+                              Host
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10.5px] text-muted-foreground shrink-0">
+                          🔥 {m.user.currentStreak}d
                         </span>
                       </div>
-                      <span className="text-[10.5px] text-muted-foreground shrink-0">
-                        🔥 {m.user.currentStreak}d
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
 
