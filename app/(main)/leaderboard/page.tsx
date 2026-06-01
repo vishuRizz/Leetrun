@@ -13,6 +13,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import UserAvatar from "@/components/UserAvatar";
 
 interface RankingUser {
   id: string;
@@ -281,9 +282,12 @@ export default function LeaderboardPage() {
                       </span>
 
                       {/* Avatar */}
-                      <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center font-bold text-xs uppercase text-foreground">
-                        {user.fullName ? user.fullName[0] : user.email[0]}
-                      </div>
+                      <UserAvatar
+                        url={user.avatarUrl}
+                        name={user.fullName}
+                        email={user.email}
+                        size={36}
+                      />
 
                       {/* Name Details */}
                       <div>

@@ -2,6 +2,53 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 
+const MAX_NAME_LEN = 60;
+
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const fullName =
+      typeof body.fullName === "string" ? body.fullName.trim() : undefined;
+
+    if (fullName !== undefined) {
+      if (fullName.length === 0) {
+        return NextResponse.json(
+          { error: "Name cannot be empty." },
+          { status: 400 }
+        );
+      }
+      if (fullName.length > MAX_NAME_LEN) {
+        return NextResponse.json(
+          { error: `Name must be at most ${MAX_NAME_LEN} characters.` },
+          { status: 400 }
+        );
+      }
+    }
+
+    const updated = await db.user.update({
+      where: { id: user.id },
+      data: fullName !== undefined ? { fullName } : {},
+      select: { id: true, fullName: true, avatarUrl: true },
+    });
+
+    return NextResponse.json({ success: true, user: updated });
+  } catch (error: any) {
+    console.error("Error in /api/profile PATCH:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to update profile." },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();

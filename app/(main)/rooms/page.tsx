@@ -30,6 +30,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import UserAvatar from "@/components/UserAvatar";
 
 interface Room {
   id: string;
@@ -45,6 +46,7 @@ interface RoomDetail extends Room {
       id: string;
       fullName: string | null;
       email: string;
+      avatarUrl: string | null;
       currentStreak: number;
     };
   }>;
@@ -93,6 +95,7 @@ interface LeaderboardEntry {
   userId: string;
   fullName: string | null;
   email: string;
+  avatarUrl: string | null;
   isHost: boolean;
   xp: number;
   verified: number;
@@ -1284,6 +1287,13 @@ function RoomsPageInner() {
                             <span className="text-[10px] font-mono w-5 text-center text-muted-foreground">
                               {medal || `#${entry.rank}`}
                             </span>
+                            <UserAvatar
+                              url={entry.avatarUrl}
+                              name={entry.fullName}
+                              email={entry.email}
+                              size={22}
+                              className="shrink-0"
+                            />
                             {entry.rank === 1 && <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
                             <span className="text-xs font-semibold text-foreground truncate">
                               {entry.fullName || entry.email.split("@")[0]}
@@ -1322,9 +1332,14 @@ function RoomsPageInner() {
                       <div
                         key={m.id}
                         title={m.user.fullName || m.user.email.split("@")[0]}
-                        className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+                        className="ring-2 ring-card rounded-full"
                       >
-                        {(m.user.fullName || m.user.email).charAt(0).toUpperCase()}
+                        <UserAvatar
+                          url={m.user.avatarUrl}
+                          name={m.user.fullName}
+                          email={m.user.email}
+                          size={28}
+                        />
                       </div>
                     ))}
                     {roomDetails.members.length > 6 && (
@@ -1508,6 +1523,13 @@ function RoomsPageInner() {
                           ) : (
                             <div className="w-4 h-4 shrink-0" />
                           )}
+                          <UserAvatar
+                            url={m.user.avatarUrl}
+                            name={m.user.fullName}
+                            email={m.user.email}
+                            size={28}
+                            className="shrink-0"
+                          />
                           <span className="text-sm font-semibold text-foreground truncate">
                             {m.user.fullName || m.user.email.split("@")[0]}
                           </span>

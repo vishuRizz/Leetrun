@@ -15,6 +15,7 @@ import {
   Activity,
   ExternalLink,
 } from "lucide-react";
+import UserAvatar from "@/components/UserAvatar";
 
 interface LeaderboardEntry {
   userId: string;
@@ -236,6 +237,13 @@ export default function LobbyLeaderboardDetailPage() {
                     <span className="text-[11px] font-mono text-muted-foreground w-9 text-right shrink-0">
                       {medal}
                     </span>
+                    <UserAvatar
+                      url={entry.avatarUrl}
+                      name={entry.fullName}
+                      email={entry.email}
+                      size={26}
+                      className="shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1 text-[11.5px]">
                         <span className="font-semibold text-foreground truncate flex items-center gap-1">
@@ -326,7 +334,14 @@ export default function LobbyLeaderboardDetailPage() {
                           {medal}
                         </td>
                         <td className="py-2.5 pr-2">
-                          <div className="flex items-center gap-1.5 min-w-0">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <UserAvatar
+                              url={entry.avatarUrl}
+                              name={entry.fullName}
+                              email={entry.email}
+                              size={24}
+                              className="shrink-0"
+                            />
                             {entry.rank === 1 && (
                               <Crown className="w-3 h-3 text-yellow-500 shrink-0" />
                             )}

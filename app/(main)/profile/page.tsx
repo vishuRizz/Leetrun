@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -19,9 +19,15 @@ import {
   Sparkles,
   Crown,
   Medal,
+  Pencil,
+  Camera,
+  Check,
+  X,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import UserAvatar from "@/components/UserAvatar";
 
 interface ProfileData {
   fullName: string | null;
@@ -87,6 +93,16 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
 
+  // Inline name + avatar editor state
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const fetchProfile = async () => {
     try {
       const res = await fetch("/api/profile");
@@ -104,6 +120,99 @@ export default function ProfilePage() {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  const handleStartEditName = () => {
+    if (!profile) return;
+    setNameDraft(profile.fullName || "");
+    setNameError(null);
+    setEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    if (!profile) return;
+    const trimmed = nameDraft.trim();
+    if (!trimmed) {
+      setNameError("Name cannot be empty.");
+      return;
+    }
+    setSavingName(true);
+    setNameError(null);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setNameError(data.error || "Could not save your name.");
+        return;
+      }
+      setProfile({ ...profile, fullName: data.user.fullName ?? trimmed });
+      setEditingName(false);
+    } catch (e: any) {
+      setNameError(e?.message || "Network error.");
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  const handlePickAvatar = () => fileInputRef.current?.click();
+
+  const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !profile) return;
+
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Please choose an image file.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError("Image must be under 2 MB.");
+      return;
+    }
+
+    setAvatarError(null);
+    setUploadingAvatar(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/profile/avatar", {
+        method: "POST",
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAvatarError(data.error || "Upload failed.");
+        return;
+      }
+      setProfile({ ...profile, avatarUrl: data.avatarUrl });
+    } catch (err: any) {
+      setAvatarError(err?.message || "Network error.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!profile?.avatarUrl) return;
+    setUploadingAvatar(true);
+    setAvatarError(null);
+    try {
+      const res = await fetch("/api/profile/avatar", { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setAvatarError(data.error || "Could not remove avatar.");
+        return;
+      }
+      setProfile({ ...profile, avatarUrl: null });
+    } catch (err: any) {
+      setAvatarError(err?.message || "Network error.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -162,15 +271,115 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center md:items-start gap-5">
-            {/* Avatar Placeholder */}
-            <div className="w-20 h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-3xl font-black shadow-lg shadow-indigo-600/5 uppercase">
-              {profile.fullName ? profile.fullName[0] : profile.email[0]}
+            {/* Avatar + uploader */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative group">
+                <UserAvatar
+                  url={profile.avatarUrl}
+                  name={profile.fullName}
+                  email={profile.email}
+                  size={80}
+                  rounded="lg"
+                  className="shadow-lg shadow-indigo-600/5 text-3xl"
+                />
+                <button
+                  type="button"
+                  onClick={handlePickAvatar}
+                  disabled={uploadingAvatar}
+                  title="Change avatar"
+                  className="absolute -bottom-1 -right-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white p-1.5 rounded-full shadow-md border-2 border-card transition cursor-pointer"
+                >
+                  {uploadingAvatar ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Camera className="w-3.5 h-3.5" />
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleAvatarFile}
+                />
+              </div>
+              {profile.avatarUrl && !uploadingAvatar && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="text-[10px] text-muted-foreground hover:text-rose-500 flex items-center gap-1 transition"
+                >
+                  <Trash2 className="w-3 h-3" /> Remove photo
+                </button>
+              )}
+              {avatarError && (
+                <p className="text-[10px] text-rose-500 text-center max-w-[120px]">
+                  {avatarError}
+                </p>
+              )}
             </div>
 
             <div className="text-center md:text-left space-y-1.5">
-              <h2 className="text-2xl font-black text-foreground">
-                {profile.fullName || profile.email.split("@")[0]}
-              </h2>
+              {editingName ? (
+                <div className="flex flex-col md:flex-row items-stretch gap-2">
+                  <input
+                    type="text"
+                    value={nameDraft}
+                    onChange={(e) => setNameDraft(e.target.value)}
+                    maxLength={60}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveName();
+                      if (e.key === "Escape") {
+                        setEditingName(false);
+                        setNameError(null);
+                      }
+                    }}
+                    className="bg-background border border-border focus:border-indigo-500 rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none text-lg font-bold w-56 max-w-full"
+                    placeholder="Your name"
+                  />
+                  <div className="flex gap-1.5 justify-center md:justify-start">
+                    <button
+                      type="button"
+                      onClick={handleSaveName}
+                      disabled={savingName}
+                      className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                    >
+                      {savingName ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Check className="w-3.5 h-3.5" />
+                      )}
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingName(false);
+                        setNameError(null);
+                      }}
+                      className="bg-muted hover:bg-muted/70 text-muted-foreground border border-border px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                    >
+                      <X className="w-3.5 h-3.5" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <h2 className="text-2xl font-black text-foreground flex items-center justify-center md:justify-start gap-2">
+                  {profile.fullName || profile.email.split("@")[0]}
+                  <button
+                    type="button"
+                    onClick={handleStartEditName}
+                    title="Edit name"
+                    className="p-1 rounded-md text-muted-foreground hover:text-indigo-500 hover:bg-muted transition"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                </h2>
+              )}
+              {nameError && (
+                <p className="text-[11px] text-rose-500">{nameError}</p>
+              )}
               <p className="text-muted-foreground text-xs flex items-center justify-center md:justify-start gap-1">
                 <Bookmark className="w-3.5 h-3.5" /> {profile.email}
               </p>
