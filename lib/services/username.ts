@@ -18,6 +18,8 @@ const RESERVED = new Set<string>([
   "rooms",
   "chat",
   "analytics",
+  "side-quests",
+  "quests",
   "login",
   "signup",
   "logout",

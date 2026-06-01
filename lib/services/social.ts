@@ -93,6 +93,25 @@ export async function getFriendsList(userId: string) {
           avatarUrl: true,
           currentStreak: true,
           totalXp: true,
+          stats: {
+            select: {
+              totalSolved: true,
+              easySolved: true,
+              mediumSolved: true,
+              hardSolved: true,
+            },
+          },
+          leetcodeProfile: {
+            select: {
+              username: true,
+              contestRating: true,
+              ranking: true,
+              totalSolved: true,
+              easySolved: true,
+              mediumSolved: true,
+              hardSolved: true,
+            },
+          },
         },
       },
       receiver: {
@@ -104,6 +123,25 @@ export async function getFriendsList(userId: string) {
           avatarUrl: true,
           currentStreak: true,
           totalXp: true,
+          stats: {
+            select: {
+              totalSolved: true,
+              easySolved: true,
+              mediumSolved: true,
+              hardSolved: true,
+            },
+          },
+          leetcodeProfile: {
+            select: {
+              username: true,
+              contestRating: true,
+              ranking: true,
+              totalSolved: true,
+              easySolved: true,
+              mediumSolved: true,
+              hardSolved: true,
+            },
+          },
         },
       },
     },

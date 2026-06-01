@@ -9,6 +9,7 @@ import {
   Bot,
   Home,
   LogOut,
+  Swords,
   Trophy,
   User,
   Users,
@@ -70,6 +71,7 @@ export function Sidebar() {
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { name: "Lobbies", href: "/rooms", icon: Users },
+    { name: "Side Quests", href: "/side-quests", icon: Swords },
     { name: "Profile", href: "/profile", icon: User },
     { name: "AI Coach", href: "/chat", icon: Bot },
   ];

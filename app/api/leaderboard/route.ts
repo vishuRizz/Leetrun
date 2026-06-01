@@ -4,24 +4,88 @@ import { db } from "@/lib/db";
 import { getFriendsList } from "@/lib/services/social";
 import { unstable_cache } from "next/cache";
 
-const getCachedGlobalRankings = unstable_cache(
-  async (sortBy: "xp" | "streak") => {
-    const orderByField = sortBy === "streak" ? { currentStreak: "desc" as const } : { totalXp: "desc" as const };
+/**
+ * Valid sort axes for the leaderboard. We keep them as a closed enum so the
+ * UI and the API can't drift apart and we can hard-fail on bogus values.
+ */
+const SORT_KEYS = [
+  "xp",       // total LeetRun XP earned in-app
+  "level",    // alias of XP for display purposes
+  "streak",   // current daily streak
+  "total",    // total problems solved (UserStats → fallback LeetcodeProfile)
+  "easy",
+  "medium",
+  "hard",
+  "contest",  // LeetCode contest rating
+] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+
+const USER_SELECT = {
+  id: true,
+  fullName: true,
+  email: true,
+  username: true,
+  avatarUrl: true,
+  currentStreak: true,
+  totalXp: true,
+  stats: {
+    select: {
+      totalSolved: true,
+      easySolved: true,
+      mediumSolved: true,
+      hardSolved: true,
+    },
+  },
+  leetcodeProfile: {
+    select: {
+      username: true,
+      contestRating: true,
+      ranking: true,
+      totalSolved: true,
+      easySolved: true,
+      mediumSolved: true,
+      hardSolved: true,
+    },
+  },
+} as const;
+
+type UserRow = Awaited<ReturnType<typeof db.user.findMany<{ select: typeof USER_SELECT }>>>[number];
+
+function metricFor(row: UserRow, sort: SortKey): number {
+  switch (sort) {
+    case "streak":
+      return row.currentStreak || 0;
+    case "total":
+      return row.stats?.totalSolved ?? row.leetcodeProfile?.totalSolved ?? 0;
+    case "easy":
+      return row.stats?.easySolved ?? row.leetcodeProfile?.easySolved ?? 0;
+    case "medium":
+      return row.stats?.mediumSolved ?? row.leetcodeProfile?.mediumSolved ?? 0;
+    case "hard":
+      return row.stats?.hardSolved ?? row.leetcodeProfile?.hardSolved ?? 0;
+    case "contest":
+      return row.leetcodeProfile?.contestRating ?? 0;
+    case "xp":
+    case "level":
+    default:
+      return row.totalXp || 0;
+  }
+}
+
+/**
+ * The cached global leaderboard pre-fetches a generous candidate pool (top
+ * 200 by XP) so we can sort them client-side by any axis without an extra
+ * round-trip to the DB. The final response is trimmed to 50.
+ */
+const getCachedGlobalCandidates = unstable_cache(
+  async () => {
     return await db.user.findMany({
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        username: true,
-        avatarUrl: true,
-        currentStreak: true,
-        totalXp: true,
-      },
-      orderBy: orderByField,
-      take: 50,
+      select: USER_SELECT,
+      orderBy: { totalXp: "desc" },
+      take: 200,
     });
   },
-  ["global-leaderboard-v2"],
+  ["global-leaderboard-candidates-v1"],
   { revalidate: 60, tags: ["leaderboard"] }
 );
 
@@ -31,51 +95,38 @@ export async function GET(request: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const filter = searchParams.get("filter") || "global"; // "global" or "friends"
-    const sortBy = searchParams.get("sortBy") === "streak" ? "streak" : "xp";
+    const filter = searchParams.get("filter") || "global";
+    const requestedSort = (searchParams.get("sortBy") || "xp").toLowerCase();
+    const sortBy: SortKey = (SORT_KEYS as readonly string[]).includes(requestedSort)
+      ? (requestedSort as SortKey)
+      : "xp";
 
+    let rows: UserRow[];
     if (filter === "friends") {
-      // 1. Fetch user's friends list
       const friends = await getFriendsList(user.id);
-      
-      // Include current user in friends ranking
       const me = await db.user.findUnique({
         where: { id: user.id },
-        select: {
-          id: true,
-          email: true,
-          fullName: true,
-          username: true,
-          avatarUrl: true,
-          currentStreak: true,
-          totalXp: true,
-        },
+        select: USER_SELECT,
       });
-
-      const rankingList = [...friends];
-      if (me) rankingList.push(me);
-
-      // Sort ranking list programmatically
-      rankingList.sort((a, b) => {
-        if (sortBy === "streak") {
-          return b.currentStreak - a.currentStreak;
-        }
-        return b.totalXp - a.totalXp;
-      });
-
-      return NextResponse.json({ rankings: rankingList });
+      rows = [...friends];
+      if (me) rows.push(me);
+    } else {
+      rows = await getCachedGlobalCandidates();
     }
 
-    // 2. Fetch global rankings (top 50) using cache
-    const rankings = await getCachedGlobalRankings(sortBy);
+    rows.sort((a, b) => metricFor(b, sortBy) - metricFor(a, sortBy));
+    const rankings = rows.slice(0, 50);
 
-    return NextResponse.json({ rankings });
+    return NextResponse.json({
+      rankings,
+      sortBy,
+      filter,
+    });
   } catch (error: any) {
     console.error("Error in /api/leaderboard:", error);
     return NextResponse.json(
@@ -84,4 +135,3 @@ export async function GET(request: Request) {
     );
   }
 }
-

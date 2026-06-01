@@ -11,10 +11,15 @@ import {
   Users,
   Search,
   CheckCircle,
+  Code2,
+  Target,
+  Sparkles,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import Link from "next/link";
+
+type SortKey = "xp" | "level" | "streak" | "total" | "easy" | "medium" | "hard" | "contest";
 
 interface RankingUser {
   id: string;
@@ -24,6 +29,72 @@ interface RankingUser {
   avatarUrl: string | null;
   currentStreak: number;
   totalXp: number;
+  stats: {
+    totalSolved: number;
+    easySolved: number;
+    mediumSolved: number;
+    hardSolved: number;
+  } | null;
+  leetcodeProfile: {
+    username: string;
+    contestRating: number | null;
+    ranking: number | null;
+    totalSolved: number;
+    easySolved: number;
+    mediumSolved: number;
+    hardSolved: number;
+  } | null;
+}
+
+const SORT_OPTIONS: { key: SortKey; label: string; short: string; icon: React.ReactNode }[] = [
+  { key: "xp",      label: "LeetRun XP",      short: "XP",       icon: <Award className="w-3.5 h-3.5" /> },
+  { key: "level",   label: "LeetRun Level",   short: "Level",    icon: <Sparkles className="w-3.5 h-3.5" /> },
+  { key: "streak",  label: "Streak",          short: "Streak",   icon: <Flame className="w-3.5 h-3.5 fill-current" /> },
+  { key: "total",   label: "Total Solved",    short: "Total",    icon: <Trophy className="w-3.5 h-3.5" /> },
+  { key: "easy",    label: "Easy Solved",     short: "Easy",     icon: <Code2 className="w-3.5 h-3.5" /> },
+  { key: "medium",  label: "Medium Solved",   short: "Medium",   icon: <Code2 className="w-3.5 h-3.5" /> },
+  { key: "hard",    label: "Hard Solved",     short: "Hard",     icon: <Code2 className="w-3.5 h-3.5" /> },
+  { key: "contest", label: "LC Contest Rating", short: "Contest", icon: <Target className="w-3.5 h-3.5" /> },
+];
+
+function metricOf(u: RankingUser, k: SortKey): number {
+  switch (k) {
+    case "streak": return u.currentStreak || 0;
+    case "total":  return u.stats?.totalSolved ?? u.leetcodeProfile?.totalSolved ?? 0;
+    case "easy":   return u.stats?.easySolved ?? u.leetcodeProfile?.easySolved ?? 0;
+    case "medium": return u.stats?.mediumSolved ?? u.leetcodeProfile?.mediumSolved ?? 0;
+    case "hard":   return u.stats?.hardSolved ?? u.leetcodeProfile?.hardSolved ?? 0;
+    case "contest":return u.leetcodeProfile?.contestRating ?? 0;
+    default:       return u.totalXp || 0;
+  }
+}
+
+function formatMetric(u: RankingUser, k: SortKey): { value: string; label: string; tint: string } {
+  switch (k) {
+    case "streak":
+      return { value: `${u.currentStreak}`, label: "day streak", tint: "text-orange-500" };
+    case "level":
+      return { value: `Lv ${Math.floor((u.totalXp || 0) / 100) + 1}`, label: `${u.totalXp} XP`, tint: "text-indigo-500 dark:text-indigo-400" };
+    case "total":
+      return { value: `${metricOf(u, "total")}`, label: "problems", tint: "text-foreground" };
+    case "easy":
+      return { value: `${metricOf(u, "easy")}`, label: "easy solved", tint: "text-emerald-600 dark:text-emerald-400" };
+    case "medium":
+      return { value: `${metricOf(u, "medium")}`, label: "medium solved", tint: "text-yellow-600 dark:text-yellow-500" };
+    case "hard":
+      return { value: `${metricOf(u, "hard")}`, label: "hard solved", tint: "text-rose-600 dark:text-rose-400" };
+    case "contest":
+      return {
+        value: u.leetcodeProfile?.contestRating
+          ? Math.round(u.leetcodeProfile.contestRating).toString()
+          : "—",
+        label: "LC contest",
+        tint: "text-violet-600 dark:text-violet-400",
+      };
+    case "xp":
+    default:
+      return { value: `${u.totalXp} XP`, label: "score", tint: "text-foreground" };
+  }
 }
 
 export default function LeaderboardPage() {
@@ -32,7 +103,7 @@ export default function LeaderboardPage() {
 
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"global" | "friends">("global");
-  const [sortBy, setSortBy] = useState<"xp" | "streak">("xp");
+  const [sortBy, setSortBy] = useState<SortKey>("xp");
   const [rankings, setRankings] = useState<RankingUser[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [friendEmail, setFriendEmail] = useState("");
@@ -135,43 +206,56 @@ export default function LeaderboardPage() {
       <main className="flex-1 max-w-4xl w-full mx-auto p-6 space-y-6">
 
         {/* Top Filters Block */}
-        <div className="bg-card/40 border border-border rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex bg-muted p-1 rounded-xl border border-border w-full sm:w-auto">
-            <button
-              onClick={() => setFilter("global")}
-              className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition ${
-                filter === "global" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Global Rank
-            </button>
-            <button
-              onClick={() => setFilter("friends")}
-              className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                filter === "friends" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" /> Friends
-            </button>
+        <div className="bg-card/40 border border-border rounded-2xl p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex bg-muted p-1 rounded-xl border border-border w-full sm:w-auto">
+              <button
+                onClick={() => setFilter("global")}
+                className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition ${
+                  filter === "global"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Global Rank
+              </button>
+              <button
+                onClick={() => setFilter("friends")}
+                className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                  filter === "friends"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Users className="w-3.5 h-3.5" /> Friends
+              </button>
+            </div>
+
+            <div className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground self-center sm:self-auto">
+              Sorted by
+            </div>
           </div>
 
-          <div className="flex bg-muted p-1 rounded-xl border border-border w-full sm:w-auto">
-            <button
-              onClick={() => setSortBy("xp")}
-              className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition ${
-                sortBy === "xp" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Sort by XP
-            </button>
-            <button
-              onClick={() => setSortBy("streak")}
-              className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                sortBy === "streak" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Flame className="w-3.5 h-3.5 fill-current" /> Sort by Streak
-            </button>
+          {/* Sort chip row */}
+          <div className="-mx-1 flex gap-2 overflow-x-auto pb-1 px-1">
+            {SORT_OPTIONS.map((opt) => {
+              const active = sortBy === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => setSortBy(opt.key)}
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold border transition flex items-center gap-1.5 ${
+                    active
+                      ? "bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-600"
+                      : "bg-muted text-muted-foreground border-border hover:text-foreground hover:border-indigo-500/40"
+                  }`}
+                  title={opt.label}
+                >
+                  {opt.icon}
+                  {opt.short}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -262,6 +346,7 @@ export default function LeaderboardPage() {
               {rankings.map((user, idx) => {
                 const rank = idx + 1;
                 const slug = user.username || user.id;
+                const metric = formatMetric(user, sortBy);
                 return (
                   <Link
                     href={`/${slug}`}
@@ -295,24 +380,21 @@ export default function LeaderboardPage() {
                           {user.fullName || user.email.split("@")[0]}
                         </h4>
                         <span className="text-[10px] text-muted-foreground">
-                          {user.username ? `@${user.username} · ` : ""}Level{" "}
-                          {Math.floor(user.totalXp / 100) + 1}
+                          {user.username ? `@${user.username} · ` : ""}Lv{" "}
+                          {Math.floor(user.totalXp / 100) + 1} · {user.totalXp} XP
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6 text-right">
-                      {sortBy === "streak" ? (
-                        <div className="flex items-center gap-1.5 text-orange-500 font-bold text-sm">
-                          <Flame className="w-4 h-4 fill-current" />
-                          <span>{user.currentStreak} days</span>
-                        </div>
-                      ) : (
-                        <div className="text-right">
-                          <div className="font-bold text-foreground text-sm">{user.totalXp} XP</div>
-                          <div className="text-[9px] text-muted-foreground uppercase tracking-widest">Score</div>
-                        </div>
-                      )}
+                    <div className="text-right">
+                      <div
+                        className={`font-bold text-sm font-mono ${metric.tint}`}
+                      >
+                        {metric.value}
+                      </div>
+                      <div className="text-[9px] text-muted-foreground uppercase tracking-widest">
+                        {metric.label}
+                      </div>
                     </div>
                   </Link>
                 );
