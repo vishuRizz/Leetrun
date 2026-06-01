@@ -59,6 +59,10 @@ model User {
   id                String   @id @default(cuid())
   email             String   @unique
   fullName          String?
+  /// Public URL slug. Auto-generated from fullName/email on first lookup,
+  /// and can be changed by the user from their profile page. Lowercased,
+  /// 3-30 chars, [a-z0-9_-] only.
+  username          String?  @unique
   avatarUrl         String?
   collegeName       String?
   graduationYear    Int?

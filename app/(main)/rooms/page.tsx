@@ -46,6 +46,7 @@ interface RoomDetail extends Room {
       id: string;
       fullName: string | null;
       email: string;
+      username: string | null;
       avatarUrl: string | null;
       currentStreak: number;
     };
@@ -95,6 +96,7 @@ interface LeaderboardEntry {
   userId: string;
   fullName: string | null;
   email: string;
+  username: string | null;
   avatarUrl: string | null;
   isHost: boolean;
   xp: number;
@@ -1277,9 +1279,10 @@ function RoomsPageInner() {
                       const medal =
                         entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : null;
                       return (
-                        <div
+                        <Link
+                          href={`/${entry.username || entry.userId}`}
                           key={entry.userId}
-                          className={`flex items-center justify-between py-2 ${
+                          className={`flex items-center justify-between py-2 group ${
                             isMe ? "bg-indigo-500/5 -mx-3 px-3 rounded-md" : ""
                           }`}
                         >
@@ -1295,7 +1298,7 @@ function RoomsPageInner() {
                               className="shrink-0"
                             />
                             {entry.rank === 1 && <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
-                            <span className="text-xs font-semibold text-foreground truncate">
+                            <span className="text-xs font-semibold text-foreground truncate group-hover:text-indigo-500 transition">
                               {entry.fullName || entry.email.split("@")[0]}
                               {isMe && <span className="text-[10px] text-indigo-400 ml-1">(you)</span>}
                             </span>
@@ -1309,7 +1312,7 @@ function RoomsPageInner() {
                               {entry.preSolved > 0 && <> · {entry.preSolved}⌛</>}
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       );
                     })}
                   </div>
@@ -1516,7 +1519,11 @@ function RoomsPageInner() {
                       leaderboard.find((e) => e.rank === 1)?.userId === m.user.id;
                     const isHost = roomDetails.creatorId === m.user.id;
                     return (
-                      <div key={m.id} className="flex items-center justify-between py-2.5">
+                      <Link
+                        href={`/${m.user.username || m.user.id}`}
+                        key={m.id}
+                        className="flex items-center justify-between py-2.5 group"
+                      >
                         <div className="flex items-center gap-2 min-w-0">
                           {isLeader ? (
                             <Crown className="w-4 h-4 text-yellow-500 shrink-0" />
@@ -1530,7 +1537,7 @@ function RoomsPageInner() {
                             size={28}
                             className="shrink-0"
                           />
-                          <span className="text-sm font-semibold text-foreground truncate">
+                          <span className="text-sm font-semibold text-foreground truncate group-hover:text-indigo-500 transition">
                             {m.user.fullName || m.user.email.split("@")[0]}
                           </span>
                           {isHost && (
@@ -1542,7 +1549,7 @@ function RoomsPageInner() {
                         <span className="text-[10.5px] text-muted-foreground shrink-0">
                           🔥 {m.user.currentStreak}d
                         </span>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

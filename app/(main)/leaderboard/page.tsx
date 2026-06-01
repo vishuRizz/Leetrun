@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
+import Link from "next/link";
 
 interface RankingUser {
   id: string;
   fullName: string | null;
   email: string;
+  username: string | null;
   avatarUrl: string | null;
   currentStreak: number;
   totalXp: number;
@@ -259,14 +261,14 @@ export default function LeaderboardPage() {
             <div className="divide-y divide-border">
               {rankings.map((user, idx) => {
                 const rank = idx + 1;
-                const isTopThree = rank <= 3;
+                const slug = user.username || user.id;
                 return (
-                  <div
+                  <Link
+                    href={`/${slug}`}
                     key={user.id}
-                    className="flex items-center justify-between p-4 hover:bg-muted/40 transition"
+                    className="flex items-center justify-between p-4 hover:bg-muted/40 transition group"
                   >
                     <div className="flex items-center gap-4">
-                      {/* Rank indicator */}
                       <span
                         className={`w-6 text-center font-bold text-sm ${
                           rank === 1
@@ -281,7 +283,6 @@ export default function LeaderboardPage() {
                         {rank}
                       </span>
 
-                      {/* Avatar */}
                       <UserAvatar
                         url={user.avatarUrl}
                         name={user.fullName}
@@ -289,18 +290,17 @@ export default function LeaderboardPage() {
                         size={36}
                       />
 
-                      {/* Name Details */}
                       <div>
-                        <h4 className="font-bold text-sm text-foreground">
+                        <h4 className="font-bold text-sm text-foreground group-hover:text-indigo-500 transition">
                           {user.fullName || user.email.split("@")[0]}
                         </h4>
                         <span className="text-[10px] text-muted-foreground">
-                          Level {Math.floor(user.totalXp / 100) + 1}
+                          {user.username ? `@${user.username} · ` : ""}Level{" "}
+                          {Math.floor(user.totalXp / 100) + 1}
                         </span>
                       </div>
                     </div>
 
-                    {/* Stats */}
                     <div className="flex items-center gap-6 text-right">
                       {sortBy === "streak" ? (
                         <div className="flex items-center gap-1.5 text-orange-500 font-bold text-sm">
@@ -314,7 +314,7 @@ export default function LeaderboardPage() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

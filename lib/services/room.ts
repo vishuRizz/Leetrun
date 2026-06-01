@@ -655,6 +655,7 @@ export async function getLobbyLeaderboard(roomId: string) {
               id: true,
               fullName: true,
               email: true,
+              username: true,
               currentStreak: true,
               avatarUrl: true,
             },
@@ -684,6 +685,7 @@ export async function getLobbyLeaderboard(roomId: string) {
     userId: string;
     fullName: string | null;
     email: string;
+    username: string | null;
     avatarUrl: string | null;
     currentStreak: number;
     isHost: boolean;
@@ -700,6 +702,7 @@ export async function getLobbyLeaderboard(roomId: string) {
       userId: m.user.id,
       fullName: m.user.fullName,
       email: m.user.email,
+      username: m.user.username,
       avatarUrl: m.user.avatarUrl,
       currentStreak: m.user.currentStreak,
       isHost: m.user.id === room.creatorId,

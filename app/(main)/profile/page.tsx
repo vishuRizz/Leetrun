@@ -24,6 +24,8 @@ import {
   Check,
   X,
   Trash2,
+  Copy,
+  ExternalLink,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -31,6 +33,7 @@ import UserAvatar from "@/components/UserAvatar";
 
 interface ProfileData {
   fullName: string | null;
+  username: string | null;
   email: string;
   avatarUrl: string | null;
   collegeName: string | null;
@@ -99,6 +102,12 @@ export default function ProfilePage() {
   const [savingName, setSavingName] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
 
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [usernameDraft, setUsernameDraft] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [usernameCopied, setUsernameCopied] = useState(false);
+
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -154,6 +163,54 @@ export default function ProfilePage() {
       setNameError(e?.message || "Network error.");
     } finally {
       setSavingName(false);
+    }
+  };
+
+  const handleStartEditUsername = () => {
+    if (!profile) return;
+    setUsernameDraft(profile.username || "");
+    setUsernameError(null);
+    setEditingUsername(true);
+  };
+
+  const handleSaveUsername = async () => {
+    if (!profile) return;
+    const trimmed = usernameDraft.trim().toLowerCase();
+    if (!trimmed) {
+      setUsernameError("Username can't be empty.");
+      return;
+    }
+    setSavingUsername(true);
+    setUsernameError(null);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsernameError(data.error || "Could not save username.");
+        return;
+      }
+      setProfile({ ...profile, username: data.user.username ?? trimmed });
+      setEditingUsername(false);
+    } catch (e: any) {
+      setUsernameError(e?.message || "Network error.");
+    } finally {
+      setSavingUsername(false);
+    }
+  };
+
+  const handleCopyProfileLink = async () => {
+    if (!profile?.username) return;
+    const url = `${window.location.origin}/${profile.username}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setUsernameCopied(true);
+      setTimeout(() => setUsernameCopied(false), 1500);
+    } catch {
+      /* ignore */
     }
   };
 
@@ -383,6 +440,104 @@ export default function ProfilePage() {
               <p className="text-muted-foreground text-xs flex items-center justify-center md:justify-start gap-1">
                 <Bookmark className="w-3.5 h-3.5" /> {profile.email}
               </p>
+
+              {/* Public profile URL */}
+              {editingUsername ? (
+                <div className="flex flex-col md:flex-row items-stretch gap-2 pt-1">
+                  <div className="flex items-stretch bg-background border border-border focus-within:border-indigo-500 rounded-lg overflow-hidden text-sm">
+                    <span className="px-2.5 py-1.5 bg-muted text-muted-foreground font-mono">
+                      /
+                    </span>
+                    <input
+                      type="text"
+                      value={usernameDraft}
+                      onChange={(e) =>
+                        setUsernameDraft(
+                          e.target.value.toLowerCase().replace(/\s+/g, "")
+                        )
+                      }
+                      maxLength={30}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveUsername();
+                        if (e.key === "Escape") {
+                          setEditingUsername(false);
+                          setUsernameError(null);
+                        }
+                      }}
+                      className="bg-background px-2 py-1.5 text-foreground placeholder:text-muted-foreground outline-none w-44 font-mono"
+                      placeholder="your-handle"
+                    />
+                  </div>
+                  <div className="flex gap-1.5 justify-center md:justify-start">
+                    <button
+                      type="button"
+                      onClick={handleSaveUsername}
+                      disabled={savingUsername}
+                      className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                    >
+                      {savingUsername ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Check className="w-3.5 h-3.5" />
+                      )}
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingUsername(false);
+                        setUsernameError(null);
+                      }}
+                      className="bg-muted hover:bg-muted/70 text-muted-foreground border border-border px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
+                    >
+                      <X className="w-3.5 h-3.5" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-xs flex items-center justify-center md:justify-start gap-1.5 pt-1">
+                  <span className="font-mono text-indigo-500 dark:text-indigo-400">
+                    @{profile.username || "—"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleStartEditUsername}
+                    title="Edit username"
+                    className="p-1 rounded-md text-muted-foreground hover:text-indigo-500 hover:bg-muted transition"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                  {profile.username && (
+                    <a
+                      href={`/${profile.username}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title="Open public profile"
+                      className="p-1 rounded-md text-muted-foreground hover:text-indigo-500 hover:bg-muted transition"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                  {profile.username && (
+                    <button
+                      type="button"
+                      onClick={handleCopyProfileLink}
+                      title="Copy public profile link"
+                      className="p-1 rounded-md text-muted-foreground hover:text-indigo-500 hover:bg-muted transition"
+                    >
+                      {usernameCopied ? (
+                        <Check className="w-3 h-3 text-emerald-500" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                    </button>
+                  )}
+                </p>
+              )}
+              {usernameError && (
+                <p className="text-[11px] text-rose-500">{usernameError}</p>
+              )}
 
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 pt-2">
                 {profile.collegeName && (

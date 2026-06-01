@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
+import { ensureUsername, setUsername } from "@/lib/services/username";
 
 const MAX_NAME_LEN = 60;
 
@@ -17,6 +18,8 @@ export async function PATCH(request: Request) {
     const body = await request.json().catch(() => ({}));
     const fullName =
       typeof body.fullName === "string" ? body.fullName.trim() : undefined;
+    const usernameRaw =
+      typeof body.username === "string" ? body.username.trim() : undefined;
 
     if (fullName !== undefined) {
       if (fullName.length === 0) {
@@ -33,10 +36,27 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const updated = await db.user.update({
+    if (fullName !== undefined) {
+      await db.user.update({
+        where: { id: user.id },
+        data: { fullName },
+      });
+    }
+
+    if (usernameRaw !== undefined) {
+      try {
+        await setUsername(user.id, usernameRaw);
+      } catch (err: any) {
+        return NextResponse.json(
+          { error: err.message || "Invalid username." },
+          { status: 400 }
+        );
+      }
+    }
+
+    const updated = await db.user.findUnique({
       where: { id: user.id },
-      data: fullName !== undefined ? { fullName } : {},
-      select: { id: true, fullName: true, avatarUrl: true },
+      select: { id: true, fullName: true, avatarUrl: true, username: true },
     });
 
     return NextResponse.json({ success: true, user: updated });
@@ -88,7 +108,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "User profile not found in database." }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, profile: dbUser });
+    // Make sure the caller has a stable public-profile slug.
+    const username = await ensureUsername({
+      id: dbUser.id,
+      username: (dbUser as any).username ?? null,
+      fullName: dbUser.fullName,
+      email: dbUser.email,
+    });
+
+    return NextResponse.json({
+      success: true,
+      profile: { ...dbUser, username },
+    });
   } catch (error: any) {
     console.error("Error in /api/profile GET:", error);
     return NextResponse.json(

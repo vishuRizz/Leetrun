@@ -21,6 +21,7 @@ interface LeaderboardEntry {
   userId: string;
   fullName: string | null;
   email: string;
+  username: string | null;
   avatarUrl: string | null;
   currentStreak: number;
   isHost: boolean;
@@ -233,7 +234,11 @@ export default function LobbyLeaderboardDetailPage() {
                     ? "🥉"
                     : `#${entry.rank}`;
                 return (
-                  <div key={entry.userId} className="flex items-center gap-3">
+                  <Link
+                    href={`/${entry.username || entry.userId}`}
+                    key={entry.userId}
+                    className="flex items-center gap-3 group"
+                  >
                     <span className="text-[11px] font-mono text-muted-foreground w-9 text-right shrink-0">
                       {medal}
                     </span>
@@ -246,7 +251,7 @@ export default function LobbyLeaderboardDetailPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1 text-[11.5px]">
-                        <span className="font-semibold text-foreground truncate flex items-center gap-1">
+                        <span className="font-semibold text-foreground truncate flex items-center gap-1 group-hover:text-indigo-500 transition">
                           {entry.rank === 1 && (
                             <Crown className="w-3 h-3 text-yellow-500 shrink-0" />
                           )}
@@ -263,7 +268,7 @@ export default function LobbyLeaderboardDetailPage() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -334,7 +339,10 @@ export default function LobbyLeaderboardDetailPage() {
                           {medal}
                         </td>
                         <td className="py-2.5 pr-2">
-                          <div className="flex items-center gap-2 min-w-0">
+                          <Link
+                            href={`/${entry.username || entry.userId}`}
+                            className="flex items-center gap-2 min-w-0 group"
+                          >
                             <UserAvatar
                               url={entry.avatarUrl}
                               name={entry.fullName}
@@ -345,10 +353,10 @@ export default function LobbyLeaderboardDetailPage() {
                             {entry.rank === 1 && (
                               <Crown className="w-3 h-3 text-yellow-500 shrink-0" />
                             )}
-                            <span className="font-semibold text-foreground truncate">
+                            <span className="font-semibold text-foreground truncate group-hover:text-indigo-500 transition">
                               {entry.fullName || entry.email.split("@")[0]}
                             </span>
-                          </div>
+                          </Link>
                         </td>
                         <td className="py-2.5 pr-2 text-right font-mono font-black text-indigo-500 dark:text-indigo-400">
                           {entry.xp}

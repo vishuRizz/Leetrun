@@ -12,6 +12,7 @@ const getCachedGlobalRankings = unstable_cache(
         id: true,
         fullName: true,
         email: true,
+        username: true,
         avatarUrl: true,
         currentStreak: true,
         totalXp: true,
@@ -20,7 +21,7 @@ const getCachedGlobalRankings = unstable_cache(
       take: 50,
     });
   },
-  ["global-leaderboard"],
+  ["global-leaderboard-v2"],
   { revalidate: 60, tags: ["leaderboard"] }
 );
 
@@ -50,6 +51,7 @@ export async function GET(request: Request) {
           id: true,
           email: true,
           fullName: true,
+          username: true,
           avatarUrl: true,
           currentStreak: true,
           totalXp: true,
