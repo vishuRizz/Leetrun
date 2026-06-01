@@ -4,25 +4,18 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingChatWidget } from "@/components/FloatingChatWidget";
 
-// Body / UI font — neutral, highly legible, great for dense product UIs.
-// Loaded as a variable font (full 100–900 axis) so every Tailwind weight class
-// renders without the browser having to synthetically bold/italicize.
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// Optional display font — opt-in via the `font-heading` Tailwind class.
-// Not auto-applied to h1–h4 because Space Grotesk maxes out at weight 700,
-// and we use `font-black` (900) headings throughout the app.
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
   display: "swap",
 });
 
-// Monospace — for numerics, code, and badges.
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
