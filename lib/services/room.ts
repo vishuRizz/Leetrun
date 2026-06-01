@@ -344,8 +344,10 @@ export async function createHostQuestion(
   });
 
   if (!room) throw new Error("Lobby not found.");
-  if (room.creatorId !== userId) {
-    throw new Error("Only the lobby host can add questions.");
+  // Any lobby member can add a question now — host-only restriction lifted.
+  const isMember = room.members.some((m) => m.userId === userId);
+  if (!isMember) {
+    throw new Error("You must be a member of this lobby to add questions.");
   }
 
   const slug = parseLeetCodeSlug(params.url);
@@ -366,7 +368,7 @@ export async function createHostQuestion(
     const challenge = await tx.challenge.create({
       data: {
         title: problemName,
-        description: `Host-picked LeetCode question. Solve it, then click Verify to claim XP.`,
+        description: `Member-picked LeetCode question. Solve it, then click Verify to claim XP.`,
         type: ChallengeType.FRIEND,
         difficulty,
         xpReward,
@@ -388,7 +390,10 @@ export async function createHostQuestion(
         roomId,
         challengeId: challenge.id,
         deadline: deadline ?? undefined,
+        // `isHostQuestion` now means "single-problem member-curated"
+        // regardless of whether the adder is the host. Kept for compat.
         isHostQuestion: true,
+        addedById: userId,
         problemNumber:
           typeof params.problemNumber === "number" && params.problemNumber > 0
             ? params.problemNumber
@@ -583,11 +588,16 @@ export async function deleteRoomQuestion(
     },
   });
   if (!rc) throw new Error("Room challenge not found.");
-  if (rc.room.creatorId !== userId) {
-    throw new Error("Only the lobby host can remove questions.");
+  // Two roles may delete: the lobby host (custodial cleanup), or the member
+  // who added the question (own their own clutter). Legacy rows with no
+  // `addedById` fall back to host-only.
+  const isHost = rc.room.creatorId === userId;
+  const isAdder = rc.addedById === userId;
+  if (!isHost && !isAdder) {
+    throw new Error("Only the lobby host or the member who added this question can remove it.");
   }
 
-  // Host questions are 1:1 with their Challenge row, so deleting the
+  // Member-added questions are 1:1 with their Challenge row, so deleting the
   // underlying Challenge cascades through RoomChallenge → RoomChallengeProgress.
   // Guard with `isHostQuestion` so we never nuke a bank-generated challenge.
   if (!rc.isHostQuestion) {

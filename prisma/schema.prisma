@@ -96,6 +96,7 @@ model User {
   roomInvitesReceived  RoomInvite[] @relation("InvitesReceived")
   
   roomChallengesProgress RoomChallengeProgress[]
+  addedRoomChallenges    RoomChallenge[] @relation("RoomChallengeAdder")
 
   @@index([email])
 }
@@ -317,12 +318,20 @@ model RoomChallenge {
   challengeId      String
   challenge        Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   deadline         DateTime?
-  // When true, this question was hand-picked by the host (single problem).
+  // When true, this question was hand-picked by a lobby member (single problem).
+  // (Field kept under its original name for backward-compat with existing rows.
+  // Today it means "member-curated, single problem" rather than strictly host-only.)
   isHostQuestion   Boolean @default(false)
-  // LeetCode problem number (e.g. 1 for Two Sum) — populated for host-added questions.
+  // LeetCode problem number (e.g. 1 for Two Sum) — populated for member-added questions.
   problemNumber    Int?
+  // The member who added this question to the lobby. Nullable for legacy rows
+  // and for bank-generated batches (where no single user is responsible).
+  addedById        String?
+  addedBy          User? @relation("RoomChallengeAdder", fields: [addedById], references: [id], onDelete: SetNull)
   createdAt        DateTime @default(now())
   progress         RoomChallengeProgress[]
+
+  @@index([addedById])
 }
 
 model RoomChallengeProgress {

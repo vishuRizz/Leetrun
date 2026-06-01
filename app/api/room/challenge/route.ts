@@ -81,6 +81,14 @@ export async function GET(request: Request) {
             problems: true,
           },
         },
+        addedBy: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
         progress: {
           select: {
             id: true,

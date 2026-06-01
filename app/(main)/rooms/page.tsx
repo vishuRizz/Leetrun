@@ -26,6 +26,8 @@ import {
   RotateCcw,
   X,
   ArrowUpRight,
+  ChevronDown,
+  UserCircle2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -53,6 +55,12 @@ interface RoomChallenge {
   deadline: string;
   isHostQuestion?: boolean;
   problemNumber?: number | null;
+  addedBy?: {
+    id: string;
+    fullName: string | null;
+    email: string;
+    avatarUrl: string | null;
+  } | null;
   challenge: {
     title: string;
     difficulty: string;
@@ -150,6 +158,18 @@ function RoomsPageInner() {
   // Active questions tab — "todo" (default) or "done". Only one bucket is
   // visible at a time so the page stays focused.
   const [questionTab, setQuestionTab] = useState<"todo" | "done">("todo");
+
+  // Cards are collapsed by default; this set tracks which RoomChallenge ids
+  // the user has clicked to expand. Click on the card header to toggle.
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const toggleCardExpanded = (id: string) => {
+    setExpandedCards((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
   const [progressMsg, setProgressMsg] = useState<{ id: string; text: string; type: "ok" | "err" } | null>(null);
 
   const fetchInvites = async () => {
@@ -775,66 +795,161 @@ function RoomsPageInner() {
                       const hasAnswer =
                         !!(myProgress?.claimed || myProgress?.verified || myProgress?.markedPreSolved);
 
+                      // Status pill for the collapsed header — mirrors the
+                      // myProgress state so users can scan what's pending
+                      // without opening every card.
+                      const myStatus = myProgress?.verified
+                        ? {
+                            text: `Verified · +${myProgress.xpAwarded ?? rc.challenge.xpReward} XP`,
+                            cls:
+                              "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+                          }
+                        : myProgress?.markedPreSolved
+                        ? {
+                            text: "Already solved",
+                            cls:
+                              "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20",
+                          }
+                        : myProgress?.claimed
+                        ? {
+                            text: "Done · verify pending",
+                            cls:
+                              "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+                          }
+                        : myProgress?.completed
+                        ? {
+                            text: "Solved (synced)",
+                            cls:
+                              "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+                          }
+                        : null;
+                      const adder = rc.addedBy;
+                      const adderName = adder
+                        ? adder.fullName || adder.email.split("@")[0]
+                        : null;
+                      const isAdder =
+                        !!(adder && currentUser && adder.id === currentUser.id);
+                      // Both the lobby host and the original adder can delete
+                      // the question. Bank-generated batches stay immutable.
+                      const canDelete = (isHost || isAdder) && rc.isHostQuestion;
+                      const isExpanded = expandedCards.has(rc.id);
+
                       return (
-                        <div key={rc.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-4">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
+                        <div
+                          key={rc.id}
+                          className="bg-muted/30 border border-border rounded-xl overflow-hidden transition-colors"
+                        >
+                          {/* Always-visible header — clicking anywhere toggles
+                              the body. Delete button stops propagation. */}
+                          <button
+                            type="button"
+                            onClick={() => toggleCardExpanded(rc.id)}
+                            aria-expanded={isExpanded}
+                            className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-muted/40 transition-colors"
+                          >
+                            <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2 flex-wrap">
-                                {rc.isHostQuestion && (
-                                  <span className="text-[9px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 border border-indigo-500/20 rounded-full px-2 py-0.5">
-                                    Host pick
-                                  </span>
-                                )}
+                                <ChevronDown
+                                  className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${
+                                    isExpanded ? "rotate-180" : ""
+                                  }`}
+                                />
                                 {typeof rc.problemNumber === "number" && (
                                   <span className="text-[10px] font-mono text-muted-foreground">
                                     #{rc.problemNumber}
                                   </span>
                                 )}
-                                <h4 className="font-bold text-foreground text-sm truncate">{rc.challenge.title}</h4>
+                                <h4 className="font-bold text-foreground text-sm truncate">
+                                  {rc.challenge.title}
+                                </h4>
                               </div>
-                              <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">
-                                Difficulty: {rc.challenge.difficulty}
-                              </span>
+                              <div className="flex items-center gap-2 flex-wrap mt-1.5 ml-6">
+                                <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">
+                                  {rc.challenge.difficulty}
+                                </span>
+                                {adderName ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted/60 border border-border rounded-full px-2 py-0.5">
+                                    <UserCircle2 className="w-3 h-3" />
+                                    Added by{" "}
+                                    <span className="text-foreground font-semibold">
+                                      {isAdder ? "you" : adderName}
+                                    </span>
+                                  </span>
+                                ) : rc.isHostQuestion ? (
+                                  <span className="text-[9px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 border border-indigo-500/20 rounded-full px-2 py-0.5">
+                                    Host pick
+                                  </span>
+                                ) : null}
+                                {myStatus && (
+                                  <span
+                                    className={`text-[10px] font-bold uppercase tracking-wider rounded-full px-2 py-0.5 border ${myStatus.cls}`}
+                                  >
+                                    {myStatus.text}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs font-bold text-indigo-400">+{rc.challenge.xpReward} XP</span>
-                              {isHost && rc.isHostQuestion && (
-                                <button
-                                  onClick={() => handleDeleteQuestion(rc.id)}
-                                  disabled={deleteBusy}
-                                  title="Remove this question from the lobby (host only)"
-                                  className="p-1.5 rounded-md text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition disabled:opacity-50"
+                              <span className="text-xs font-bold text-indigo-400">
+                                +{rc.challenge.xpReward} XP
+                              </span>
+                              {canDelete && (
+                                <span
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteQuestion(rc.id);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleDeleteQuestion(rc.id);
+                                    }
+                                  }}
+                                  title={
+                                    isHost && !isAdder
+                                      ? "Remove this question from the lobby (host)"
+                                      : "Remove the question you added"
+                                  }
+                                  className={`p-1.5 rounded-md text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition ${
+                                    deleteBusy ? "opacity-50 pointer-events-none" : ""
+                                  }`}
                                 >
                                   {deleteBusy ? (
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                   ) : (
                                     <Trash2 className="w-3.5 h-3.5" />
                                   )}
-                                </button>
+                                </span>
                               )}
                             </div>
-                          </div>
+                          </button>
 
-                          <div className="grid gap-2">
-                            {rc.challenge.problems.map((prob) => (
-                              <div key={prob.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg text-xs">
-                                <div className="min-w-0">
-                                  <span className="font-bold text-foreground">{prob.problemName}</span>
-                                  <span className="text-[9px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium ml-2 uppercase">
-                                    {prob.topic}
-                                  </span>
-                                </div>
-                                <a
-                                  href={`https://leetcode.com/problems/${prob.problemSlug}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="flex items-center gap-1 text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition shrink-0"
-                                >
-                                  Solve <ExternalLink className="w-3 h-3" />
-                                </a>
+                          {/* Expanded body — problems, actions, member strip. */}
+                          {isExpanded && (
+                            <div className="px-4 pb-4 space-y-4 border-t border-border/60">
+                              <div className="grid gap-2 pt-4">
+                                {rc.challenge.problems.map((prob) => (
+                                  <div key={prob.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg text-xs">
+                                    <div className="min-w-0">
+                                      <span className="font-bold text-foreground">{prob.problemName}</span>
+                                      <span className="text-[9px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium ml-2 uppercase">
+                                        {prob.topic}
+                                      </span>
+                                    </div>
+                                    <a
+                                      href={`https://leetcode.com/problems/${prob.problemSlug}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="flex items-center gap-1 text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition shrink-0"
+                                    >
+                                      Solve <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
 
                           {/* Per-user actions (only for host-added questions) */}
                           {rc.isHostQuestion && (
@@ -980,6 +1095,8 @@ function RoomsPageInner() {
                               })}
                             </div>
                           </div>
+                            </div>
+                          )}
                         </div>
                       );
                     };
@@ -1062,14 +1179,14 @@ function RoomsPageInner() {
             {/* Right Column: Host settings & members list */}
             <div className="space-y-6">
 
-              {/* Host Add-LeetCode-Question form */}
-              {roomDetails && currentUser && roomDetails.creatorId === currentUser.id && (
+              {/* Add LeetCode Question — any lobby member can add. */}
+              {roomDetails && currentUser && (
                 <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4 text-indigo-400" /> Add LeetCode Question
+                    <LinkIcon className="w-4 h-4 text-indigo-400" /> Add a LeetCode question
                   </h3>
                   <p className="text-[11px] text-muted-foreground -mt-2">
-                    Paste the full LeetCode problem URL (e.g. <span className="font-mono">https://leetcode.com/problems/valid-anagram/</span>) or just the slug (<span className="font-mono">valid-anagram</span>). Members can mark it Done and click Verify to claim XP automatically.
+                    Any member can add. Paste the full LeetCode problem URL (e.g. <span className="font-mono">https://leetcode.com/problems/valid-anagram/</span>) or just the slug (<span className="font-mono">valid-anagram</span>). Everyone in the lobby will see it; you can remove anything you added.
                   </p>
 
                   <form onSubmit={handleAddHostQuestion} className="space-y-3">
