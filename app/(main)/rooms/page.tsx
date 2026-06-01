@@ -15,6 +15,14 @@ import {
   ExternalLink,
   Crown,
   Settings,
+  Link as LinkIcon,
+  CheckCircle2,
+  CircleDashed,
+  Sparkles,
+  Trophy,
+  ShieldCheck,
+  Trash2,
+  RotateCcw,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -40,6 +48,8 @@ interface RoomDetail extends Room {
 interface RoomChallenge {
   id: string;
   deadline: string;
+  isHostQuestion?: boolean;
+  problemNumber?: number | null;
   challenge: {
     title: string;
     difficulty: string;
@@ -53,13 +63,32 @@ interface RoomChallenge {
     }>;
   };
   progress: Array<{
+    id?: string;
     userId: string;
     completed: boolean;
+    claimed?: boolean;
+    verified?: boolean;
+    markedPreSolved?: boolean;
+    xpAwarded?: number;
     user: {
+      id?: string;
       fullName: string | null;
       email: string;
     };
   }>;
+}
+
+interface LeaderboardEntry {
+  userId: string;
+  fullName: string | null;
+  email: string;
+  isHost: boolean;
+  xp: number;
+  verified: number;
+  preSolved: number;
+  solved: number;
+  rank: number;
+  lastActivity: string | null;
 }
 
 export default function RoomsPage() {
@@ -94,6 +123,20 @@ export default function RoomsPage() {
   const [assignDifficulty, setAssignDifficulty] = useState("EASY");
   const [assignCount, setAssignCount] = useState(2);
   const [assignLoading, setAssignLoading] = useState(false);
+
+  // Host-added question form
+  const [questionUrl, setQuestionUrl] = useState("");
+  const [questionName, setQuestionName] = useState("");
+  const [questionNumber, setQuestionNumber] = useState("");
+  const [questionDifficulty, setQuestionDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("EASY");
+  const [questionTopic, setQuestionTopic] = useState("Arrays");
+  const [questionLoading, setQuestionLoading] = useState(false);
+  const [questionError, setQuestionError] = useState("");
+
+  // Per-room leaderboard + per-question action loading state
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [progressBusyId, setProgressBusyId] = useState<string | null>(null);
+  const [progressMsg, setProgressMsg] = useState<{ id: string; text: string; type: "ok" | "err" } | null>(null);
 
   const fetchInvites = async () => {
     try {
@@ -146,19 +189,148 @@ export default function RoomsPage() {
 
   const fetchActiveRoomDetails = async (roomId: string) => {
     try {
-      const detailsRes = await fetch(`/api/room/details?roomId=${roomId}`);
-      const detailsData = await detailsRes.json();
-      if (detailsRes.ok) {
-        setRoomDetails(detailsData.room);
-      }
+      const [detailsRes, challengesRes, leaderboardRes] = await Promise.all([
+        fetch(`/api/room/details?roomId=${roomId}`),
+        fetch(`/api/room/challenge?roomId=${roomId}`),
+        fetch(`/api/room/leaderboard?roomId=${roomId}`),
+      ]);
 
-      const challengesRes = await fetch(`/api/room/challenge?roomId=${roomId}`);
+      const detailsData = await detailsRes.json();
+      if (detailsRes.ok) setRoomDetails(detailsData.room);
+
       const challengesData = await challengesRes.json();
-      if (challengesRes.ok) {
-        setRoomChallenges(challengesData.challenges || []);
-      }
+      if (challengesRes.ok) setRoomChallenges(challengesData.challenges || []);
+
+      const leaderboardData = await leaderboardRes.json();
+      if (leaderboardRes.ok) setLeaderboard(leaderboardData.leaderboard || []);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleAddHostQuestion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeRoomId || !questionUrl.trim()) return;
+    setQuestionLoading(true);
+    setQuestionError("");
+    try {
+      const res = await fetch("/api/room/question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomId: activeRoomId,
+          url: questionUrl.trim(),
+          problemName: questionName.trim() || undefined,
+          problemNumber: questionNumber.trim()
+            ? Number(questionNumber.trim())
+            : undefined,
+          difficulty: questionDifficulty,
+          topic: questionTopic,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setQuestionError(data.error || "Failed to add question.");
+      } else {
+        setQuestionUrl("");
+        setQuestionName("");
+        setQuestionNumber("");
+        fetchActiveRoomDetails(activeRoomId);
+      }
+    } catch (e) {
+      setQuestionError("Network error while adding question.");
+    } finally {
+      setQuestionLoading(false);
+    }
+  };
+
+  const flashProgressMsg = (id: string, text: string, type: "ok" | "err") => {
+    setProgressMsg({ id, text, type });
+    setTimeout(() => setProgressMsg(null), 3500);
+  };
+
+  const handleQuestionAction = async (
+    roomChallengeId: string,
+    action: "claim" | "verify" | "preSolved" | "reset"
+  ) => {
+    setProgressBusyId(roomChallengeId + ":" + action);
+    try {
+      const res = await fetch("/api/room/question/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomChallengeId, action }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        flashProgressMsg(roomChallengeId, data.error || "Failed.", "err");
+      } else if (action === "verify") {
+        if (data.verified) {
+          flashProgressMsg(
+            roomChallengeId,
+            data.alreadyAwarded
+              ? "Already verified earlier — nice."
+              : `Verified on LeetCode! +${data.xpAwarded} XP added to your lobby score.`,
+            "ok"
+          );
+        } else if (data.reason === "notFoundInSubmissions") {
+          flashProgressMsg(
+            roomChallengeId,
+            "We couldn't find this problem in your recent LeetCode submissions. Solve it on leetcode.com first, then click Verify again.",
+            "err"
+          );
+        } else if (data.reason === "preSolved") {
+          flashProgressMsg(
+            roomChallengeId,
+            "You marked this as solved before joining — no XP. Use \"Change my answer\" to undo.",
+            "err"
+          );
+        } else {
+          flashProgressMsg(roomChallengeId, "Verification failed.", "err");
+        }
+      } else if (action === "claim") {
+        flashProgressMsg(
+          roomChallengeId,
+          "Marked as done. Click \"Verify on LeetCode\" when your submission is live to earn XP.",
+          "ok"
+        );
+      } else if (action === "preSolved") {
+        flashProgressMsg(
+          roomChallengeId,
+          "Marked as already solved before joining (no XP). You can change this with \"Change my answer\".",
+          "ok"
+        );
+      } else if (action === "reset") {
+        flashProgressMsg(roomChallengeId, "Your answer was reset. Pick again whenever you're ready.", "ok");
+      }
+      if (activeRoomId) fetchActiveRoomDetails(activeRoomId);
+    } catch (err) {
+      flashProgressMsg(roomChallengeId, "Network error.", "err");
+    } finally {
+      setProgressBusyId(null);
+    }
+  };
+
+  const handleDeleteQuestion = async (roomChallengeId: string) => {
+    const ok = window.confirm(
+      "Remove this question from the lobby?\n\nAll members will lose their progress on it. This cannot be undone."
+    );
+    if (!ok) return;
+    setProgressBusyId(roomChallengeId + ":delete");
+    try {
+      const res = await fetch(
+        `/api/room/question?roomChallengeId=${encodeURIComponent(roomChallengeId)}`,
+        { method: "DELETE" }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        flashProgressMsg(roomChallengeId, data.error || "Failed to delete.", "err");
+      } else if (activeRoomId) {
+        fetchActiveRoomDetails(activeRoomId);
+      }
+    } catch (err) {
+      flashProgressMsg(roomChallengeId, "Network error.", "err");
+    } finally {
+      setProgressBusyId(null);
     }
   };
 
@@ -516,63 +688,237 @@ export default function RoomsPage() {
 
                 {roomChallenges.length === 0 ? (
                   <div className="p-16 text-center text-muted-foreground border border-dashed border-border rounded-xl text-sm">
-                    No active challenges assigned yet. Ask the room host to create one!
+                    No questions yet. Ask the host to paste a LeetCode link in the
+                    "Add LeetCode Question" panel, or generate a topic batch.
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {roomChallenges.map((rc) => (
-                      <div key={rc.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold text-foreground text-sm">{rc.challenge.title}</h4>
-                            <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">
-                              Difficulty: {rc.challenge.difficulty}
-                            </span>
-                          </div>
-                          <span className="text-xs font-bold text-indigo-400">+{rc.challenge.xpReward} XP</span>
-                        </div>
+                    {roomChallenges.map((rc) => {
+                      const myProgress = rc.progress.find(
+                        (p) => p.userId === currentUser?.id
+                      );
+                      const verifyBusy =
+                        progressBusyId === rc.id + ":verify";
+                      const claimBusy = progressBusyId === rc.id + ":claim";
+                      const preBusy = progressBusyId === rc.id + ":preSolved";
+                      const resetBusy = progressBusyId === rc.id + ":reset";
+                      const deleteBusy = progressBusyId === rc.id + ":delete";
+                      const msg = progressMsg?.id === rc.id ? progressMsg : null;
+                      const isHost =
+                        !!roomDetails &&
+                        !!currentUser &&
+                        roomDetails.creatorId === currentUser.id;
+                      const hasAnswer =
+                        !!(myProgress?.claimed || myProgress?.verified || myProgress?.markedPreSolved);
 
-                        <div className="grid gap-2">
-                          {rc.challenge.problems.map((prob) => (
-                            <div key={prob.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg text-xs">
-                              <div>
-                                <span className="font-bold text-foreground">{prob.problemName}</span>
-                                <span className="text-[9px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium ml-2 uppercase">
-                                  {prob.topic}
-                                </span>
+                      return (
+                        <div key={rc.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {rc.isHostQuestion && (
+                                  <span className="text-[9px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 border border-indigo-500/20 rounded-full px-2 py-0.5">
+                                    Host pick
+                                  </span>
+                                )}
+                                {typeof rc.problemNumber === "number" && (
+                                  <span className="text-[10px] font-mono text-muted-foreground">
+                                    #{rc.problemNumber}
+                                  </span>
+                                )}
+                                <h4 className="font-bold text-foreground text-sm truncate">{rc.challenge.title}</h4>
                               </div>
-                              <a
-                                href={`https://leetcode.com/problems/${prob.problemSlug}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex items-center gap-1 text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition"
-                              >
-                                Solve <ExternalLink className="w-3 h-3" />
-                              </a>
+                              <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">
+                                Difficulty: {rc.challenge.difficulty}
+                              </span>
                             </div>
-                          ))}
-                        </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs font-bold text-indigo-400">+{rc.challenge.xpReward} XP</span>
+                              {isHost && rc.isHostQuestion && (
+                                <button
+                                  onClick={() => handleDeleteQuestion(rc.id)}
+                                  disabled={deleteBusy}
+                                  title="Remove this question from the lobby (host only)"
+                                  className="p-1.5 rounded-md text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition disabled:opacity-50"
+                                >
+                                  {deleteBusy ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          </div>
 
-                        {/* Leaderboard stats for this challenge inside room */}
-                        <div className="border-t border-border/60 pt-3">
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold block mb-2">Member Progress</span>
-                          <div className="grid gap-2.5">
-                            {rc.progress.map((prog) => (
-                              <div key={prog.userId} className="flex items-center justify-between text-xs">
-                                <span className="text-foreground">{prog.user.fullName || prog.user.email.split("@")[0]}</span>
-                                <span className={`font-semibold px-2 py-0.5 rounded text-[10px] uppercase ${
-                                  prog.completed 
-                                    ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40" 
-                                    : "bg-muted text-muted-foreground border border-border"
-                                }`}>
-                                  {prog.completed ? "Solved All" : "Working"}
-                                </span>
+                          <div className="grid gap-2">
+                            {rc.challenge.problems.map((prob) => (
+                              <div key={prob.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg text-xs">
+                                <div className="min-w-0">
+                                  <span className="font-bold text-foreground">{prob.problemName}</span>
+                                  <span className="text-[9px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium ml-2 uppercase">
+                                    {prob.topic}
+                                  </span>
+                                </div>
+                                <a
+                                  href={`https://leetcode.com/problems/${prob.problemSlug}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="flex items-center gap-1 text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition shrink-0"
+                                >
+                                  Solve <ExternalLink className="w-3 h-3" />
+                                </a>
                               </div>
                             ))}
                           </div>
+
+                          {/* Per-user actions (only for host-added questions) */}
+                          {rc.isHostQuestion && (
+                            <div className="border-t border-border/60 pt-3 space-y-2">
+                              {myProgress?.verified ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 rounded-lg px-3 py-2">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    Verified on LeetCode — +{myProgress.xpAwarded ?? rc.challenge.xpReward} XP added to your lobby score.
+                                  </div>
+                                  <button
+                                    onClick={() => handleQuestionAction(rc.id, "reset")}
+                                    disabled={resetBusy}
+                                    className="text-[10.5px] font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 disabled:opacity-50"
+                                    title="Reset my answer for this question. Your lobby XP for it is removed."
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                    {resetBusy ? "Resetting…" : "Change my answer / remove submission"}
+                                  </button>
+                                </div>
+                              ) : myProgress?.markedPreSolved ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground bg-muted/40 border border-border rounded-lg px-3 py-2">
+                                    <ShieldCheck className="w-4 h-4" />
+                                    You marked this as solved before joining — no XP.
+                                  </div>
+                                  <button
+                                    onClick={() => handleQuestionAction(rc.id, "reset")}
+                                    disabled={resetBusy}
+                                    className="text-[10.5px] font-semibold text-indigo-500 hover:text-indigo-400 inline-flex items-center gap-1 disabled:opacity-50"
+                                    title="Undo this choice and pick again"
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                    {resetBusy ? "Undoing…" : "Wait, I want to change this"}
+                                  </button>
+                                </div>
+                              ) : myProgress?.claimed ? (
+                                <div className="space-y-2">
+                                  <div className="text-[11px] text-muted-foreground bg-muted/30 border border-border rounded-lg px-3 py-2">
+                                    You marked this as done. Click <b>Verify on LeetCode</b> once your submission is live to earn the XP.
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                      onClick={() => handleQuestionAction(rc.id, "verify")}
+                                      disabled={verifyBusy}
+                                      className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white rounded-lg px-3 py-1.5 text-[11px] font-bold transition flex items-center gap-1.5"
+                                    >
+                                      <Sparkles className="w-3.5 h-3.5" />
+                                      {verifyBusy ? "Checking LeetCode…" : `Verify on LeetCode (+${rc.challenge.xpReward} XP)`}
+                                    </button>
+                                    <button
+                                      onClick={() => handleQuestionAction(rc.id, "reset")}
+                                      disabled={resetBusy}
+                                      className="text-[10.5px] font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 disabled:opacity-50"
+                                    >
+                                      <RotateCcw className="w-3 h-3" />
+                                      {resetBusy ? "Undoing…" : "Undo \"Done\""}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  <div className="text-[11px] text-muted-foreground">
+                                    Pick one of the options below. <b>You can change your choice later</b> if you click by mistake.
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                      onClick={() => handleQuestionAction(rc.id, "verify")}
+                                      disabled={verifyBusy}
+                                      className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white rounded-lg px-3 py-1.5 text-[11px] font-bold transition flex items-center gap-1.5"
+                                      title="Check my latest LeetCode submissions and award XP if this problem is solved."
+                                    >
+                                      <Sparkles className="w-3.5 h-3.5" />
+                                      {verifyBusy ? "Checking LeetCode…" : `I solved it — verify (+${rc.challenge.xpReward} XP)`}
+                                    </button>
+                                    <button
+                                      onClick={() => handleQuestionAction(rc.id, "claim")}
+                                      disabled={claimBusy}
+                                      className="bg-card hover:bg-muted border border-border rounded-lg px-3 py-1.5 text-[11px] font-bold text-foreground transition flex items-center gap-1.5"
+                                      title="Mark as done now and verify on LeetCode later."
+                                    >
+                                      <CircleDashed className="w-3.5 h-3.5" />
+                                      {claimBusy ? "Marking…" : "Mark done, verify later"}
+                                    </button>
+                                    <button
+                                      onClick={() => handleQuestionAction(rc.id, "preSolved")}
+                                      disabled={preBusy}
+                                      className="bg-muted hover:bg-muted/70 border border-border rounded-lg px-3 py-1.5 text-[11px] font-bold text-muted-foreground hover:text-foreground transition"
+                                      title="I had already solved this before joining the lobby. No XP."
+                                    >
+                                      {preBusy ? "Saving…" : "Already solved before joining (no XP)"}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                              {msg && (
+                                <div
+                                  className={`text-[10.5px] font-medium ${
+                                    msg.type === "ok"
+                                      ? "text-emerald-600 dark:text-emerald-400"
+                                      : "text-rose-600 dark:text-rose-400"
+                                  }`}
+                                >
+                                  {msg.text}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Per-member progress strip */}
+                          <div className="border-t border-border/60 pt-3">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold block mb-2">Member Progress</span>
+                            <div className="grid gap-2.5">
+                              {rc.progress.map((prog) => {
+                                let label = "Working";
+                                let style =
+                                  "bg-muted text-muted-foreground border border-border";
+                                if (prog.verified) {
+                                  label = `Verified · +${prog.xpAwarded ?? 0} XP`;
+                                  style =
+                                    "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40";
+                                } else if (prog.markedPreSolved) {
+                                  label = "Solved earlier";
+                                  style =
+                                    "bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-900/40";
+                                } else if (prog.completed) {
+                                  label = "Solved All";
+                                  style =
+                                    "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40";
+                                } else if (prog.claimed) {
+                                  label = "Claimed · awaiting verify";
+                                  style =
+                                    "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/40";
+                                }
+                                return (
+                                  <div key={prog.userId} className="flex items-center justify-between text-xs">
+                                    <span className="text-foreground">{prog.user.fullName || prog.user.email.split("@")[0]}</span>
+                                    <span className={`font-semibold px-2 py-0.5 rounded text-[10px] uppercase ${style}`}>
+                                      {label}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -580,7 +926,122 @@ export default function RoomsPage() {
 
             {/* Right Column: Host settings & members list */}
             <div className="space-y-6">
-              
+
+              {/* Host Add-LeetCode-Question form */}
+              {roomDetails && currentUser && roomDetails.creatorId === currentUser.id && (
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    <LinkIcon className="w-4 h-4 text-indigo-400" /> Add LeetCode Question
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground -mt-2">
+                    Paste the full LeetCode problem URL (e.g. <span className="font-mono">https://leetcode.com/problems/valid-anagram/</span>) or just the slug (<span className="font-mono">valid-anagram</span>). Members can mark it Done and click Verify to claim XP automatically.
+                  </p>
+
+                  <form onSubmit={handleAddHostQuestion} className="space-y-3">
+                    <input
+                      type="text"
+                      value={questionUrl}
+                      onChange={(e) => setQuestionUrl(e.target.value)}
+                      placeholder="https://leetcode.com/problems/valid-anagram/"
+                      className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-mono"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={questionNumber}
+                        onChange={(e) => setQuestionNumber(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="LC #"
+                        className="bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition font-mono"
+                      />
+                      <select
+                        value={questionDifficulty}
+                        onChange={(e) => setQuestionDifficulty(e.target.value as "EASY" | "MEDIUM" | "HARD")}
+                        className="bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition"
+                      >
+                        <option value="EASY">EASY · +20 XP</option>
+                        <option value="MEDIUM">MEDIUM · +40 XP</option>
+                        <option value="HARD">HARD · +80 XP</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={questionName}
+                        onChange={(e) => setQuestionName(e.target.value)}
+                        placeholder="Custom name (optional)"
+                        className="bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition"
+                      />
+                      <select
+                        value={questionTopic}
+                        onChange={(e) => setQuestionTopic(e.target.value)}
+                        className="bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition"
+                      >
+                        {["Arrays", "Strings", "Binary Search", "Trees", "Graph", "DP", "Linked List", "Heap", "HashMap", "Greedy", "Sliding Window", "Backtracking", "General"].map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {questionError && (
+                      <p className="text-rose-500 text-[10.5px] font-medium">{questionError}</p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={questionLoading || !questionUrl.trim()}
+                      className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-2"
+                    >
+                      {questionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                      {questionLoading ? "Adding…" : "Add Question to Lobby"}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Lobby Leaderboard — visible to all members */}
+              <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-yellow-500" /> Lobby Leaderboard
+                </h3>
+                {leaderboard.length === 0 ? (
+                  <p className="text-[11px] text-muted-foreground">No XP earned yet. Solve a question and click Verify to appear here.</p>
+                ) : (
+                  <div className="divide-y divide-border/60">
+                    {leaderboard.map((entry) => {
+                      const isMe = entry.userId === currentUser?.id;
+                      const medal =
+                        entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : null;
+                      return (
+                        <div
+                          key={entry.userId}
+                          className={`flex items-center justify-between py-2 ${
+                            isMe ? "bg-indigo-500/5 -mx-3 px-3 rounded-md" : ""
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-[10px] font-mono w-5 text-center text-muted-foreground">
+                              {medal || `#${entry.rank}`}
+                            </span>
+                            {entry.isHost && <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />}
+                            <span className="text-xs font-semibold text-foreground truncate">
+                              {entry.fullName || entry.email.split("@")[0]}
+                              {isMe && <span className="text-[10px] text-indigo-400 ml-1">(you)</span>}
+                            </span>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className="text-xs font-black font-mono text-indigo-500 dark:text-indigo-400">
+                              {entry.xp} XP
+                            </div>
+                            <div className="text-[9px] text-muted-foreground font-mono">
+                              {entry.verified}✓
+                              {entry.preSolved > 0 && <> · {entry.preSolved}⌛</>}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               {/* Host Settings (Visible if creatorId === currentUser.id) */}
               {roomDetails && currentUser && roomDetails.creatorId === currentUser.id && (
                 <div className="bg-card border border-border rounded-2xl p-6 space-y-4">

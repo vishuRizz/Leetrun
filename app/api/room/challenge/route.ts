@@ -72,7 +72,7 @@ export async function GET(request: Request) {
       console.error("Failed to verify room challenge completion:", err);
     });
 
-    // Get active room challenges with completion trackers
+    // Get active room challenges with completion trackers (all progress fields)
     const activeChallenges = await db.roomChallenge.findMany({
       where: { roomId },
       include: {
@@ -82,7 +82,17 @@ export async function GET(request: Request) {
           },
         },
         progress: {
-          include: {
+          select: {
+            id: true,
+            userId: true,
+            completed: true,
+            completedAt: true,
+            claimed: true,
+            claimedAt: true,
+            verified: true,
+            verifiedAt: true,
+            markedPreSolved: true,
+            xpAwarded: true,
             user: {
               select: {
                 id: true,

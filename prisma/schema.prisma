@@ -317,21 +317,36 @@ model RoomChallenge {
   challengeId      String
   challenge        Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   deadline         DateTime?
+  // When true, this question was hand-picked by the host (single problem).
+  isHostQuestion   Boolean @default(false)
+  // LeetCode problem number (e.g. 1 for Two Sum) — populated for host-added questions.
+  problemNumber    Int?
   createdAt        DateTime @default(now())
   progress         RoomChallengeProgress[]
 }
 
 model RoomChallengeProgress {
-  id              String @id @default(cuid())
-  roomChallengeId String
-  roomChallenge   RoomChallenge @relation(fields: [roomChallengeId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  completed       Boolean @default(false)
-  completedAt     DateTime?
-  createdAt       DateTime @default(now())
+  id               String @id @default(cuid())
+  roomChallengeId  String
+  roomChallenge    RoomChallenge @relation(fields: [roomChallengeId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completed        Boolean @default(false)
+  completedAt      DateTime?
+  // User clicked "Done" but hasn't yet been verified against LeetCode submissions.
+  claimed          Boolean @default(false)
+  claimedAt        DateTime?
+  // Verified against LeetCode latest submissions — XP eligible.
+  verified         Boolean @default(false)
+  verifiedAt       DateTime?
+  // User self-reported they had solved this previously — no XP, but counts as done.
+  markedPreSolved  Boolean @default(false)
+  // Frozen XP amount actually awarded for this progress row (0 for pre-solved).
+  xpAwarded        Int @default(0)
+  createdAt        DateTime @default(now())
 
   @@unique([roomChallengeId, userId])
+  @@index([userId])
 }
 
 model RoomInvite {

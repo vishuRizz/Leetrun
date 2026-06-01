@@ -1,26 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
-  Trophy,
-  Users,
-  User,
+  BarChart3,
   Bot,
+  Home,
   LogOut,
+  Trophy,
+  User,
+  Users,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
-import { SidebarAnalytics } from "./SidebarAnalytics";
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const [expanded, setExpanded] = useState(false);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -29,6 +28,7 @@ export function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { name: "Lobbies", href: "/rooms", icon: Users },
     { name: "Profile", href: "/profile", icon: User },
@@ -36,11 +36,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
-      className="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 w-16 hover:w-80 group overflow-hidden whitespace-nowrap shadow-lg shadow-black/5"
-    >
+    <aside className="fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 w-16 hover:w-64 group overflow-hidden whitespace-nowrap shadow-lg shadow-black/5">
       {/* Top Logo Section */}
       <div className="h-16 flex items-center px-4 border-b border-border/50 shrink-0">
         <Image
@@ -55,38 +51,30 @@ export function Sidebar() {
         </span>
       </div>
 
-      {/* Navigation + Analytics (single scroll region) */}
-      <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
-        <nav className="py-4 flex flex-col gap-1 px-3 shrink-0">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 px-2 py-2.5 rounded-lg transition-colors shrink-0 ${
-                  isActive
-                    ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium"
-                }`}
-                title={item.name}
-              >
-                <Icon className="w-5 h-5 shrink-0" />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Divider between nav and analytics */}
-        <div className="mx-3 my-1 border-t border-border/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        {/* Analytics — lazily fetched the first time the sidebar opens */}
-        <SidebarAnalytics visible={expanded} />
-      </div>
+      {/* Navigation Links */}
+      <nav className="flex-1 py-4 flex flex-col gap-1 px-3 overflow-y-auto overflow-x-hidden">
+        {navItems.map((item) => {
+          const isActive = pathname.startsWith(item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex items-center gap-3 px-2 py-2.5 rounded-lg transition-colors shrink-0 ${
+                isActive
+                  ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium"
+              }`}
+              title={item.name}
+            >
+              <Icon className="w-5 h-5 shrink-0" />
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
 
       {/* Footer Actions */}
       <div className="p-3 border-t border-border/50 flex flex-col gap-2 shrink-0">
