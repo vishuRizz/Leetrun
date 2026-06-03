@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { awardXp, incrementStreak } from "./progression";
 import { ChallengeType, ChallengeStatus, Difficulty } from "@prisma/client";
 import questionBankData from "@/DSA Question Bank.json";
+import { startOfAppDay } from "@/lib/utils/app-time";
 
 export interface BankQuestion {
   id: number;
@@ -504,8 +505,9 @@ export async function getSolvedSlugSet(userId: string): Promise<Set<string>> {
  * Expired-but-unfinished quests are marked FAILED.
  */
 export async function expireStaleActiveChallenges(userId: string) {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
+  // Day boundary anchored to the app timezone (IST by default) so daily and
+  // revision quests rotate at local midnight, not 00:00 UTC.
+  const startOfToday = startOfAppDay();
 
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);

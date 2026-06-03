@@ -8,6 +8,7 @@ import {
   verifyChallengeCompletion,
 } from "@/lib/services/challenge";
 import { ChallengeStatus, ChallengeType } from "@prisma/client";
+import { startOfAppDay } from "@/lib/utils/app-time";
 
 const CHALLENGE_INCLUDE = {
   challenge: { include: { problems: true } },
@@ -27,11 +28,14 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
   if (active) return active;
 
   // Look for a recently completed challenge in the relevant window
-  const rangeStart = new Date();
+  let rangeStart: Date;
   if (type === ChallengeType.WEEKLY) {
+    rangeStart = new Date();
     rangeStart.setDate(rangeStart.getDate() - 7);
   } else {
-    rangeStart.setHours(0, 0, 0, 0);
+    // Daily / revision: "today" anchored to the app timezone (IST), so a
+    // completed daily only counts as today's until local midnight.
+    rangeStart = startOfAppDay();
   }
 
   const completedRecently = await db.userChallenge.findFirst({

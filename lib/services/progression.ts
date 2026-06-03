@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { appDayKey, startOfPreviousAppDay } from "@/lib/utils/app-time";
 
 /**
  * Dynamically recalculates the user's totalXp (Universal Competency Score)
@@ -130,15 +131,32 @@ export async function awardXp(userId: string, amount: number, reason: string) {
   });
 }
 
+/**
+ * Bump the user's streak for completing a quest today. Day-aware:
+ * - Idempotent: at most one increment per app day (IST).
+ * - Continues the streak if the previous increment was yesterday.
+ * - Resets to 1 if a day (or more) was skipped, or it's the first ever.
+ */
 export async function incrementStreak(userId: string) {
   const user = await db.user.findUnique({
     where: { id: userId },
-    select: { currentStreak: true, longestStreak: true },
+    select: { currentStreak: true, longestStreak: true, lastStreakAt: true },
   });
 
   if (!user) throw new Error("User not found.");
 
-  const nextStreak = user.currentStreak + 1;
+  const todayKey = appDayKey();
+
+  // Already counted today — nothing to do.
+  if (user.lastStreakAt && appDayKey(user.lastStreakAt) === todayKey) {
+    return user;
+  }
+
+  const yesterdayKey = appDayKey(startOfPreviousAppDay());
+  const continuing =
+    user.lastStreakAt && appDayKey(user.lastStreakAt) === yesterdayKey;
+
+  const nextStreak = continuing ? user.currentStreak + 1 : 1;
   const nextLongest = Math.max(user.longestStreak, nextStreak);
 
   const updatedUser = await db.user.update({
@@ -146,6 +164,7 @@ export async function incrementStreak(userId: string) {
     data: {
       currentStreak: nextStreak,
       longestStreak: nextLongest,
+      lastStreakAt: new Date(),
     },
   });
 
