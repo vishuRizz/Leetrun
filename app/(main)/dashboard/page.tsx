@@ -12,6 +12,9 @@ import {
   RotateCw,
   ExternalLink,
   MessageSquare,
+  Check,
+  BadgeCheck,
+  CheckCircle2,
 } from "lucide-react";
 import { InviteFriendModal } from "@/components/InviteFriendModal";
 import { createClient } from "@/lib/supabase/client";
@@ -24,9 +27,13 @@ interface ChallengeProblem {
   problemSlug: string;
   difficulty: string;
   topic: string;
+  completed: boolean;
+  verified: boolean;
 }
 
 interface ChallengeData {
+  userChallengeId: string | null;
+  status: string;
   title: string;
   difficulty: string;
   xpReward: number;
@@ -95,19 +102,34 @@ function writeCache(data: DashboardData) {
 }
 
 function formatChallenge(raw: any): ChallengeData {
+  const progressById = new Map<string, { completed: boolean; verified: boolean }>();
+  (raw?.problemProgress || []).forEach((pp: any) => {
+    progressById.set(pp.problemId, {
+      completed: !!pp.completed,
+      verified: !!pp.verified,
+    });
+  });
+
   return {
+    userChallengeId: raw?.id || null,
+    status: raw?.status || "ACTIVE",
     title: raw?.challenge?.title || "No Active Challenge",
     difficulty: raw?.challenge?.difficulty || "EASY",
     xpReward: raw?.challenge?.xpReward || 30,
     description:
       raw?.challenge?.description || "Your custom generated challenge.",
-    problems: (raw?.challenge?.problems || []).map((p: any) => ({
-      id: p.id,
-      problemName: p.problemName,
-      problemSlug: p.problemSlug,
-      difficulty: p.difficulty,
-      topic: p.topic,
-    })),
+    problems: (raw?.challenge?.problems || []).map((p: any) => {
+      const prog = progressById.get(p.id);
+      return {
+        id: p.id,
+        problemName: p.problemName,
+        problemSlug: p.problemSlug,
+        difficulty: p.difficulty,
+        topic: p.topic,
+        completed: prog?.completed ?? false,
+        verified: prog?.verified ?? false,
+      };
+    }),
   };
 }
 
@@ -133,6 +155,12 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"daily" | "weekly" | "revision">(
     "daily"
   );
+  const [verifyingQuest, setVerifyingQuest] = useState(false);
+  const [togglingProblem, setTogglingProblem] = useState<string | null>(null);
+  const [questMessage, setQuestMessage] = useState<{
+    type: "success" | "info" | "error";
+    text: string;
+  } | null>(null);
   const backgroundSyncRan = useRef(false);
 
   const loadDashboard = useCallback(
@@ -209,6 +237,78 @@ export default function Dashboard() {
       await triggerBackgroundSync(true);
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleVerifyQuest = async (userChallengeId: string | null) => {
+    if (!userChallengeId) return;
+    setVerifyingQuest(true);
+    setQuestMessage(null);
+    try {
+      // Pull fresh LeetCode solves first so verification is accurate.
+      await fetch("/api/leetcode/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force: true }),
+      }).catch(() => {});
+
+      const res = await fetch("/api/challenge/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userChallengeId, action: "verify" }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setQuestMessage({ type: "error", text: json.error || "Verify failed." });
+        return;
+      }
+      setQuestMessage({
+        type: json.status === "COMPLETED" ? "success" : "info",
+        text: json.message,
+      });
+      await loadDashboard();
+    } catch {
+      setQuestMessage({ type: "error", text: "Network error. Try again." });
+    } finally {
+      setVerifyingQuest(false);
+    }
+  };
+
+  const handleToggleProblem = async (
+    userChallengeId: string | null,
+    problemId: string,
+    completed: boolean
+  ) => {
+    if (!userChallengeId) return;
+    setTogglingProblem(problemId);
+    setQuestMessage(null);
+    try {
+      const res = await fetch("/api/challenge/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userChallengeId,
+          action: "toggle",
+          problemId,
+          completed,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setQuestMessage({ type: "error", text: json.error || "Update failed." });
+        return;
+      }
+      if (json.status === "COMPLETED" && json.xpAwarded > 0) {
+        setQuestMessage({
+          type: "success",
+          text: `Quest complete! +${json.xpAwarded} XP claimed.`,
+        });
+      }
+      await loadDashboard();
+    } catch {
+      setQuestMessage({ type: "error", text: "Network error. Try again." });
+    } finally {
+      setTogglingProblem(null);
     }
   };
 
@@ -302,21 +402,27 @@ export default function Dashboard() {
                     id: "daily",
                     name: "Daily Quest",
                     xp: `+${data.daily.xpReward} XP`,
+                    done: data.daily.status === "COMPLETED",
                   },
                   {
                     id: "weekly",
                     name: "Weekly Quest",
                     xp: `+${data.weekly.xpReward} XP`,
+                    done: data.weekly.status === "COMPLETED",
                   },
                   {
                     id: "revision",
                     name: "Revision Shield",
                     xp: `+${data.revision.xpReward} XP`,
+                    done: data.revision.status === "COMPLETED",
                   },
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => {
+                      setActiveTab(tab.id as any);
+                      setQuestMessage(null);
+                    }}
                     type="button"
                     className={`pb-3 px-4 text-sm font-bold border-b-2 whitespace-nowrap transition flex items-center gap-1.5 ${
                       activeTab === tab.id
@@ -325,15 +431,19 @@ export default function Dashboard() {
                     }`}
                   >
                     {tab.name}
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                        activeTab === tab.id
-                          ? "bg-indigo-600/20 text-indigo-600 dark:text-indigo-300"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {tab.xp}
-                    </span>
+                    {tab.done ? (
+                      <BadgeCheck className="w-4 h-4 text-emerald-500" />
+                    ) : (
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                          activeTab === tab.id
+                            ? "bg-indigo-600/20 text-indigo-600 dark:text-indigo-300"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {tab.xp}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -364,45 +474,127 @@ export default function Dashboard() {
               </p>
 
               <div className="space-y-4">
-                {currentChallenge.problems.map((prob) => (
-                  <div
-                    key={prob.id}
-                    className="flex items-center justify-between p-4 bg-muted/30 border border-border hover:border-indigo-500/40 rounded-xl transition"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-foreground">
-                          {prob.problemName}
-                        </span>
-                        <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">
-                          {prob.topic}
-                        </span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Difficulty:{" "}
-                        <span className="text-emerald-600 dark:text-emerald-500 font-semibold">
-                          {prob.difficulty}
-                        </span>
-                      </div>
-                    </div>
-                    <a
-                      href={`https://leetcode.com/problems/${prob.problemSlug}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition shadow-sm"
+                {currentChallenge.problems.map((prob) => {
+                  const isCompleted = currentChallenge.status === "COMPLETED";
+                  const done = isCompleted || prob.completed;
+                  const toggling = togglingProblem === prob.id;
+                  return (
+                    <div
+                      key={prob.id}
+                      className={`flex items-center justify-between gap-3 p-4 border rounded-xl transition ${
+                        done
+                          ? "bg-emerald-500/5 border-emerald-500/30"
+                          : "bg-muted/30 border-border hover:border-indigo-500/40"
+                      }`}
                     >
-                      Solve <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                ))}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleToggleProblem(
+                              currentChallenge.userChallengeId,
+                              prob.id,
+                              !prob.completed
+                            )
+                          }
+                          disabled={toggling || isCompleted}
+                          title={
+                            done ? "Mark as not done" : "Mark as done"
+                          }
+                          className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 transition ${
+                            done
+                              ? "bg-emerald-500 border-emerald-500 text-white"
+                              : "bg-background border-border hover:border-indigo-500"
+                          } ${isCompleted ? "cursor-default" : ""}`}
+                        >
+                          {toggling ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                          ) : done ? (
+                            <Check className="w-4 h-4" />
+                          ) : null}
+                        </button>
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span
+                              className={`font-bold ${
+                                done
+                                  ? "text-muted-foreground line-through"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {prob.problemName}
+                            </span>
+                            <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">
+                              {prob.topic}
+                            </span>
+                            {prob.verified && (
+                              <span className="text-[10px] inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 font-bold">
+                                <BadgeCheck className="w-3 h-3" /> Verified
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Difficulty:{" "}
+                            <span className="text-emerald-600 dark:text-emerald-500 font-semibold">
+                              {prob.difficulty}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <a
+                        href={`https://leetcode.com/problems/${prob.problemSlug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition shadow-sm shrink-0"
+                      >
+                        Solve <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
 
-              <div className="flex items-center justify-between mt-6 pt-6 border-t border-border text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck className="w-4 h-4" /> Solved problems
-                  automatically sync on reload or trigger.
-                </span>
-                <span className="font-semibold text-primary">
+              {questMessage && (
+                <div
+                  className={`mt-4 text-xs font-medium flex items-center gap-1.5 rounded-lg px-3 py-2 ${
+                    questMessage.type === "success"
+                      ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                      : questMessage.type === "error"
+                      ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      : "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300"
+                  }`}
+                >
+                  {questMessage.type === "success" && (
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  {questMessage.text}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-6 pt-6 border-t border-border">
+                {currentChallenge.status === "COMPLETED" ? (
+                  <span className="flex items-center gap-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    <BadgeCheck className="w-4 h-4" /> Completed — +
+                    {currentChallenge.xpReward} XP claimed
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleVerifyQuest(currentChallenge.userChallengeId)
+                    }
+                    disabled={verifyingQuest}
+                    className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition shadow-sm"
+                  >
+                    {verifyingQuest ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="w-4 h-4" />
+                    )}
+                    Verify &amp; Claim XP
+                  </button>
+                )}
+                <span className="text-xs font-semibold text-primary">
                   +{currentChallenge.xpReward} XP Reward
                 </span>
               </div>

@@ -5,8 +5,15 @@ import {
   generateDailyChallenge,
   generateWeeklyChallenge,
   generateRevisionChallenge,
+  expireStaleActiveChallenges,
+  verifyChallengeCompletion,
 } from "@/lib/services/challenge";
 import { ChallengeStatus, ChallengeType } from "@prisma/client";
+
+const CHALLENGE_INCLUDE = {
+  challenge: { include: { problems: true } },
+  problemProgress: true,
+} as const;
 
 // Lightweight DB-only fetch for a single challenge type.
 async function getOrCreateChallenge(userId: string, type: ChallengeType) {
@@ -16,9 +23,7 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
       status: ChallengeStatus.ACTIVE,
       challenge: { type },
     },
-    include: {
-      challenge: { include: { problems: true } },
-    },
+    include: CHALLENGE_INCLUDE,
   });
   if (active) return active;
 
@@ -37,9 +42,7 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
       challenge: { type },
       completedAt: { gte: rangeStart },
     },
-    include: {
-      challenge: { include: { problems: true } },
-    },
+    include: CHALLENGE_INCLUDE,
   });
   if (completedRecently) return completedRecently;
 
@@ -55,9 +58,7 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
 
   return db.userChallenge.findUnique({
     where: { id: result.userChallenge.id },
-    include: {
-      challenge: { include: { problems: true } },
-    },
+    include: CHALLENGE_INCLUDE,
   });
 }
 
@@ -71,6 +72,14 @@ export async function GET() {
     if (!authUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Expire yesterday's daily/revision quests and last week's weekly quest so
+    // fresh ones get generated below. Must run BEFORE the get-or-create calls.
+    await expireStaleActiveChallenges(authUser.id);
+
+    // Auto-complete any quests whose problems are already in the user's solve
+    // history (recent + deep-synced). DB-only, no external LeetCode call.
+    await verifyChallengeCompletion(authUser.id).catch(() => {});
 
     // Run user profile + 3 challenge resolutions fully in parallel.
     // Profile query is intentionally slim — only what the dashboard renders.

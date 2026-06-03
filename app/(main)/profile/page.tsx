@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   Loader2,
@@ -103,6 +104,7 @@ export default function ProfilePage() {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // Inline name + avatar editor state
   const [editingName, setEditingName] = useState(false);
@@ -129,24 +131,52 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("/api/profile");
+      setAuthError(null);
+      const res = await fetch("/api/profile", { credentials: "include" });
       const data = await res.json();
-      if (res.ok) {
-        setProfile(data.profile);
-        setLcUsername(data.profile.leetcodeProfile?.username || "");
-        if (!data.profile.leetcodeProfile) {
-          setEditingLeetcode(true);
-        }
+
+      if (res.status === 401) {
+        setAuthError("session");
+        setProfile(null);
+        return;
+      }
+
+      if (!res.ok) {
+        setAuthError(data.error || "Could not load your profile.");
+        setProfile(null);
+        return;
+      }
+
+      setProfile(data.profile);
+      setLcUsername(data.profile.leetcodeProfile?.username || "");
+      if (!data.profile.leetcodeProfile) {
+        setEditingLeetcode(true);
       }
     } catch (e) {
       console.error(e);
+      setAuthError("Network error. Please refresh and try again.");
+      setProfile(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProfile();
+    const init = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setLoading(false);
+        setAuthError("session");
+        return;
+      }
+
+      await fetchProfile();
+    };
+    void init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStartEditName = () => {
@@ -339,13 +369,31 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
-        <p className="text-muted-foreground mb-4">Please log in to see your profile.</p>
-        <button
-          onClick={() => router.push("/login")}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition"
-        >
-          Go to Login
-        </button>
+        <p className="text-muted-foreground mb-2 max-w-md">
+          {authError === "session"
+            ? "Your session expired or could not be verified. Please sign in again."
+            : authError || "We couldn't load your profile right now."}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 mt-2">
+          <Link
+            href="/login"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition"
+          >
+            Go to Login
+          </Link>
+          {authError !== "session" && (
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true);
+                void fetchProfile();
+              }}
+              className="border border-border hover:bg-muted px-6 py-2.5 rounded-lg text-sm font-bold transition"
+            >
+              Retry
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -756,7 +804,7 @@ export default function ProfilePage() {
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xl">
                   Import every problem you&apos;ve solved on LeetCode using your
-                  session cookie — full solve history, not just recent
+                  session cookie - full solve history, not just recent
                   submissions. Optionally auto-marks matching Striver sheet
                   progress.
                 </p>

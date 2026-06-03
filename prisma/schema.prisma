@@ -261,6 +261,24 @@ model UserChallenge {
   progress         Int @default(0)
   assignedAt       DateTime @default(now())
   completedAt      DateTime?
+  problemProgress  UserChallengeProblem[]
+}
+
+/// Per-problem completion within a user's quest. A problem can be completed
+/// either by self-report (verified=false) or auto-verified against the user's
+/// LeetCode solves (verified=true). When all problems are completed the parent
+/// UserChallenge is marked COMPLETED and XP is awarded once.
+model UserChallengeProblem {
+  id               String @id @default(cuid())
+  userChallengeId  String
+  userChallenge    UserChallenge @relation(fields: [userChallengeId], references: [id], onDelete: Cascade)
+  problemId        String
+  completed        Boolean @default(false)
+  verified         Boolean @default(false)
+  completedAt      DateTime?
+
+  @@unique([userChallengeId, problemId])
+  @@index([userChallengeId])
 }
 
 model XPLog {

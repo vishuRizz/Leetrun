@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { ensureUsername, setUsername } from "@/lib/services/username";
+import { ensureDbUser } from "@/lib/auth/ensure-user";
 
 const MAX_NAME_LEN = 60;
 
@@ -79,6 +80,9 @@ export async function GET(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Auto-provision Prisma profile if auth exists but DB row is missing.
+    await ensureDbUser(user);
 
     // Retrieve comprehensive user data
     const dbUser = await db.user.findUnique({

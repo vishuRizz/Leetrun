@@ -44,9 +44,12 @@ function LoginForm() {
       const data = await res.json();
 
       if (res.ok) {
-        // Fetch session to determine redirection path (dashboard vs onboarding)
-        const nextPath = data.user?.user_metadata?.onboardingDone ? "/dashboard" : "/onboarding";
-        router.push(nextPath);
+        const nextPath = data.user?.user_metadata?.onboardingDone
+          ? "/dashboard"
+          : "/onboarding";
+        // Hard navigation ensures middleware sees freshly-set auth cookies.
+        window.location.href = nextPath;
+        return;
       } else {
         setError(data.error || "Invalid email or password. Please verify credentials.");
       }

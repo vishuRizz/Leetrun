@@ -348,63 +348,250 @@ export async function generateRevisionChallenge(userId: string) {
   });
 }
 
-export async function verifyChallengeCompletion(userId: string) {
-  // Fetch active user challenges
-  const activeChallenges = await db.userChallenge.findMany({
-    where: {
-      userId,
-      status: ChallengeStatus.ACTIVE,
+/**
+ * Build the set of every problem slug the user has solved on LeetCode.
+ * Combines recent submissions (lightweight sync) with the full deep-synced
+ * solve history so quest verification is accurate.
+ */
+export async function getSolvedSlugSet(userId: string): Promise<Set<string>> {
+  const profile = await db.leetcodeProfile.findUnique({
+    where: { userId },
+    select: {
+      submissions: { select: { slug: true } },
+      solvedProblems: { select: { titleSlug: true } },
     },
-    include: {
-      challenge: {
-        include: {
-          problems: true,
+  });
+
+  const set = new Set<string>();
+  if (profile) {
+    profile.submissions.forEach((s) => set.add(s.slug));
+    profile.solvedProblems.forEach((s) => set.add(s.titleSlug));
+  }
+  return set;
+}
+
+/**
+ * Expire stale ACTIVE quests so fresh ones are generated:
+ * - DAILY / REVISION: expire if assigned before the start of today.
+ * - WEEKLY: expire if assigned more than 7 days ago.
+ * Expired-but-unfinished quests are marked FAILED.
+ */
+export async function expireStaleActiveChallenges(userId: string) {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  await Promise.all([
+    db.userChallenge.updateMany({
+      where: {
+        userId,
+        status: ChallengeStatus.ACTIVE,
+        assignedAt: { lt: startOfToday },
+        challenge: {
+          type: { in: [ChallengeType.DAILY, ChallengeType.REVISION] },
         },
       },
+      data: { status: ChallengeStatus.FAILED },
+    }),
+    db.userChallenge.updateMany({
+      where: {
+        userId,
+        status: ChallengeStatus.ACTIVE,
+        assignedAt: { lt: weekAgo },
+        challenge: { type: ChallengeType.WEEKLY },
+      },
+      data: { status: ChallengeStatus.FAILED },
+    }),
+  ]);
+}
+
+/**
+ * If every problem in a quest is completed, mark it COMPLETED and award XP
+ * exactly once. Always keeps the `progress` percentage in sync.
+ */
+async function finalizeQuestProgress(
+  userId: string,
+  userChallengeId: string
+): Promise<{ status: ChallengeStatus; progress: number; xpAwarded: number }> {
+  const uc = await db.userChallenge.findUnique({
+    where: { id: userChallengeId },
+    include: {
+      challenge: { include: { problems: true } },
+      problemProgress: true,
     },
+  });
+
+  if (!uc || uc.userId !== userId) {
+    throw new Error("Quest not found.");
+  }
+
+  const total = uc.challenge.problems.length;
+  const doneIds = new Set(
+    uc.problemProgress.filter((p) => p.completed).map((p) => p.problemId)
+  );
+  const doneCount = uc.challenge.problems.filter((p) =>
+    doneIds.has(p.id)
+  ).length;
+  const progress = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+  const allDone = total > 0 && doneCount === total;
+
+  // Already completed — just report current state.
+  if (uc.status === ChallengeStatus.COMPLETED) {
+    return { status: ChallengeStatus.COMPLETED, progress: 100, xpAwarded: 0 };
+  }
+
+  if (!allDone) {
+    if (uc.progress !== progress) {
+      await db.userChallenge.update({
+        where: { id: uc.id },
+        data: { progress },
+      });
+    }
+    return { status: uc.status, progress, xpAwarded: 0 };
+  }
+
+  await db.userChallenge.update({
+    where: { id: uc.id },
+    data: {
+      status: ChallengeStatus.COMPLETED,
+      completedAt: new Date(),
+      progress: 100,
+    },
+  });
+
+  await awardXp(
+    userId,
+    uc.challenge.xpReward,
+    `Completed quest: ${uc.challenge.title}`
+  );
+
+  if (uc.challenge.type === ChallengeType.DAILY) {
+    await incrementStreak(userId).catch(() => {});
+  }
+
+  return {
+    status: ChallengeStatus.COMPLETED,
+    progress: 100,
+    xpAwarded: uc.challenge.xpReward,
+  };
+}
+
+/** Manually toggle a single problem's completion (self-report). */
+export async function setQuestProblemCompletion(
+  userId: string,
+  userChallengeId: string,
+  problemId: string,
+  completed: boolean
+) {
+  const uc = await db.userChallenge.findUnique({
+    where: { id: userChallengeId },
+    include: { challenge: { include: { problems: true } } },
+  });
+
+  if (!uc || uc.userId !== userId) {
+    throw new Error("Quest not found.");
+  }
+  if (!uc.challenge.problems.some((p) => p.id === problemId)) {
+    throw new Error("Problem does not belong to this quest.");
+  }
+  if (uc.status === ChallengeStatus.COMPLETED) {
+    return finalizeQuestProgress(userId, userChallengeId);
+  }
+
+  await db.userChallengeProblem.upsert({
+    where: { userChallengeId_problemId: { userChallengeId, problemId } },
+    update: {
+      completed,
+      completedAt: completed ? new Date() : null,
+    },
+    create: {
+      userChallengeId,
+      problemId,
+      completed,
+      verified: false,
+      completedAt: completed ? new Date() : null,
+    },
+  });
+
+  return finalizeQuestProgress(userId, userChallengeId);
+}
+
+/**
+ * Verify a quest against the user's actual LeetCode solves. Auto-marks every
+ * problem found in their solve history, then completes + awards XP if done.
+ */
+export async function verifyQuest(userId: string, userChallengeId: string) {
+  const uc = await db.userChallenge.findUnique({
+    where: { id: userChallengeId },
+    include: {
+      challenge: { include: { problems: true } },
+      problemProgress: true,
+    },
+  });
+
+  if (!uc || uc.userId !== userId) {
+    throw new Error("Quest not found.");
+  }
+
+  const solved = await getSolvedSlugSet(userId);
+  const alreadyDone = new Set(
+    uc.problemProgress.filter((p) => p.completed).map((p) => p.problemId)
+  );
+
+  let newlyVerified = 0;
+  for (const p of uc.challenge.problems) {
+    if (solved.has(p.problemSlug) && !alreadyDone.has(p.id)) {
+      await db.userChallengeProblem.upsert({
+        where: {
+          userChallengeId_problemId: { userChallengeId, problemId: p.id },
+        },
+        update: { completed: true, verified: true, completedAt: new Date() },
+        create: {
+          userChallengeId,
+          problemId: p.id,
+          completed: true,
+          verified: true,
+          completedAt: new Date(),
+        },
+      });
+      newlyVerified++;
+    }
+  }
+
+  const result = await finalizeQuestProgress(userId, userChallengeId);
+
+  const pendingSlugs = uc.challenge.problems
+    .filter((p) => !solved.has(p.problemSlug) && !alreadyDone.has(p.id))
+    .map((p) => p.problemSlug);
+
+  return { ...result, newlyVerified, pendingSlugs };
+}
+
+/**
+ * Auto-verify all ACTIVE quests against the user's LeetCode solve history.
+ * Reuses verifyQuest so per-problem progress rows stay consistent with the UI.
+ */
+export async function verifyChallengeCompletion(userId: string) {
+  const activeChallenges = await db.userChallenge.findMany({
+    where: { userId, status: ChallengeStatus.ACTIVE },
+    select: { id: true },
   });
 
   if (activeChallenges.length === 0) {
     return { verifiedCount: 0 };
   }
 
-  // Fetch recent user submissions
-  const profile = await db.leetcodeProfile.findUnique({
-    where: { userId },
-    include: { submissions: true },
-  });
-
-  if (!profile) return { verifiedCount: 0 };
-
-  const solvedSlugs = new Set(profile.submissions.map((s) => s.slug));
   let verifiedCount = 0;
-
   for (const uc of activeChallenges) {
-    const problems = uc.challenge.problems;
-    // Check if ALL problems in this challenge have been solved
-    const allSolved = problems.every((p) => solvedSlugs.has(p.problemSlug));
-
-    if (allSolved) {
-      await db.$transaction(async (tx) => {
-        // Mark challenge as completed
-        await tx.userChallenge.update({
-          where: { id: uc.id },
-          data: {
-            status: ChallengeStatus.COMPLETED,
-            completedAt: new Date(),
-            progress: 100,
-          },
-        });
-
-        // Award XP
-        await awardXp(userId, uc.challenge.xpReward, `Completed challenge: ${uc.challenge.title}`);
-
-        // Update streak
-        if (uc.challenge.type === ChallengeType.DAILY) {
-          await incrementStreak(userId);
-        }
-      });
-      verifiedCount++;
+    try {
+      const result = await verifyQuest(userId, uc.id);
+      if (result.status === ChallengeStatus.COMPLETED && result.xpAwarded > 0) {
+        verifiedCount++;
+      }
+    } catch {
+      // Skip individual quest failures; keep verifying the rest.
     }
   }
 

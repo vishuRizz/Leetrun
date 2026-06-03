@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { db } from "@/lib/db";
+import { ensureDbUser } from "@/lib/auth/ensure-user";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -35,37 +35,9 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const prismaUser = await db.user.findUnique({
-          where: { id: user.id },
+        await ensureDbUser(user).catch((err) => {
+          console.error("Failed to ensure DB user on OAuth callback:", err);
         });
-
-        if (!prismaUser) {
-          await db.user.create({
-            data: {
-              id: user.id,
-              email: user.email!,
-              fullName: user.user_metadata?.full_name || null,
-              avatarUrl: user.user_metadata?.avatar_url || null,
-              level: "BEGINNER",
-              onboardingDone: false,
-              preferences: {
-                create: {
-                  preferredDifficulty: "EASY",
-                  dailyQuestionTarget: 2,
-                  mentorName: "Buddy",
-                },
-              },
-              stats: {
-                create: {
-                  totalSolved: 0,
-                  easySolved: 0,
-                  mediumSolved: 0,
-                  hardSolved: 0,
-                },
-              },
-            },
-          });
-        }
       }
 
       return NextResponse.redirect(`${origin}${next}`);

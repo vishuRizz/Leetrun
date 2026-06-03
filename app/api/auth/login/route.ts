@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { ensureDbUser } from "@/lib/auth/ensure-user";
 
 export async function POST(request: Request) {
   try {
@@ -17,6 +18,12 @@ export async function POST(request: Request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (data.user) {
+      await ensureDbUser(data.user).catch((err) => {
+        console.error("Failed to ensure DB user on login:", err);
+      });
     }
 
     return NextResponse.json({ success: true, user: data.user });
