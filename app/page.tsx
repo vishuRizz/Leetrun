@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import FAQSection from "@/components/landing/FAQSection";
 import FeaturesBenefits from "@/components/landing/FeaturesBenefits";
 import HeroSection from "@/components/landing/HeroSection";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import PricingSection from "@/components/landing/PricingSection";
+import { siteConfig } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: siteConfig.title,
+  },
+  description: siteConfig.description,
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (
