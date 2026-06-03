@@ -26,6 +26,8 @@ import {
   Trash2,
   Copy,
   ExternalLink,
+  Link2,
+  RefreshCw,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -108,6 +110,12 @@ export default function ProfilePage() {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [usernameCopied, setUsernameCopied] = useState(false);
 
+  const [lcUsername, setLcUsername] = useState("");
+  const [editingLeetcode, setEditingLeetcode] = useState(false);
+  const [lcSaving, setLcSaving] = useState(false);
+  const [lcError, setLcError] = useState<string | null>(null);
+  const [lcSuccess, setLcSuccess] = useState<string | null>(null);
+
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -118,6 +126,10 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setProfile(data.profile);
+        setLcUsername(data.profile.leetcodeProfile?.username || "");
+        if (!data.profile.leetcodeProfile) {
+          setEditingLeetcode(true);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -268,6 +280,43 @@ export default function ProfilePage() {
       setAvatarError(err?.message || "Network error.");
     } finally {
       setUploadingAvatar(false);
+    }
+  };
+
+  const handleStartEditLeetcode = () => {
+    setLcUsername(profile?.leetcodeProfile?.username || "");
+    setLcError(null);
+    setLcSuccess(null);
+    setEditingLeetcode(true);
+  };
+
+  const handleConnectLeetcode = async () => {
+    const trimmed = lcUsername.trim().replace(/^@/, "");
+    if (!trimmed) {
+      setLcError("Enter your LeetCode username.");
+      return;
+    }
+    setLcSaving(true);
+    setLcError(null);
+    setLcSuccess(null);
+    try {
+      const res = await fetch("/api/profile/leetcode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLcError(data.error || "Could not connect LeetCode account.");
+        return;
+      }
+      setLcSuccess(data.message || "LeetCode connected!");
+      setEditingLeetcode(false);
+      await fetchProfile();
+    } catch (err: any) {
+      setLcError(err?.message || "Network error.");
+    } finally {
+      setLcSaving(false);
     }
   };
 
@@ -581,6 +630,112 @@ export default function ProfilePage() {
               <div className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">Coins</div>
             </div>
           </div>
+        </section>
+
+        {/* LeetCode connect / update */}
+        <section className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <h3 className="font-extrabold text-sm text-foreground flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-indigo-500" /> LeetCode Account
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+                Connect your LeetCode username to sync solves, recalculate XP,
+                calibrate your level, and unlock personalized daily quests.
+              </p>
+            </div>
+            {profile.leetcodeProfile && !editingLeetcode && (
+              <button
+                type="button"
+                onClick={handleStartEditLeetcode}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10 px-3 py-1.5 rounded-lg transition"
+              >
+                <Pencil className="w-3.5 h-3.5" /> Update username
+              </button>
+            )}
+          </div>
+
+          {editingLeetcode ? (
+            <div className="flex flex-col sm:flex-row gap-2 max-w-lg">
+              <div className="flex flex-1 items-stretch bg-background border border-border focus-within:border-indigo-500 rounded-lg overflow-hidden">
+                <span className="px-3 py-2.5 bg-muted text-muted-foreground text-sm font-mono border-r border-border">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={lcUsername}
+                  onChange={(e) => setLcUsername(e.target.value.replace(/\s/g, ""))}
+                  placeholder="leetcode-username"
+                  className="flex-1 bg-background px-3 py-2.5 text-sm text-foreground outline-none font-mono"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleConnectLeetcode();
+                  }}
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleConnectLeetcode}
+                  disabled={lcSaving || !lcUsername.trim()}
+                  className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white px-4 py-2.5 rounded-lg text-xs font-bold transition"
+                >
+                  {lcSaving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  )}
+                  {profile.leetcodeProfile ? "Sync & update" : "Connect & sync"}
+                </button>
+                {profile.leetcodeProfile && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingLeetcode(false);
+                      setLcUsername(profile.leetcodeProfile?.username || "");
+                      setLcError(null);
+                    }}
+                    className="px-3 py-2.5 rounded-lg text-xs font-bold border border-border text-muted-foreground hover:bg-muted transition"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : profile.leetcodeProfile ? (
+            <div className="flex flex-wrap items-center gap-4 bg-muted/40 border border-border rounded-xl p-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                  Connected as
+                </div>
+                <a
+                  href={`https://leetcode.com/u/${profile.leetcodeProfile.username}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-base font-black text-foreground hover:text-indigo-500 transition inline-flex items-center gap-1"
+                >
+                  @{profile.leetcodeProfile.username}
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Ranking{" "}
+                <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                  #{profile.leetcodeProfile.ranking ?? "N/A"}
+                </span>
+                {" · "}
+                {profile.leetcodeProfile.totalSolved} solved
+              </div>
+            </div>
+          ) : null}
+
+          {lcError && (
+            <p className="text-xs text-rose-500 font-medium">{lcError}</p>
+          )}
+          {lcSuccess && (
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" /> {lcSuccess}
+            </p>
+          )}
         </section>
 
         {/* Breakdown section grid */}
