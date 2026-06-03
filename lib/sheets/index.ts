@@ -180,3 +180,25 @@ export function validProblemKeys(sheet: NormalizedSheet): Set<string> {
   }
   return keys;
 }
+
+export interface SheetProblemRef {
+  sheetSlug: string;
+  problemKey: string;
+}
+
+/** Map LeetCode titleSlug → sheet problem refs across all sheets. */
+export function buildLeetcodeSlugIndex(): Map<string, SheetProblemRef[]> {
+  const map = new Map<string, SheetProblemRef[]>();
+  for (const sheet of SHEETS) {
+    for (const section of sheet.sections) {
+      for (const p of section.problems) {
+        if (!p.leetcodeSlug) continue;
+        const slug = p.leetcodeSlug.toLowerCase();
+        const refs = map.get(slug) || [];
+        refs.push({ sheetSlug: sheet.slug, problemKey: p.key });
+        map.set(slug, refs);
+      }
+    }
+  }
+  return map;
+}

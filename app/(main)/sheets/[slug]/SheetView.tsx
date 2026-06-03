@@ -11,6 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import type { NormalizedSheet } from "@/lib/sheets";
+import SheetsDeepSyncBanner from "@/components/SheetsDeepSyncBanner";
 
 interface Props {
   sheet: NormalizedSheet;
@@ -136,6 +137,20 @@ export default function SheetView({ sheet, initialCompleted }: Props) {
         next.delete(key);
         return next;
       });
+    }
+  };
+
+  const refreshSheetProgress = async () => {
+    try {
+      const res = await fetch(
+        `/api/sheets/progress?sheetSlug=${encodeURIComponent(sheet.slug)}`
+      );
+      const data = await res.json();
+      if (data.success && Array.isArray(data.completed)) {
+        setCompleted(new Set(data.completed));
+      }
+    } catch {
+      // ignore
     }
   };
 
@@ -296,6 +311,8 @@ export default function SheetView({ sheet, initialCompleted }: Props) {
       </nav>
 
       <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4">
+        <SheetsDeepSyncBanner onSynced={refreshSheetProgress} />
+
         {hasSteps
           ? groups.map((group) => {
               const groupOpen = openGroups.has(group.id);

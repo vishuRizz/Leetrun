@@ -4,6 +4,7 @@ import { Layers, ArrowRight, ListChecks } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { getSheetSummaries } from "@/lib/sheets";
+import SheetsDeepSyncBanner from "@/components/SheetsDeepSyncBanner";
 
 export const metadata: Metadata = {
   title: "DSA Sheets",
@@ -40,6 +41,8 @@ export default async function SheetsPage() {
       </nav>
 
       <main className="max-w-5xl mx-auto p-6 space-y-6">
+        <SheetsDeepSyncBanner />
+
         <p className="text-sm text-muted-foreground max-w-2xl">
           Work through hand-picked problem sets and tick problems off as you
           solve them. Your progress is saved automatically and synced across

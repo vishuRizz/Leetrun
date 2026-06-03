@@ -3,6 +3,45 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { getSheet, validProblemKeys } from "@/lib/sheets";
 
+/** GET ?sheetSlug= — list completed problem keys for the current user. */
+export async function GET(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const sheetSlug = searchParams.get("sheetSlug") || "";
+
+    if (!sheetSlug) {
+      return NextResponse.json(
+        { error: "sheetSlug query param is required." },
+        { status: 400 }
+      );
+    }
+
+    const rows = await db.sheetProgress.findMany({
+      where: { userId: user.id, sheetSlug },
+      select: { problemKey: true },
+    });
+
+    return NextResponse.json({
+      success: true,
+      completed: rows.map((r) => r.problemKey),
+    });
+  } catch (error: any) {
+    console.error("Error in /api/sheets/progress GET:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to load progress." },
+      { status: 500 }
+    );
+  }
+}
+
 /**
  * Toggle a single sheet problem's completion for the current user.
  * Body: { sheetSlug, problemKey, completed }

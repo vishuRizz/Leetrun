@@ -167,8 +167,27 @@ model LeetcodeProfile {
   acceptanceRate       Float?
   submissionCalendar   String?
   syncedAt             DateTime?
+  sessionCookieEnc     String?   @db.Text
+  deepSyncedAt         DateTime?
+  deepSyncCount        Int       @default(0)
   submissions          LeetcodeSubmission[]
+  solvedProblems       LeetcodeSolvedProblem[]
   languageStats        LeetcodeLanguageStat[]
+}
+
+model LeetcodeSolvedProblem {
+  id         String          @id @default(cuid())
+  profileId  String
+  profile    LeetcodeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title      String
+  titleSlug  String
+  difficulty Difficulty
+  topics     String?
+  acRate     Float?
+  syncedAt   DateTime        @default(now())
+
+  @@unique([profileId, titleSlug])
+  @@index([profileId])
 }
 
 model LeetcodeSubmission {

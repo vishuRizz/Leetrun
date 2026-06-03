@@ -94,6 +94,7 @@ export async function GET(request: Request) {
               orderBy: { submittedAt: "desc" },
               take: 10,
             },
+            _count: { select: { solvedProblems: true } },
           },
         },
         badges: {
@@ -116,9 +117,29 @@ export async function GET(request: Request) {
       email: dbUser.email,
     });
 
+    const { leetcodeProfile, ...rest } = dbUser;
+    const safeLeetcode = leetcodeProfile
+      ? (() => {
+          const {
+            sessionCookieEnc: _enc,
+            _count,
+            ...lc
+          } = leetcodeProfile as typeof leetcodeProfile & {
+            sessionCookieEnc?: string | null;
+            _count?: { solvedProblems: number };
+          };
+          return {
+            ...lc,
+            hasSavedCookie: Boolean(_enc),
+            solvedProblemsCount:
+              _count?.solvedProblems ?? lc.deepSyncCount ?? 0,
+          };
+        })()
+      : null;
+
     return NextResponse.json({
       success: true,
-      profile: { ...dbUser, username },
+      profile: { ...rest, username, leetcodeProfile: safeLeetcode },
     });
   } catch (error: any) {
     console.error("Error in /api/profile GET:", error);

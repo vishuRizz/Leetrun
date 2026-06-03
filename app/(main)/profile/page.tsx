@@ -28,10 +28,12 @@ import {
   ExternalLink,
   Link2,
   RefreshCw,
+  Cookie,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
+import DeepLeetcodeSyncModal from "@/components/DeepLeetcodeSyncModal";
 
 interface ProfileData {
   fullName: string | null;
@@ -65,6 +67,10 @@ interface ProfileData {
     mediumSolved: number;
     hardSolved: number;
     acceptanceRate: number | null;
+    deepSyncedAt: string | null;
+    deepSyncCount: number;
+    hasSavedCookie: boolean;
+    solvedProblemsCount: number;
     languageStats: Array<{
       id: string;
       language: string;
@@ -115,6 +121,7 @@ export default function ProfilePage() {
   const [lcSaving, setLcSaving] = useState(false);
   const [lcError, setLcError] = useState<string | null>(null);
   const [lcSuccess, setLcSuccess] = useState<string | null>(null);
+  const [deepSyncOpen, setDeepSyncOpen] = useState(false);
 
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
@@ -737,6 +744,74 @@ export default function ProfilePage() {
             </p>
           )}
         </section>
+
+        {/* Deep LeetCode sync */}
+        {profile.leetcodeProfile && (
+          <section className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <h3 className="font-extrabold text-sm text-foreground flex items-center gap-2">
+                  <Cookie className="w-4 h-4 text-indigo-500" /> Deep LeetCode
+                  Sync
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+                  Import every problem you&apos;ve solved on LeetCode using your
+                  session cookie — full solve history, not just recent
+                  submissions. Optionally auto-marks matching Striver sheet
+                  progress.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDeepSyncOpen(true)}
+                className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition"
+              >
+                <Cookie className="w-3.5 h-3.5" />
+                Deep Sync
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-4 text-xs">
+              <div className="bg-muted/50 border border-border rounded-xl px-4 py-3">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                  Imported solves
+                </div>
+                <div className="text-lg font-black text-foreground mt-0.5">
+                  {profile.leetcodeProfile.solvedProblemsCount ||
+                    profile.leetcodeProfile.deepSyncCount ||
+                    0}
+                </div>
+              </div>
+              <div className="bg-muted/50 border border-border rounded-xl px-4 py-3">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                  Last deep sync
+                </div>
+                <div className="text-sm font-bold text-foreground mt-0.5">
+                  {profile.leetcodeProfile.deepSyncedAt
+                    ? new Date(
+                        profile.leetcodeProfile.deepSyncedAt
+                      ).toLocaleString()
+                    : "Never"}
+                </div>
+              </div>
+              {profile.leetcodeProfile.hasSavedCookie && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-emerald-700 dark:text-emerald-400">
+                  <div className="text-[10px] uppercase tracking-widest font-bold opacity-80">
+                    Saved session
+                  </div>
+                  <div className="text-sm font-bold mt-0.5">Encrypted on server</div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        <DeepLeetcodeSyncModal
+          open={deepSyncOpen}
+          onClose={() => setDeepSyncOpen(false)}
+          leetcodeUsername={profile.leetcodeProfile?.username}
+          onSuccess={() => fetchProfile()}
+        />
 
         {/* Breakdown section grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
