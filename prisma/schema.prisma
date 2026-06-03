@@ -103,6 +103,7 @@ model User {
   addedRoomChallenges    RoomChallenge[] @relation("RoomChallengeAdder")
 
   sheetProgress          SheetProgress[]
+  focusSheets            UserFocusSheet[]
 
   @@index([email])
 }
@@ -121,6 +122,18 @@ model SheetProgress {
 
   @@unique([userId, sheetSlug, problemKey])
   @@index([userId, sheetSlug])
+}
+
+/// Sheets a user has pinned to their "Focus Sheets" list for quick access.
+model UserFocusSheet {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sheetSlug String
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, sheetSlug])
+  @@index([userId])
 }
 
 model UserPreference {

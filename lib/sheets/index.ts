@@ -13,6 +13,9 @@
 import sdeSheet from "@/sheets/striver-SDE-sheet.json";
 import a2zSheet from "@/sheets/striver-a2zsheet.json";
 import sheet79 from "@/sheets/striver-last-moment-79-sheet.json";
+import blind75Sheet from "@/sheets/blind-75-sheet.json";
+import neetcode150Sheet from "@/sheets/neetcode-150-sheet.json";
+import loveBabbar450Sheet from "@/sheets/love-babbar-450-sheet.json";
 
 export type SheetDifficulty = "easy" | "medium" | "hard";
 
@@ -104,13 +107,22 @@ function normalizeA2z(raw: typeof a2zSheet): NormalizedSheet {
   };
 }
 
-function normalizeTopicSheet(raw: typeof sheet79): NormalizedSheet {
+interface RawTopicSheet {
+  sheet: string;
+  slug: string;
+  total: number;
+  source?: string | null;
+  description?: string;
+  topics: { id: number | string; title: string; problems: RawProblem[] }[];
+}
+
+function normalizeTopicSheet(raw: RawTopicSheet): NormalizedSheet {
   return {
     slug: raw.slug,
     name: raw.sheet,
     total: raw.total,
     source: raw.source ?? null,
-    description: (raw as { description?: string }).description ?? null,
+    description: raw.description ?? null,
     sections: raw.topics.map((t) => ({
       id: `topic-${t.id}`,
       title: t.title,
@@ -122,9 +134,12 @@ function normalizeTopicSheet(raw: typeof sheet79): NormalizedSheet {
 
 // Build once at module load — these are pure transforms over static JSON.
 const SHEETS: NormalizedSheet[] = [
+  normalizeTopicSheet(blind75Sheet),
+  normalizeTopicSheet(neetcode150Sheet),
   normalizeSde(sdeSheet),
   normalizeA2z(a2zSheet),
   normalizeTopicSheet(sheet79),
+  normalizeTopicSheet(loveBabbar450Sheet),
 ];
 
 const SHEET_BY_SLUG = new Map(SHEETS.map((s) => [s.slug, s]));
