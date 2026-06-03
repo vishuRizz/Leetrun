@@ -1,0 +1,148 @@
+{
+  "sheet": "Striver's 79 Last Moment Sheet",
+  "slug": "striver-79",
+  "total": 79,
+  "description": "Revision sheet for last-moment interview prep — covers the most important problems across all topics",
+  "source": "https://takeuforward.org/interview-sheets/strivers-79-last-moment-dsa-sheet-ace-interviews",
+  "topics": [
+    {
+      "id": 1,
+      "title": "Arrays",
+      "problems": [
+        { "id": 1, "title": "Sort an array of 0s, 1s and 2s", "difficulty": "easy", "leetcode_id": 75, "leetcode_slug": "sort-colors" },
+        { "id": 2, "title": "Find the majority element that occurs more than N/2 times", "difficulty": "easy", "leetcode_id": 169, "leetcode_slug": "majority-element" },
+        { "id": 3, "title": "Kadane's Algorithm / Maximum Subarray Sum", "difficulty": "medium", "leetcode_id": 53, "leetcode_slug": "maximum-subarray" },
+        { "id": 4, "title": "Stock Buy and Sell", "difficulty": "easy", "leetcode_id": 121, "leetcode_slug": "best-time-to-buy-and-sell-stock" },
+        { "id": 5, "title": "Two Sum - Check if a pair with given sum exists in Array", "difficulty": "easy", "leetcode_id": 1, "leetcode_slug": "two-sum" },
+        { "id": 6, "title": "Sort Colors using Rearranging array", "difficulty": "medium", "leetcode_id": 75, "leetcode_slug": "sort-colors" },
+        { "id": 7, "title": "Next Permutation", "difficulty": "medium", "leetcode_id": 31, "leetcode_slug": "next-permutation" },
+        { "id": 8, "title": "Leaders in an Array problem", "difficulty": "easy", "leetcode_id": null, "leetcode_slug": null },
+        { "id": 9, "title": "Longest Consecutive Sequence in an Array", "difficulty": "medium", "leetcode_id": 128, "leetcode_slug": "longest-consecutive-sequence" },
+        { "id": 10, "title": "Set Matrix Zeroes", "difficulty": "medium", "leetcode_id": 73, "leetcode_slug": "set-matrix-zeroes" },
+        { "id": 11, "title": "Rotate Image by 90 degree", "difficulty": "medium", "leetcode_id": 48, "leetcode_slug": "rotate-image" },
+        { "id": 12, "title": "Spiral Matrix", "difficulty": "medium", "leetcode_id": 54, "leetcode_slug": "spiral-matrix" },
+        { "id": 13, "title": "Count Subarrays with given sum", "difficulty": "medium", "leetcode_id": 560, "leetcode_slug": "subarray-sum-equals-k" },
+        { "id": 14, "title": "3-Sum Problem", "difficulty": "medium", "leetcode_id": 15, "leetcode_slug": "3sum" },
+        { "id": 15, "title": "4-Sum Problem", "difficulty": "medium", "leetcode_id": 18, "leetcode_slug": "4sum" },
+        { "id": 16, "title": "Merge Overlapping Subintervals", "difficulty": "medium", "leetcode_id": 56, "leetcode_slug": "merge-intervals" },
+        { "id": 17, "title": "Merge Two Sorted Arrays Without Extra Space", "difficulty": "hard", "leetcode_id": 88, "leetcode_slug": "merge-sorted-array" },
+        { "id": 18, "title": "Maximum Product Subarray", "difficulty": "medium", "leetcode_id": 152, "leetcode_slug": "maximum-product-subarray" },
+        { "id": 19, "title": "Pascal's Triangle", "difficulty": "easy", "leetcode_id": 118, "leetcode_slug": "pascals-triangle" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Binary Search",
+      "problems": [
+        { "id": 20, "title": "Implement Lower Bound", "difficulty": "easy", "leetcode_id": 35, "leetcode_slug": "search-insert-position" },
+        { "id": 21, "title": "Implement Upper Bound", "difficulty": "easy", "leetcode_id": null, "leetcode_slug": null },
+        { "id": 22, "title": "Search in Rotated Sorted Array", "difficulty": "medium", "leetcode_id": 33, "leetcode_slug": "search-in-rotated-sorted-array" },
+        { "id": 23, "title": "Median of Two Sorted Arrays", "difficulty": "hard", "leetcode_id": 4, "leetcode_slug": "median-of-two-sorted-arrays" },
+        { "id": 24, "title": "Koko Eating Bananas", "difficulty": "medium", "leetcode_id": 875, "leetcode_slug": "koko-eating-bananas" },
+        { "id": 25, "title": "Aggressive Cows", "difficulty": "hard", "leetcode_id": null, "leetcode_slug": null },
+        { "id": 26, "title": "Book Allocation Problem", "difficulty": "hard", "leetcode_id": null, "leetcode_slug": null },
+        { "id": 27, "title": "Split Array - Largest Sum", "difficulty": "hard", "leetcode_id": 410, "leetcode_slug": "split-array-largest-sum" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Strings",
+      "problems": [
+        { "id": 28, "title": "Reverse Words in a String", "difficulty": "medium", "leetcode_id": 151, "leetcode_slug": "reverse-words-in-a-string" },
+        { "id": 29, "title": "Longest Palindromic Substring", "difficulty": "medium", "leetcode_id": 5, "leetcode_slug": "longest-palindromic-substring" },
+        { "id": 30, "title": "Roman Number to Integer", "difficulty": "easy", "leetcode_id": 13, "leetcode_slug": "roman-to-integer" },
+        { "id": 31, "title": "String to Integer (Atoi)", "difficulty": "medium", "leetcode_id": 8, "leetcode_slug": "string-to-integer-atoi" },
+        { "id": 32, "title": "Longest Common Prefix", "difficulty": "easy", "leetcode_id": 14, "leetcode_slug": "longest-common-prefix" },
+        { "id": 33, "title": "Longest Substring without Repeating Characters", "difficulty": "medium", "leetcode_id": 3, "leetcode_slug": "longest-substring-without-repeating-characters" },
+        { "id": 34, "title": "Count and Say", "difficulty": "medium", "leetcode_id": 38, "leetcode_slug": "count-and-say" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Linked List",
+      "problems": [
+        { "id": 35, "title": "Reverse a Linked List", "difficulty": "easy", "leetcode_id": 206, "leetcode_slug": "reverse-linked-list" },
+        { "id": 36, "title": "Find the middle of a Linked List", "difficulty": "easy", "leetcode_id": 876, "leetcode_slug": "middle-of-the-linked-list" },
+        { "id": 37, "title": "Detect a Cycle in a Linked List", "difficulty": "easy", "leetcode_id": 141, "leetcode_slug": "linked-list-cycle" },
+        { "id": 38, "title": "Find the starting point of the Loop of a Linked List", "difficulty": "medium", "leetcode_id": 142, "leetcode_slug": "linked-list-cycle-ii" },
+        { "id": 39, "title": "Reverse Nodes in k-Group", "difficulty": "hard", "leetcode_id": 25, "leetcode_slug": "reverse-nodes-in-k-group" },
+        { "id": 40, "title": "Palindrome Linked List", "difficulty": "easy", "leetcode_id": 234, "leetcode_slug": "palindrome-linked-list" },
+        { "id": 41, "title": "Add Two Numbers as LL", "difficulty": "medium", "leetcode_id": 2, "leetcode_slug": "add-two-numbers" },
+        { "id": 42, "title": "Intersection of Two Linked Lists", "difficulty": "easy", "leetcode_id": 160, "leetcode_slug": "intersection-of-two-linked-lists" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Recursion and Backtracking",
+      "problems": [
+        { "id": 43, "title": "Combination Sum", "difficulty": "medium", "leetcode_id": 39, "leetcode_slug": "combination-sum" },
+        { "id": 44, "title": "Combination Sum II", "difficulty": "medium", "leetcode_id": 40, "leetcode_slug": "combination-sum-ii" },
+        { "id": 45, "title": "Subset Sum", "difficulty": "medium", "leetcode_id": 78, "leetcode_slug": "subsets" },
+        { "id": 46, "title": "Subsets II", "difficulty": "medium", "leetcode_id": 90, "leetcode_slug": "subsets-ii" },
+        { "id": 47, "title": "Palindrome Partitioning", "difficulty": "medium", "leetcode_id": 131, "leetcode_slug": "palindrome-partitioning" },
+        { "id": 48, "title": "N-Queens", "difficulty": "hard", "leetcode_id": 51, "leetcode_slug": "n-queens" },
+        { "id": 49, "title": "Sudoku Solver", "difficulty": "hard", "leetcode_id": 37, "leetcode_slug": "sudoku-solver" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Stack and Queue",
+      "problems": [
+        { "id": 50, "title": "Valid Parentheses", "difficulty": "easy", "leetcode_id": 20, "leetcode_slug": "valid-parentheses" },
+        { "id": 51, "title": "Next Greater Element", "difficulty": "easy", "leetcode_id": 496, "leetcode_slug": "next-greater-element-i" },
+        { "id": 52, "title": "Trapping Rainwater", "difficulty": "hard", "leetcode_id": 42, "leetcode_slug": "trapping-rain-water" },
+        { "id": 53, "title": "Min Stack", "difficulty": "medium", "leetcode_id": 155, "leetcode_slug": "min-stack" },
+        { "id": 54, "title": "LRU Cache", "difficulty": "hard", "leetcode_id": 146, "leetcode_slug": "lru-cache" },
+        { "id": 55, "title": "Largest Rectangle in Histogram", "difficulty": "hard", "leetcode_id": 84, "leetcode_slug": "largest-rectangle-in-histogram" },
+        { "id": 56, "title": "Sliding Window Maximum", "difficulty": "hard", "leetcode_id": 239, "leetcode_slug": "sliding-window-maximum" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Trees",
+      "problems": [
+        { "id": 57, "title": "Maximum Depth of Binary Tree", "difficulty": "easy", "leetcode_id": 104, "leetcode_slug": "maximum-depth-of-binary-tree" },
+        { "id": 58, "title": "Balanced Binary Tree", "difficulty": "easy", "leetcode_id": 110, "leetcode_slug": "balanced-binary-tree" },
+        { "id": 59, "title": "Diameter of Binary Tree", "difficulty": "easy", "leetcode_id": 543, "leetcode_slug": "diameter-of-binary-tree" },
+        { "id": 60, "title": "Binary Tree Maximum Path Sum", "difficulty": "hard", "leetcode_id": 124, "leetcode_slug": "binary-tree-maximum-path-sum" },
+        { "id": 61, "title": "LCA in Binary Tree", "difficulty": "medium", "leetcode_id": 236, "leetcode_slug": "lowest-common-ancestor-of-a-binary-tree" },
+        { "id": 62, "title": "Binary Tree Right Side View", "difficulty": "medium", "leetcode_id": 199, "leetcode_slug": "binary-tree-right-side-view" },
+        { "id": 63, "title": "Serialize and Deserialize Binary Tree", "difficulty": "hard", "leetcode_id": 297, "leetcode_slug": "serialize-and-deserialize-binary-tree" },
+        { "id": 64, "title": "Validate Binary Search Tree", "difficulty": "medium", "leetcode_id": 98, "leetcode_slug": "validate-binary-search-tree" },
+        { "id": 65, "title": "Kth Smallest Element in a BST", "difficulty": "medium", "leetcode_id": 230, "leetcode_slug": "kth-smallest-element-in-a-bst" }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Heap",
+      "problems": [
+        { "id": 66, "title": "Kth Largest Element in an Array", "difficulty": "medium", "leetcode_id": 215, "leetcode_slug": "kth-largest-element-in-an-array" },
+        { "id": 67, "title": "Top K Frequent Elements", "difficulty": "medium", "leetcode_id": 347, "leetcode_slug": "top-k-frequent-elements" },
+        { "id": 68, "title": "Find Median from Data Stream", "difficulty": "hard", "leetcode_id": 295, "leetcode_slug": "find-median-from-data-stream" }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Graphs",
+      "problems": [
+        { "id": 69, "title": "Number of Islands", "difficulty": "medium", "leetcode_id": 200, "leetcode_slug": "number-of-islands" },
+        { "id": 70, "title": "Rotten Oranges", "difficulty": "medium", "leetcode_id": 994, "leetcode_slug": "rotting-oranges" },
+        { "id": 71, "title": "Flood Fill", "difficulty": "easy", "leetcode_id": 733, "leetcode_slug": "flood-fill" },
+        { "id": 72, "title": "Course Schedule I & II (Topological Sort)", "difficulty": "medium", "leetcode_id": 207, "leetcode_slug": "course-schedule" },
+        { "id": 73, "title": "Dijkstra's Algorithm", "difficulty": "medium", "leetcode_id": null, "leetcode_slug": null },
+        { "id": 74, "title": "Cheapest Flights Within K Stops", "difficulty": "medium", "leetcode_id": 787, "leetcode_slug": "cheapest-flights-within-k-stops" }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Dynamic Programming",
+      "problems": [
+        { "id": 75, "title": "Climbing Stairs", "difficulty": "easy", "leetcode_id": 70, "leetcode_slug": "climbing-stairs" },
+        { "id": 76, "title": "House Robber", "difficulty": "medium", "leetcode_id": 198, "leetcode_slug": "house-robber" },
+        { "id": 77, "title": "Longest Common Subsequence", "difficulty": "medium", "leetcode_id": 1143, "leetcode_slug": "longest-common-subsequence" },
+        { "id": 78, "title": "Longest Increasing Subsequence", "difficulty": "medium", "leetcode_id": 300, "leetcode_slug": "longest-increasing-subsequence" },
+        { "id": 79, "title": "Edit Distance", "difficulty": "hard", "leetcode_id": 72, "leetcode_slug": "edit-distance" }
+      ]
+    }
+  ]
+}

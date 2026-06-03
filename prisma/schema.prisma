@@ -102,7 +102,25 @@ model User {
   roomChallengesProgress RoomChallengeProgress[]
   addedRoomChallenges    RoomChallenge[] @relation("RoomChallengeAdder")
 
+  sheetProgress          SheetProgress[]
+
   @@index([email])
+}
+
+/// Per-user completion of a problem inside a curated DSA sheet (Striver, etc).
+/// Sheet definitions live as static JSON in /sheets — we only persist the
+/// user's checkmarks here. A row's existence means "completed" (toggling off
+/// deletes the row), which keeps this table tiny regardless of sheet size.
+model SheetProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sheetSlug   String
+  problemKey  String
+  completedAt DateTime @default(now())
+
+  @@unique([userId, sheetSlug, problemKey])
+  @@index([userId, sheetSlug])
 }
 
 model UserPreference {
