@@ -294,7 +294,7 @@ export function parseLeetCodeSlug(input: string): string | null {
   if (!input) return null;
   const trimmed = input.trim();
 
-  // 1. Prefer the URL-anchored match — this is the common case.
+  // 1. Prefer the URL-anchored match - this is the common case.
   const urlMatch = trimmed.match(
     /leetcode\.com\/problems\/([a-z0-9][a-z0-9-]*)/i
   );
@@ -302,7 +302,7 @@ export function parseLeetCodeSlug(input: string): string | null {
 
   // 2. If the user typed *anything* that looks URL-ish (has a slash, colon,
   //    or a dot followed by letters) but didn't match the URL pattern above,
-  //    reject it — otherwise we'd happily accept "https" as a slug.
+  //    reject it - otherwise we'd happily accept "https" as a slug.
   if (/[\/:]/.test(trimmed) || /\.[a-z]/i.test(trimmed)) return null;
 
   // 3. Otherwise, accept ONLY if the entire input is itself a clean slug.
@@ -344,7 +344,7 @@ export async function createHostQuestion(
   });
 
   if (!room) throw new Error("Lobby not found.");
-  // Any lobby member can add a question now — host-only restriction lifted.
+  // Any lobby member can add a question now - host-only restriction lifted.
   const isMember = room.members.some((m) => m.userId === userId);
   if (!isMember) {
     throw new Error("You must be a member of this lobby to add questions.");
@@ -538,7 +538,7 @@ export async function verifyRoomQuestion(userId: string, roomChallengeId: string
  * Note: any XP that was already awarded via the global XPLog stream stays in
  * the audit log, but the in-lobby `xpAwarded` is cleared so the lobby
  * leaderboard reflects the reset immediately. To prevent re-claiming, the
- * row stays in place (just blanked out) — `verifyRoomQuestion` will treat
+ * row stays in place (just blanked out) - `verifyRoomQuestion` will treat
  * this as a fresh attempt.
  */
 export async function resetRoomQuestionProgress(
@@ -744,7 +744,7 @@ export async function getLobbyLeaderboard(roomId: string) {
  *   - activity timeline of every member action on every host-added question
  *     (verified / pre-solved / claimed), most recent first
  *
- * One big query plan — fetches the room, members, all progress, and the
+ * One big query plan - fetches the room, members, all progress, and the
  * related challenge/problem metadata in parallel where possible.
  */
 export async function getLobbyLeaderboardDetail(roomId: string) {
@@ -882,7 +882,7 @@ export async function getLobbyLeaderboardDetail(roomId: string) {
       });
     }
     // Auto-completed (bank-generated, completed by sync) without explicit
-    // verify or claim — fall back to completedAt so the timeline still has
+    // verify or claim - fall back to completedAt so the timeline still has
     // a row.
     if (
       p.completed &&

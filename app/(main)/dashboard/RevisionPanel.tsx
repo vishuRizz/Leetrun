@@ -207,7 +207,7 @@ export default function RevisionPanel({ onGenerated, onCancel }: Props) {
             <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-2 flex items-start gap-1.5">
               <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               We don&apos;t have your solve history yet. Run a Deep Sync from your
-              profile so we know what you&apos;ve done — otherwise this filter
+              profile so we know what you&apos;ve done - otherwise this filter
               may find nothing.
             </p>
           )}

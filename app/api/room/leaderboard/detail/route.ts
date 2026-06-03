@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       );
     }
 
-    // Membership check — only lobby members can view its detail.
+    // Membership check - only lobby members can view its detail.
     const member = await db.roomMember.findFirst({
       where: { roomId, userId: user.id },
       select: { id: true },

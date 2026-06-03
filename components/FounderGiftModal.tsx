@@ -13,7 +13,7 @@ import { Crown, Gift, Sparkles, Check } from "lucide-react";
  *    `/api/founder-gift/claim` which is idempotent.
  *  - Once granted, the API event marker prevents the modal from ever
  *    appearing again for that user.
- *  - There is no dismiss button — accepting the gift is the only path
+ *  - There is no dismiss button - accepting the gift is the only path
  *    forward, by design.
  */
 export function FounderGiftModal() {
@@ -34,7 +34,7 @@ export function FounderGiftModal() {
         if (cancelled) return;
         if (data.status === "eligible") setVisible(true);
       } catch {
-        /* silent — modal simply won't appear */
+        /* silent - modal simply won't appear */
       }
     })();
     return () => {
@@ -107,7 +107,7 @@ export function FounderGiftModal() {
           </div>
 
           <h2 className="font-heading text-2xl font-black text-foreground">
-            You just got LeetRun PRO — for free, for life.
+            You just got LeetRun PRO - for free, for life.
           </h2>
 
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -148,7 +148,7 @@ export function FounderGiftModal() {
           </button>
 
           <p className="text-[10px] text-muted-foreground text-center font-mono">
-            One-tap, irrevocable, and absolutely free. — Vishu
+            One-tap, irrevocable, and absolutely free. - Vishu
           </p>
         </div>
       </div>

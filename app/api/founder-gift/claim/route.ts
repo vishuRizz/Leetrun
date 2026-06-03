@@ -8,7 +8,7 @@ import { SubscriptionPlan } from "@prisma/client";
  * (FOUNDER_GIFT_GRANTED event present) we just return success without
  * creating a second subscription.
  *
- * The "subscription" is a permanent gift — endDate is set ~100 years out
+ * The "subscription" is a permanent gift - endDate is set ~100 years out
  * so existing PREMIUM-gating logic continues to work without changes.
  */
 export async function POST() {
@@ -31,7 +31,7 @@ export async function POST() {
     }
 
     const startDate = new Date();
-    // Lifetime gift — 100 years out is the simplest, safest expression.
+    // Lifetime gift - 100 years out is the simplest, safest expression.
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + 100);
 
@@ -55,7 +55,7 @@ export async function POST() {
           eventType: "FOUNDER_GIFT_GRANTED",
           metadata: {
             grantedBy: "Mr Vishu",
-            note: "Founder's gift — lifetime PRO access.",
+            note: "Founder's gift - lifetime PRO access.",
             startDate,
             endDate,
           },

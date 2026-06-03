@@ -21,7 +21,7 @@ import {
 export default function SideQuestsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Top bar — mirrors the look of the other (main) routes */}
+      {/* Top bar - mirrors the look of the other (main) routes */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <Swords className="w-5 h-5 text-indigo-500" />
@@ -90,7 +90,7 @@ export default function SideQuestsPage() {
           <Preview
             icon={<Sparkles className="w-5 h-5 text-violet-500" />}
             title="Daily Drops"
-            description="Random bonus quests that show up unannounced — clear them while they last for extra XP and coins."
+            description="Random bonus quests that show up unannounced - clear them while they last for extra XP and coins."
           />
           <Preview
             icon={<Trophy className="w-5 h-5 text-amber-500" />}

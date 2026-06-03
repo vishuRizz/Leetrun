@@ -10,7 +10,7 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "What exactly is LeetRun, and how does it work?",
-    answer: "LeetRun is a gamified DSA placement platform built around curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, company sets), interview patterns ranked by weightage, and adaptive quests. It syncs with your LeetCode profile and an AI mentor keeps you accountable — harshly if needed."
+    answer: "LeetRun is a gamified DSA placement platform built around curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, company sets), interview patterns ranked by weightage, and adaptive quests. It syncs with your LeetCode profile and an AI mentor keeps you accountable - harshly if needed."
   },
   {
     question: "Which DSA sheets and question banks are included?",
@@ -18,7 +18,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "What is Deep LeetCode Sync?",
-    answer: "Deep Sync imports your entire LeetCode solve history — every accepted problem, not just recent ones — and automatically checks them off across all of your sheets. It also powers accurate quest verification so you never have to manually mark what you've already done."
+    answer: "Deep Sync imports your entire LeetCode solve history - every accepted problem, not just recent ones - and automatically checks them off across all of your sheets. It also powers accurate quest verification so you never have to manually mark what you've already done."
   },
   {
     question: "How do interview patterns and configurable revision work?",
@@ -26,7 +26,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Does LeetRun require a LeetCode Premium account?",
-    answer: "No. LeetRun works with any public LeetCode account — connect your username during onboarding and we sync your stats, submissions, and solve counts. Deep Sync is an optional one-time step that imports your full solve history."
+    answer: "No. LeetRun works with any public LeetCode account - connect your username during onboarding and we sync your stats, submissions, and solve counts. Deep Sync is an optional one-time step that imports your full solve history."
   },
   {
     question: "How is XP and the leaderboard calculated?",

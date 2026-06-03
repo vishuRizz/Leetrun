@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * IMPORTANT — token cascade order:
+ * IMPORTANT - token cascade order:
  *   :root must be declared BEFORE .dark / html.dark so that the dark
  *   selector overrides it when next-themes adds class="dark" to <html>.
- *   :root and .dark have equal CSS specificity (0,1,0) — whichever comes
+ *   :root and .dark have equal CSS specificity (0,1,0) - whichever comes
  *   later wins. Light tokens live in :root below; dark tokens live in
  *   html.dark below that (the `html.` prefix bumps specificity to 0,1,1
  *   so the rule also beats any later :root declaration from third-party
@@ -50,7 +50,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Dark theme — true black background per product spec.
+/* Dark theme - true black background per product spec.
    Selector is `html.dark, .dark` so we cover both
    (a) the html element when next-themes adds class="dark", and
    (b) any nested scope explicitly opted in via class="dark". */
@@ -117,7 +117,7 @@ code, pre, kbd, samp {
 }
 
 @theme inline {
-  /* Default sans for the whole app — Inter loaded as a variable font. */
+  /* Default sans for the whole app - Inter loaded as a variable font. */
   --font-sans:
     var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

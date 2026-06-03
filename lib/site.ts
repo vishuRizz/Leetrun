@@ -6,11 +6,11 @@
 export const siteConfig = {
   name: "LeetRun",
   // Used in <title> templates and brand copy.
-  title: "LeetRun — Gamified DSA & LeetCode Placement Prep",
+  title: "LeetRun - Gamified DSA & LeetCode Placement Prep",
   shortDescription:
     "Gamified DSA prep with curated sheets, interview patterns, deep LeetCode sync, adaptive quests, and an AI mentor that keeps you accountable.",
   description:
-    "LeetRun is a gamified DSA placement platform with curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, Love Babbar 450, plus Google & Amazon company sets), interview patterns ranked by weightage, and deep LeetCode sync that imports your entire solve history. Get adaptive daily, weekly, and configurable revision quests, compete on smart leaderboards, share a public profile, and stay accountable with an AI mentor — perfect for cracking placements and tech interviews.",
+    "LeetRun is a gamified DSA placement platform with curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, Love Babbar 450, plus Google & Amazon company sets), interview patterns ranked by weightage, and deep LeetCode sync that imports your entire solve history. Get adaptive daily, weekly, and configurable revision quests, compete on smart leaderboards, share a public profile, and stay accountable with an AI mentor - perfect for cracking placements and tech interviews.",
   url: (process.env.NEXT_PUBLIC_SITE_URL || "https://leetrun.vercel.app").replace(
     /\/$/,
     ""

@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Deep sync complete — ${result.solvedCount} solved problems imported${
+      message: `Deep sync complete - ${result.solvedCount} solved problems imported${
         result.sheetMarked > 0
           ? `, ${result.sheetMarked} sheet problems auto-marked`
           : ""

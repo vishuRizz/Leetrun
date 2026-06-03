@@ -87,7 +87,7 @@ function formatMetric(u: RankingUser, k: SortKey): { value: string; label: strin
       return {
         value: u.leetcodeProfile?.contestRating
           ? Math.round(u.leetcodeProfile.contestRating).toString()
-          : "—",
+          : "-",
         label: "LC contest",
         tint: "text-violet-600 dark:text-violet-400",
       };

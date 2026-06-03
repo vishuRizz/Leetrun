@@ -109,7 +109,7 @@ model User {
 }
 
 /// Per-user completion of a problem inside a curated DSA sheet (Striver, etc).
-/// Sheet definitions live as static JSON in /sheets — we only persist the
+/// Sheet definitions live as static JSON in /sheets - we only persist the
 /// user's checkmarks here. A row's existence means "completed" (toggling off
 /// deletes the row), which keeps this table tiny regardless of sheet size.
 model SheetProgress {
@@ -394,7 +394,7 @@ model RoomChallenge {
   // (Field kept under its original name for backward-compat with existing rows.
   // Today it means "member-curated, single problem" rather than strictly host-only.)
   isHostQuestion   Boolean @default(false)
-  // LeetCode problem number (e.g. 1 for Two Sum) — populated for member-added questions.
+  // LeetCode problem number (e.g. 1 for Two Sum) - populated for member-added questions.
   problemNumber    Int?
   // The member who added this question to the lobby. Nullable for legacy rows
   // and for bank-generated batches (where no single user is responsible).
@@ -417,10 +417,10 @@ model RoomChallengeProgress {
   // User clicked "Done" but hasn't yet been verified against LeetCode submissions.
   claimed          Boolean @default(false)
   claimedAt        DateTime?
-  // Verified against LeetCode latest submissions — XP eligible.
+  // Verified against LeetCode latest submissions - XP eligible.
   verified         Boolean @default(false)
   verifiedAt       DateTime?
-  // User self-reported they had solved this previously — no XP, but counts as done.
+  // User self-reported they had solved this previously - no XP, but counts as done.
   markedPreSolved  Boolean @default(false)
   // Frozen XP amount actually awarded for this progress row (0 for pre-solved).
   xpAwarded        Int @default(0)

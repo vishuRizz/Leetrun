@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { getSheet, validProblemKeys } from "@/lib/sheets";
 
-/** GET ?sheetSlug= — list completed problem keys for the current user. */
+/** GET ?sheetSlug= - list completed problem keys for the current user. */
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
           },
         })
         .catch(() => {
-          // Already absent — treat as success (idempotent un-mark).
+          // Already absent - treat as success (idempotent un-mark).
         });
     }
 

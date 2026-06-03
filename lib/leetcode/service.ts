@@ -56,7 +56,7 @@ export async function syncUserProfile(
   if (inflight) return inflight;
 
   const job = (async () => {
-    // 1. Cooldown short-circuit — return whatever's in the DB without hitting LeetCode.
+    // 1. Cooldown short-circuit - return whatever's in the DB without hitting LeetCode.
     if (!options.force) {
       const existing = await db.leetcodeProfile.findUnique({
         where: { userId },

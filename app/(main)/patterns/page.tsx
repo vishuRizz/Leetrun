@@ -28,7 +28,7 @@ export default function PatternsPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Master the recurring problem-solving patterns interviewers love most.
             Patterns are ranked by how often they show up across our curated
-            question bank — expand any pattern to drill into the exact problems.
+            question bank - expand any pattern to drill into the exact problems.
           </p>
         </div>
 

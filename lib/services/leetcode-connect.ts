@@ -94,7 +94,7 @@ export async function connectOrUpdateLeetCodeAccount(
   });
   const isFirstConnect = !existingForUser;
 
-  // LeetCode usernames are globally unique in our DB — block hijacking another account.
+  // LeetCode usernames are globally unique in our DB - block hijacking another account.
   const takenByOther = await db.leetcodeProfile.findFirst({
     where: {
       username,

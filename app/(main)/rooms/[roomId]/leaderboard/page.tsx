@@ -126,7 +126,7 @@ export default function LobbyLeaderboardDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Lazy fetch — only runs when the user navigates to this page.
+  // Lazy fetch - only runs when the user navigates to this page.
   useEffect(() => {
     if (!roomId) return;
     let active = true;
@@ -373,7 +373,7 @@ export default function LobbyLeaderboardDetailPage() {
                         <td className="py-2.5 pr-2 text-right text-muted-foreground hidden sm:table-cell">
                           {entry.lastActivity
                             ? formatRelative(entry.lastActivity)
-                            : "—"}
+                            : "-"}
                         </td>
                       </tr>
                     );

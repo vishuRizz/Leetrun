@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify completion against the data we already have (no external sync here —
+    // Verify completion against the data we already have (no external sync here -
     // sync is owned by /api/leetcode/sync and is debounced server-side anyway).
     await verifyChallengeCompletion(user.id).catch(() => {});
 

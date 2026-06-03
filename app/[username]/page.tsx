@@ -189,7 +189,7 @@ export async function generateMetadata(
   const name = profile.fullName || profile.username;
   return {
     title: `${name} (@${profile.username}) · LeetRun`,
-    description: `${name}'s public LeetRun profile — ${profile.progression.totalXp} XP, ${profile.progression.currentStreak}-day streak, ${profile.stats?.totalSolved ?? 0} problems solved.`,
+    description: `${name}'s public LeetRun profile - ${profile.progression.totalXp} XP, ${profile.progression.currentStreak}-day streak, ${profile.stats?.totalSolved ?? 0} problems solved.`,
     openGraph: {
       title: `${name} on LeetRun`,
       images: profile.avatarUrl ? [{ url: profile.avatarUrl }] : undefined,
@@ -413,12 +413,12 @@ export default async function PublicProfilePage(
             <Insight
               icon={<Sparkles className="w-4 h-4 text-emerald-500" />}
               title="Strongest topic"
-              value={profile.stats?.strongestTopic || "—"}
+              value={profile.stats?.strongestTopic || "-"}
             />
             <Insight
               icon={<Activity className="w-4 h-4 text-rose-500" />}
               title="Focus area"
-              value={profile.stats?.weakestTopic || "—"}
+              value={profile.stats?.weakestTopic || "-"}
             />
           </section>
         )}

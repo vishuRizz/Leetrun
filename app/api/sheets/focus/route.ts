@@ -93,7 +93,7 @@ export async function DELETE(request: Request) {
         where: { userId_sheetSlug: { userId: user.id, sheetSlug } },
       })
       .catch(() => {
-        // Already removed — idempotent.
+        // Already removed - idempotent.
       });
 
     return NextResponse.json({ success: true });

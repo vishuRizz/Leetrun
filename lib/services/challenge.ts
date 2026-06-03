@@ -564,7 +564,7 @@ async function finalizeQuestProgress(
   const progress = total > 0 ? Math.round((doneCount / total) * 100) : 0;
   const allDone = total > 0 && doneCount === total;
 
-  // Already completed — just report current state.
+  // Already completed - just report current state.
   if (uc.status === ChallengeStatus.COMPLETED) {
     return { status: ChallengeStatus.COMPLETED, progress: 100, xpAwarded: 0 };
   }

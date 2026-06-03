@@ -45,7 +45,7 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
   });
   if (completedRecently) return completedRecently;
 
-  // Otherwise generate a new one. Revision quests are NOT auto-generated —
+  // Otherwise generate a new one. Revision quests are NOT auto-generated -
   // they're built on demand from the user's configuration in the revision tab.
   if (type === ChallengeType.REVISION) return null;
 
@@ -80,7 +80,7 @@ export async function GET() {
     await verifyChallengeCompletion(authUser.id).catch(() => {});
 
     // Run user profile + 3 challenge resolutions fully in parallel.
-    // Profile query is intentionally slim — only what the dashboard renders.
+    // Profile query is intentionally slim - only what the dashboard renders.
     const [dbUser, daily, weekly, revision] = await Promise.all([
       db.user.findUnique({
         where: { id: authUser.id },

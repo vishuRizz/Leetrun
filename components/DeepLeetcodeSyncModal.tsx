@@ -38,7 +38,7 @@ interface Props {
 
 const STEPS = [
   "Log in to leetcode.com in your browser (same account as your connected username).",
-  "Open DevTools — press F12 or right-click → Inspect.",
+  "Open DevTools - press F12 or right-click → Inspect.",
   "Go to the Application tab → Cookies → https://leetcode.com.",
   "Copy the Value of LEETCODE_SESSION (or copy the full Cookie header from any graphql request in the Network tab).",
   "Paste it below and run Deep Sync.",
@@ -161,7 +161,7 @@ export default function DeepLeetcodeSyncModal({
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Deep sync matches your LeetCode solves to Striver sheets and
-                automatically checks off problems you&apos;ve already done — no
+                automatically checks off problems you&apos;ve already done - no
                 manual ticking required.
               </p>
             </div>

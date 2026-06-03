@@ -90,7 +90,7 @@ function writeCache(data: AnalyticsResponse) {
 }
 
 function compact(n: number | null | undefined) {
-  if (n == null) return "—";
+  if (n == null) return "-";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
   return String(n);
@@ -303,7 +303,7 @@ export default function AnalyticsPage() {
                 value={
                   lc.acceptanceRate != null
                     ? `${Math.round(lc.acceptanceRate)}%`
-                    : "—"
+                    : "-"
                 }
               />
               <MetricBox

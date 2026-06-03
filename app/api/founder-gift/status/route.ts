@@ -38,7 +38,7 @@ export async function GET() {
       return NextResponse.json({ status: "claimed" });
     }
     if (user.plan === "PREMIUM") {
-      // Already premium via paid subscription — don't pester them.
+      // Already premium via paid subscription - don't pester them.
       return NextResponse.json({ status: "ineligible" });
     }
 

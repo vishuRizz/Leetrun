@@ -21,7 +21,7 @@ export async function generateMetadata({
     title: sheet.name,
     description:
       sheet.description ||
-      `Track your progress through ${sheet.name} — ${sheet.total} curated DSA problems.`,
+      `Track your progress through ${sheet.name} - ${sheet.total} curated DSA problems.`,
   };
 }
 

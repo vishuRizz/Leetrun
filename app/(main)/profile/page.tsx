@@ -602,7 +602,7 @@ export default function ProfilePage() {
               ) : (
                 <p className="text-muted-foreground text-xs flex items-center justify-center md:justify-start gap-1.5 pt-1">
                   <span className="font-mono text-indigo-500 dark:text-indigo-400">
-                    @{profile.username || "—"}
+                    @{profile.username || "-"}
                   </span>
                   <button
                     type="button"

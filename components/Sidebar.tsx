@@ -33,7 +33,7 @@ export function Sidebar() {
   const [joinedLobbies, setJoinedLobbies] = useState<JoinedRoom[]>([]);
 
   // Fetch the user's joined lobbies once on mount so we can show shortcuts
-  // in the sidebar. Errors are silently swallowed — if the call fails the
+  // in the sidebar. Errors are silently swallowed - if the call fails the
   // section just renders empty, which is acceptable for a nav affordance.
   useEffect(() => {
     let active = true;

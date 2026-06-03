@@ -160,7 +160,7 @@ function RoomsPageInner() {
   // Settings drawer (host controls + invite + members + leave)
   const [showSettings, setShowSettings] = useState(false);
 
-  // Active questions tab — "todo" (default) or "done". Only one bucket is
+  // Active questions tab - "todo" (default) or "done". Only one bucket is
   // visible at a time so the page stays focused.
   const [questionTab, setQuestionTab] = useState<"todo" | "done">("todo");
 
@@ -307,7 +307,7 @@ function RoomsPageInner() {
           flashProgressMsg(
             roomChallengeId,
             data.alreadyAwarded
-              ? "Already verified earlier — nice."
+              ? "Already verified earlier - nice."
               : `Verified on LeetCode! +${data.xpAwarded} XP added to your lobby score.`,
             "ok"
           );
@@ -320,7 +320,7 @@ function RoomsPageInner() {
         } else if (data.reason === "preSolved") {
           flashProgressMsg(
             roomChallengeId,
-            "You marked this as solved before joining — no XP. Use \"Change my answer\" to undo.",
+            "You marked this as solved before joining - no XP. Use \"Change my answer\" to undo.",
             "err"
           );
         } else {
@@ -800,7 +800,7 @@ function RoomsPageInner() {
                       const hasAnswer =
                         !!(myProgress?.claimed || myProgress?.verified || myProgress?.markedPreSolved);
 
-                      // Status pill for the collapsed header — mirrors the
+                      // Status pill for the collapsed header - mirrors the
                       // myProgress state so users can scan what's pending
                       // without opening every card.
                       const myStatus = myProgress?.verified
@@ -844,7 +844,7 @@ function RoomsPageInner() {
                           key={rc.id}
                           className="bg-muted/30 border border-border rounded-xl overflow-hidden transition-colors"
                         >
-                          {/* Always-visible header — clicking anywhere toggles
+                          {/* Always-visible header - clicking anywhere toggles
                               the body. Delete button stops propagation. */}
                           <button
                             type="button"
@@ -932,7 +932,7 @@ function RoomsPageInner() {
                             </div>
                           </button>
 
-                          {/* Expanded body — problems, actions, member strip. */}
+                          {/* Expanded body - problems, actions, member strip. */}
                           {isExpanded && (
                             <div className="px-4 pb-4 space-y-4 border-t border-border/60">
                               <div className="grid gap-2 pt-4">
@@ -963,7 +963,7 @@ function RoomsPageInner() {
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 rounded-lg px-3 py-2">
                                     <CheckCircle2 className="w-4 h-4" />
-                                    Verified on LeetCode — +{myProgress.xpAwarded ?? rc.challenge.xpReward} XP added to your lobby score.
+                                    Verified on LeetCode, +{myProgress.xpAwarded ?? rc.challenge.xpReward} XP added to your lobby score.
                                   </div>
                                   <button
                                     onClick={() => handleQuestionAction(rc.id, "reset")}
@@ -979,7 +979,7 @@ function RoomsPageInner() {
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground bg-muted/40 border border-border rounded-lg px-3 py-2">
                                     <ShieldCheck className="w-4 h-4" />
-                                    You marked this as solved before joining — no XP.
+                                    You marked this as solved before joining - no XP.
                                   </div>
                                   <button
                                     onClick={() => handleQuestionAction(rc.id, "reset")}
@@ -1028,7 +1028,7 @@ function RoomsPageInner() {
                                       title="Check my latest LeetCode submissions and award XP if this problem is solved."
                                     >
                                       <Sparkles className="w-3.5 h-3.5" />
-                                      {verifyBusy ? "Checking LeetCode…" : `I solved it — verify (+${rc.challenge.xpReward} XP)`}
+                                      {verifyBusy ? "Checking LeetCode…" : `I solved it - verify (+${rc.challenge.xpReward} XP)`}
                                     </button>
                                     <button
                                       onClick={() => handleQuestionAction(rc.id, "claim")}
@@ -1108,7 +1108,7 @@ function RoomsPageInner() {
                   const activeList = questionTab === "todo" ? pendingList : doneList;
                   return (
                     <div className="space-y-5">
-                      {/* Tab bar — two equal columns, only one list visible at a time.
+                      {/* Tab bar - two equal columns, only one list visible at a time.
                           Counts on each tab so users see what's in the other bucket
                           without switching. */}
                       <div
@@ -1155,7 +1155,7 @@ function RoomsPageInner() {
                           questionTab === "todo" ? (
                             <div className="p-8 text-center border border-dashed border-emerald-500/30 bg-emerald-500/5 rounded-xl">
                               <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                All caught up — great work.
+                                All caught up - great work.
                               </p>
                               <p className="text-[10.5px] text-muted-foreground mt-1">
                                 Wait for the host to add more, or generate a fresh batch from Settings.
@@ -1184,7 +1184,7 @@ function RoomsPageInner() {
             {/* Right Column: Host settings & members list */}
             <div className="space-y-6">
 
-              {/* Add LeetCode Question — any lobby member can add. */}
+              {/* Add LeetCode Question - any lobby member can add. */}
               {roomDetails && currentUser && (
                 <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -1253,7 +1253,7 @@ function RoomsPageInner() {
                 </div>
               )}
 
-              {/* Lobby Leaderboard — visible to all members */}
+              {/* Lobby Leaderboard - visible to all members */}
               <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -1401,7 +1401,7 @@ function RoomsPageInner() {
             </header>
 
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
-              {/* Host controls — only the host sees this. */}
+              {/* Host controls - only the host sees this. */}
               {currentUser && roomDetails.creatorId === currentUser.id && (
                 <section className="bg-muted/30 border border-border rounded-xl p-4 space-y-3">
                   <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
@@ -1555,7 +1555,7 @@ function RoomsPageInner() {
                 </div>
               </section>
 
-              {/* Danger zone — leave lobby */}
+              {/* Danger zone - leave lobby */}
               <section className="bg-rose-50/50 dark:bg-rose-950/10 border border-rose-200 dark:border-rose-900/30 rounded-xl p-4 space-y-2">
                 <h3 className="font-bold text-sm text-rose-600 dark:text-rose-400">Danger zone</h3>
                 <p className="text-[10.5px] text-muted-foreground">

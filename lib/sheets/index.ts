@@ -6,7 +6,7 @@
  * single `NormalizedSheet` structure (sections → problems) so the UI and
  * progress tracking can treat every sheet identically.
  *
- * Sheet content is static reference data — it's bundled at build time and
+ * Sheet content is static reference data - it's bundled at build time and
  * shared by all users. We never store the problems per-user; only the user's
  * completion checkmarks live in the DB (see `SheetProgress`).
  */
@@ -148,7 +148,7 @@ function normalizeTopicSheet(
   };
 }
 
-// Build once at module load — these are pure transforms over static JSON.
+// Build once at module load - these are pure transforms over static JSON.
 const SHEETS: NormalizedSheet[] = [
   normalizeTopicSheet(blind75Sheet),
   normalizeTopicSheet(neetcode150Sheet),
@@ -209,7 +209,7 @@ export function countProblems(sheet: NormalizedSheet): number {
   return sheet.sections.reduce((sum, s) => sum + s.problems.length, 0);
 }
 
-/** Set of all valid problem keys in a sheet — used to validate progress writes. */
+/** Set of all valid problem keys in a sheet - used to validate progress writes. */
 export function validProblemKeys(sheet: NormalizedSheet): Set<string> {
   const keys = new Set<string>();
   for (const section of sheet.sections) {

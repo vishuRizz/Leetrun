@@ -9,7 +9,7 @@ export default function HeroSection() {
   const router = useRouter();
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#fafbfa] dark:bg-black text-black dark:text-white overflow-hidden min-h-[70vh] max-sm:min-h-[60vh]">
-      {/* Wavy background pattern — identical to ai-paper */}
+      {/* Wavy background pattern - identical to ai-paper */}
       <div className="absolute inset-0 w-full h-full z-0">
         <svg
           className="w-full h-full opacity-8"

@@ -99,7 +99,7 @@ function writeCache(data: DashboardData) {
       JSON.stringify({ data, ts: Date.now() })
     );
   } catch {
-    // Storage quota / privacy mode — silently ignore
+    // Storage quota / privacy mode - silently ignore
   }
 }
 
@@ -330,7 +330,7 @@ export default function Dashboard() {
     }
   };
 
-  // First-visit skeleton — drawn instantly, no spinner-only blank screen.
+  // First-visit skeleton - drawn instantly, no spinner-only blank screen.
   if (loading && !data) {
     return <DashboardSkeleton />;
   }
@@ -622,7 +622,7 @@ export default function Dashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-6 pt-6 border-t border-border">
                 {currentChallenge.status === "COMPLETED" ? (
                   <span className="flex items-center gap-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                    <BadgeCheck className="w-4 h-4" /> Completed — +
+                    <BadgeCheck className="w-4 h-4" /> Completed, +
                     {currentChallenge.xpReward} XP claimed
                   </span>
                 ) : (

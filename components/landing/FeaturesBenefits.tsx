@@ -28,7 +28,7 @@ const benefits = [
   {
     icon: Network,
     title: "Interview Patterns by Weightage",
-    desc: "See the patterns interviewers actually ask most — DP, Graphs, Two Pointers, Sliding Window — ranked by weightage, then drill into pattern-wise questions.",
+    desc: "See the patterns interviewers actually ask most - DP, Graphs, Two Pointers, Sliding Window - ranked by weightage, then drill into pattern-wise questions.",
   },
   {
     icon: Dices,
@@ -43,17 +43,17 @@ const benefits = [
   {
     icon: UserCircle,
     title: "Public Profile",
-    desc: "Get a shareable profile at leetrun.app/yourname showing your LeetCode analytics, levels, streaks, and badges — drop it in your resume or bio.",
+    desc: "Get a shareable profile at leetrun.app/yourname showing your LeetCode analytics, levels, streaks, and badges - drop it in your resume or bio.",
   },
   {
     icon: Trophy,
     title: "Smart Leaderboards",
-    desc: "Climb global and private leaderboards ranked by XP, LeetRun level, current streak, solved counts, or LeetCode contest rating — you pick the metric.",
+    desc: "Climb global and private leaderboards ranked by XP, LeetRun level, current streak, solved counts, or LeetCode contest rating - you pick the metric.",
   },
   {
     icon: Brain,
     title: "Savage AI Mentor",
-    desc: "Your AI mentor doesn't coddle you. Low solve count? Broken streak? It roasts you back on track — and explains the concepts you keep missing.",
+    desc: "Your AI mentor doesn't coddle you. Low solve count? Broken streak? It roasts you back on track - and explains the concepts you keep missing.",
   },
 ];
 
@@ -76,12 +76,12 @@ export default function FeaturesBenefits() {
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
             Most trackers just count your solves. LeetRun gives you curated
             sheets, interview patterns, deep LeetCode sync, adaptive quests, and
-            an AI mentor that keeps you accountable — all working together to get
+            an AI mentor that keeps you accountable - all working together to get
             you placed.
           </p>
         </div>
 
-        {/* Two hero feature cards — the real differentiators */}
+        {/* Two hero feature cards - the real differentiators */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Curated Sheets */}
           <div className="bg-white dark:bg-[#141414] rounded-2xl p-7 sm:p-8 shadow-sm border border-gray-200 dark:border-gray-800">
@@ -123,8 +123,8 @@ export default function FeaturesBenefits() {
               <h3 className="text-xl sm:text-2xl font-bold">Deep LeetCode Sync</h3>
             </div>
             <p className="text-sm text-gray-300 leading-relaxed mb-5">
-              Connect once and we import your entire solve history — every
-              accepted problem — then automatically check them off across all your
+              Connect once and we import your entire solve history - every
+              accepted problem - then automatically check them off across all your
               sheets. No more manually marking what you&apos;ve already done.
             </p>
             <div className="space-y-2.5">

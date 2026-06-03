@@ -153,7 +153,7 @@ const jsonLd = {
           name: "What is Deep LeetCode Sync?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Deep Sync imports your entire LeetCode solve history — every accepted problem, not just recent ones — and automatically checks them off across all of your sheets, also powering accurate quest verification.",
+            text: "Deep Sync imports your entire LeetCode solve history - every accepted problem, not just recent ones - and automatically checks them off across all of your sheets, also powering accurate quest verification.",
           },
         },
         {

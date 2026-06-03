@@ -5,7 +5,7 @@ import { ensureUsername, findUserBySlug } from "@/lib/services/username";
 /**
  * Public profile snapshot for /<username>.
  *
- * Intentionally read-only and unauthenticated — anyone can view it.
+ * Intentionally read-only and unauthenticated - anyone can view it.
  * Returns the same shape the public profile page renders, hiding private
  * bits (email, internal IDs, OTPs, billing).
  */

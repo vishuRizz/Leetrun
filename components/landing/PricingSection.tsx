@@ -13,7 +13,7 @@ const PricingPage = () => {
     {
       name: 'Free',
       price: isAnnual ? '₹0' : '₹0',
-      billing: 'Forever free — no credit card needed',
+      billing: 'Forever free - no credit card needed',
       description: 'Perfect to get started',
       features: [
         'LeetCode profile sync',
