@@ -11,6 +11,7 @@ import {
   Layers,
   LogOut,
   Network,
+  Shield,
   Swords,
   Trophy,
   User,
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminEmail } from "@/lib/admin/config";
 
 interface JoinedRoom {
   id: string;
@@ -31,6 +33,26 @@ export function Sidebar() {
   const supabase = createClient();
 
   const [joinedLobbies, setJoinedLobbies] = useState<JoinedRoom[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Reveal the Admin tab only for allow-listed accounts. The /admin routes are
+  // also gated server-side, so this is purely a UI affordance.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (active) setIsAdmin(isAdminEmail(user?.email));
+      } catch {
+        /* noop */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
 
   // Fetch the user's joined lobbies once on mount so we can show shortcuts
   // in the sidebar. Errors are silently swallowed - if the call fails the
@@ -211,6 +233,22 @@ export function Sidebar() {
 
       {/* Footer Actions */}
       <div className="p-3 border-t border-border/50 flex flex-col gap-2 shrink-0">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            title="Admin"
+            className={`flex items-center gap-3 px-2 py-2.5 rounded-lg transition-colors shrink-0 ${
+              pathname.startsWith("/admin")
+                ? "bg-pink-500/10 text-pink-600 dark:text-pink-400 font-bold"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium"
+            }`}
+          >
+            <Shield className="w-5 h-5 shrink-0" />
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+              Admin
+            </span>
+          </Link>
+        )}
         <div
           className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground"
           title="Toggle Theme"

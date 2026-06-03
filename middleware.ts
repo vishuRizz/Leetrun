@@ -46,7 +46,8 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/chat") ||
     path.startsWith("/sheets") ||
     path.startsWith("/patterns") ||
-    path.startsWith("/side-quests");
+    path.startsWith("/side-quests") ||
+    path.startsWith("/admin");
 
   if (!user && isProtectedRoute) {
     // Redirect to login if user is not authenticated and trying to access protected route
