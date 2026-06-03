@@ -1,199 +1,192 @@
-import React from 'react';
-import { Flame, Trophy, Users, Zap, Target, Brain, Shield, Clock } from 'lucide-react';
+import React from "react";
+import {
+  Layers,
+  Network,
+  Dices,
+  RefreshCw,
+  Flame,
+  Trophy,
+  Users,
+  Brain,
+  Target,
+  UserCircle,
+  Building2,
+  Sparkles,
+} from "lucide-react";
+
+const SHEETS = [
+  "Blind 75",
+  "NeetCode 150",
+  "Striver SDE",
+  "Striver A2Z",
+  "Love Babbar 450",
+  "Google Top 100",
+  "Amazon Top 100",
+];
+
+const benefits = [
+  {
+    icon: Network,
+    title: "Interview Patterns by Weightage",
+    desc: "See the patterns interviewers actually ask most — DP, Graphs, Two Pointers, Sliding Window — ranked by weightage, then drill into pattern-wise questions.",
+  },
+  {
+    icon: Dices,
+    title: "Build-Your-Own Revision",
+    desc: "Generate a random revision set filtered by topic, difficulty, and whether you've already solved it. Perfect for targeted brush-ups before an interview.",
+  },
+  {
+    icon: Target,
+    title: "Adaptive Daily & Weekly Quests",
+    desc: "Quests are generated from your weakest topics and target company, then auto-verified against your real LeetCode solves so XP is always earned, never faked.",
+  },
+  {
+    icon: UserCircle,
+    title: "Public Profile",
+    desc: "Get a shareable profile at leetrun.app/yourname showing your LeetCode analytics, levels, streaks, and badges — drop it in your resume or bio.",
+  },
+  {
+    icon: Trophy,
+    title: "Smart Leaderboards",
+    desc: "Climb global and private leaderboards ranked by XP, LeetRun level, current streak, solved counts, or LeetCode contest rating — you pick the metric.",
+  },
+  {
+    icon: Brain,
+    title: "Savage AI Mentor",
+    desc: "Your AI mentor doesn't coddle you. Low solve count? Broken streak? It roasts you back on track — and explains the concepts you keep missing.",
+  },
+];
 
 export default function FeaturesBenefits() {
   return (
-    <div id="features" className="bg-gray-50 dark:bg-[#0a0a0a] min-h-screen text-[#1a1b23] dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-
-        {/* Mobile Header Section */}
-        <div className="block lg:hidden mb-8">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Why LeetRun?</p>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight text-[#1a1b23] dark:text-white">
-            Placement Excellence<br />
-            Starts Here.
-          </h1>
-          <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-            LeetRun is not just another DSA tracker. It is your gamified placement partner. From daily challenges to AI roasts,
-            LeetRun adapts to your weak spots and keeps you accountable every single day.
+    <div
+      id="features"
+      className="bg-gray-50 dark:bg-[#0a0a0a] text-[#1a1b23] dark:text-white"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        {/* Header */}
+        <div className="max-w-3xl mb-12 sm:mb-16">
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
+            Why LeetRun?
           </p>
-
-          {/* Mobile Hero Cards */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-white dark:bg-[#141414] rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-800 text-center">
-              <Flame className="w-12 h-12 mx-auto mb-3 text-orange-500" />
-              <h3 className="text-sm font-bold mb-2 dark:text-white">Streak Tracking</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Never break your daily streak</p>
-            </div>
-            <div className="bg-white dark:bg-[#141414] rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-800 text-center">
-              <Brain className="w-12 h-12 mx-auto mb-3 text-indigo-500" />
-              <h3 className="text-sm font-bold mb-2 dark:text-white">AI Mentor</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Gets savage when you slack off</p>
-            </div>
-          </div>
+          <h2 className="text-3xl sm:text-5xl font-bold mb-5 leading-tight tracking-tight">
+            Your entire placement prep,
+            <br className="hidden sm:block" /> in one ruthless dashboard.
+          </h2>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+            Most trackers just count your solves. LeetRun gives you curated
+            sheets, interview patterns, deep LeetCode sync, adaptive quests, and
+            an AI mentor that keeps you accountable — all working together to get
+            you placed.
+          </p>
         </div>
 
-        {/* Desktop Header Section */}
-        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Left — headline */}
-          <div className="lg:col-span-1">
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Why LeetRun?</p>
-            <h1 className="text-4xl font-bold mb-6 leading-tight text-[#1a1b23] dark:text-white">
-              Placement Excellence<br />
-              Starts Here.
-            </h1>
-            <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-              LeetRun is not just another DSA tracker. It is your gamified placement partner. From daily challenges to AI roasts,
-              LeetRun adapts to your weak spots and keeps you accountable every single day.
-            </p>
-          </div>
-
-          {/* Middle Card */}
-          <div className="bg-white dark:bg-[#141414] rounded-xl p-8 shadow-sm border-2 border-gray-300 dark:border-gray-800">
-            <h3 className="text-2xl font-bold mb-4 text-[#1a1b23] dark:text-white">
-              Savage AI Mentor
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-              Your AI mentor doesn't coddle you. Low solve count? Broken streak? It will roast you into getting back on track Gigachad energy included.
-            </p>
-            <div className="flex justify-center">
-              <Brain className="w-24 h-24 text-indigo-500" />
-            </div>
-          </div>
-
-          {/* Right Card */}
-          <div className="bg-white dark:bg-[#141414] rounded-xl p-8 shadow-sm border-2 border-gray-300 dark:border-gray-800">
-            <div className="flex justify-center pb-8">
-              <Flame className="w-24 h-24 text-orange-500" />
-            </div>
-            <h3 className="text-2xl font-bold mb-4 text-[#1a1b23] dark:text-white">
-              Daily + Weekly Quests
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              Custom-generated daily, weekly and revision challenges auto-synced with your LeetCode profile and weak areas.
-            </p>
-          </div>
-        </div>
-
-        {/* Desktop Benefits Grid */}
-        <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {[
-            {
-              icon: <Shield className="w-10 h-10 text-[#1a1b23] dark:text-gray-200" />,
-              title: 'LeetCode Sync',
-              desc: 'Auto-sync your LeetCode profile stats, recent submissions, and solve counts — always up to date.'
-            },
-            {
-              icon: <Trophy className="w-10 h-10 text-[#1a1b23] dark:text-gray-200" />,
-              title: 'Live Leaderboard',
-              desc: 'Compete with friends in real-time XP rankings. Climb the global and private leaderboards.'
-            },
-            {
-              icon: <Zap className="w-10 h-10 text-[#1a1b23] dark:text-gray-200" />,
-              title: 'XP & Coin Rewards',
-              desc: 'Earn XP and coins for solving problems, maintaining streaks, and completing daily quests.'
-            },
-          ].map((f) => (
-            <div key={f.title} className="bg-white dark:bg-[#141414] rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:border-gray-700 transition-shadow">
-              <div className="mb-4">{f.icon}</div>
-              <h3 className="text-lg font-bold mb-3 text-[#1a1b23] dark:text-white">{f.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Mobile Key Features Horizontal Scroll */}
-        <div className="block sm:hidden mb-8">
-          <h2 className="text-xl font-bold mb-4 text-[#1a1b23] dark:text-white">Key Features</h2>
-          <div className="flex overflow-x-auto space-x-4 pb-4">
-            {[
-              { icon: <Shield className="w-8 h-8 text-[#1a1b23] dark:text-gray-200" />, title: 'LeetCode Sync', desc: 'Auto-sync your stats' },
-              { icon: <Trophy className="w-8 h-8 text-[#1a1b23] dark:text-gray-200" />, title: 'Leaderboard', desc: 'Compete with friends' },
-              { icon: <Zap className="w-8 h-8 text-[#1a1b23] dark:text-gray-200" />, title: 'XP Rewards', desc: 'Earn for solving problems' },
-            ].map((f) => (
-              <div key={f.title} className="bg-white dark:bg-[#141414] rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-800 flex-shrink-0 w-64">
-                <div className="mb-3">{f.icon}</div>
-                <h3 className="text-base font-bold mb-2 dark:text-white">{f.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{f.desc}</p>
+        {/* Two hero feature cards — the real differentiators */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Curated Sheets */}
+          <div className="bg-white dark:bg-[#141414] rounded-2xl p-7 sm:p-8 shadow-sm border border-gray-200 dark:border-gray-800">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                <Layers className="w-6 h-6 text-indigo-500" />
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Desktop Large Feature Cards */}
-        <div className="hidden sm:grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-          <div className="rounded-xl p-6 shadow-sm border border-gray-800 bg-[#1a1b23] dark:bg-[#141414] text-white hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold mb-3">
-              Multiplayer Coding Rooms,<br />
-              Made Fun.
-            </h3>
-            <p className="text-gray-300 leading-relaxed mb-4 text-sm">
-              Create private rooms, invite friends, and race through DSA problems in real-time. First to solve wins bragging rights.
+              <h3 className="text-xl sm:text-2xl font-bold">
+                Every sheet that matters
+              </h3>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-5">
+              Blind 75, NeetCode 150, Striver&apos;s SDE &amp; A2Z, Love Babbar
+              450, plus company-specific sets. Pin your focus sheets and track
+              every problem in one place.
             </p>
-            <div className="flex items-center space-x-3">
-              <Users className="w-6 h-6 text-indigo-400" />
-              <div className="text-xs text-gray-400">Real-time multiplayer challenges</div>
+            <div className="flex flex-wrap gap-2">
+              {SHEETS.map((s) => (
+                <span
+                  key={s}
+                  className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+            <div className="mt-5 flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+              <Building2 className="w-4 h-4 text-indigo-500" />
+              Curated + company-wise question banks
             </div>
           </div>
 
-          <div className="rounded-xl p-6 shadow-sm border border-gray-800 bg-[#1a1b23] dark:bg-[#141414] text-white hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold mb-3">
-              Personalized Placement<br />
-              Intelligence.
-            </h3>
-            <p className="text-gray-300 leading-relaxed mb-4 text-sm">
-              LeetRun tracks your weakest topics, strongest algorithms, and target company patterns to generate hyper-personalized quests.
-            </p>
-            <div className="flex items-center space-x-3">
-              <Target className="w-6 h-6 text-indigo-400" />
-              <Clock className="w-6 h-6 text-indigo-400" />
-              <Brain className="w-6 h-6 text-indigo-400" />
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Bottom Grid */}
-        <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-[#141414] rounded-xl p-6 border border-transparent dark:border-gray-800">
-            <h3 className="text-lg font-bold mb-3 text-[#1a1b23] dark:text-white">
-              Series-Themed<br />Mentorship.
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              Choose your vibe Naruto, One Piece, or Stranger Things. Your AI mentor channels their wisdom to keep you coding.
-            </p>
-            <div className="p-3 rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700">
-              <div className="text-xs text-gray-500 mb-2">Mentor Themes</div>
-              <div className="space-y-1">
-                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-1.5 bg-indigo-200 dark:bg-indigo-800 rounded w-3/4"></div>
-                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          {/* Deep LeetCode Sync */}
+          <div className="rounded-2xl p-7 sm:p-8 shadow-sm border border-gray-800 bg-[#1a1b23] dark:bg-[#141414] text-white">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+                <RefreshCw className="w-6 h-6 text-indigo-400" />
               </div>
+              <h3 className="text-xl sm:text-2xl font-bold">Deep LeetCode Sync</h3>
+            </div>
+            <p className="text-sm text-gray-300 leading-relaxed mb-5">
+              Connect once and we import your entire solve history — every
+              accepted problem — then automatically check them off across all your
+              sheets. No more manually marking what you&apos;ve already done.
+            </p>
+            <div className="space-y-2.5">
+              {[
+                "Imports all solved problems, not just recent ones",
+                "Auto-marks matching questions on every sheet",
+                "Powers accurate quest verification & XP",
+              ].map((line) => (
+                <div key={line} className="flex items-center gap-2.5">
+                  <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <span className="text-sm text-gray-300">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
+        </div>
 
-          <div className="bg-white dark:bg-[#141414] rounded-xl p-6 text-center border border-transparent dark:border-gray-800">
-            <div className="mb-4">
-              <Trophy className="w-10 h-10 mx-auto text-[#1a1b23] dark:text-amber-400" />
+        {/* Benefit grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          {benefits.map((b) => {
+            const Icon = b.icon;
+            return (
+              <div
+                key={b.title}
+                className="bg-white dark:bg-[#141414] rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md dark:hover:border-gray-700 transition-shadow"
+              >
+                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5 text-indigo-500" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">{b.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {b.desc}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Wide supporting cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="rounded-2xl p-7 shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#141414]">
+            <div className="flex items-center gap-3 mb-3">
+              <Users className="w-6 h-6 text-indigo-500" />
+              <h3 className="text-xl font-bold">Multiplayer Coding Rooms</h3>
             </div>
-            <h3 className="text-lg font-bold mb-3 text-[#1a1b23] dark:text-white">
-              Badges &<br />Achievements.
-            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              Unlock badges for streaks, milestones, and rare problem completions. Show off your grind.
+              Create private rooms, invite friends, and race through DSA problems
+              in real time. Mock contests, study sessions, and friendly rivalry to
+              keep the prep energy high.
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#141414] rounded-xl p-6 border border-transparent dark:border-gray-800">
-            <h3 className="text-lg font-bold mb-3 text-[#1a1b23] dark:text-white">
-              Friend Invites &<br />Social Prep.
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              Invite friends, challenge them to rooms, or send placement battle invites. DSA is better together.
-            </p>
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-8 bg-indigo-100 dark:bg-indigo-900 rounded border-l-4 border-indigo-600"></div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Friends & Leaderboards</div>
+          <div className="rounded-2xl p-7 shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#141414]">
+            <div className="flex items-center gap-3 mb-3">
+              <Flame className="w-6 h-6 text-orange-500" />
+              <h3 className="text-xl font-bold">Streaks, XP &amp; Levels</h3>
             </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+              Earn XP and coins for solves, streaks, and quests. Level up through
+              LeetRun&apos;s progression system and unlock badges as you grind
+              toward your dream offer.
+            </p>
           </div>
         </div>
       </div>

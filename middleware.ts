@@ -45,6 +45,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/leaderboard") ||
     path.startsWith("/chat") ||
     path.startsWith("/sheets") ||
+    path.startsWith("/patterns") ||
     path.startsWith("/side-quests");
 
   if (!user && isProtectedRoute) {

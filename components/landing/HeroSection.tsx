@@ -92,8 +92,8 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10"
           >
-            Compete with friends, get roasted by your AI mentor,<br />
-            and crack your dream company with LeetRun.
+            Curated sheets, interview patterns, deep LeetCode sync, and an<br />
+            AI mentor that roasts you all the way to your dream offer.
           </motion.p>
 
           <motion.div

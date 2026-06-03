@@ -10,6 +10,7 @@ import {
   Home,
   Layers,
   LogOut,
+  Network,
   Swords,
   Trophy,
   User,
@@ -91,6 +92,7 @@ export function Sidebar() {
       label: "Practice",
       items: [
         { name: "Sheets", href: "/sheets", icon: Layers },
+        { name: "Patterns", href: "/patterns", icon: Network },
         { name: "Side Quests", href: "/side-quests", icon: Swords },
         { name: "Lobbies", href: "/rooms", icon: Users },
       ],

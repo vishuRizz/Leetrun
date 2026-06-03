@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import {
   generateDailyChallenge,
   generateWeeklyChallenge,
-  generateRevisionChallenge,
   expireStaleActiveChallenges,
   verifyChallengeCompletion,
 } from "@/lib/services/challenge";
@@ -46,15 +45,14 @@ async function getOrCreateChallenge(userId: string, type: ChallengeType) {
   });
   if (completedRecently) return completedRecently;
 
-  // Otherwise generate a new one
-  let result;
-  if (type === ChallengeType.DAILY) {
-    result = await generateDailyChallenge(userId);
-  } else if (type === ChallengeType.WEEKLY) {
-    result = await generateWeeklyChallenge(userId);
-  } else {
-    result = await generateRevisionChallenge(userId);
-  }
+  // Otherwise generate a new one. Revision quests are NOT auto-generated —
+  // they're built on demand from the user's configuration in the revision tab.
+  if (type === ChallengeType.REVISION) return null;
+
+  const result =
+    type === ChallengeType.DAILY
+      ? await generateDailyChallenge(userId)
+      : await generateWeeklyChallenge(userId);
 
   return db.userChallenge.findUnique({
     where: { id: result.userChallenge.id },

@@ -10,27 +10,27 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "What exactly is LeetRun, and how does it work?",
-    answer: "LeetRun is a gamified DSA preparation platform that syncs with your LeetCode profile and generates daily, weekly, and revision challenges personalized to your skill level and target company. An AI mentor tracks your progress and keeps you accountable — harshly if needed."
+    answer: "LeetRun is a gamified DSA placement platform built around curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, company sets), interview patterns ranked by weightage, and adaptive quests. It syncs with your LeetCode profile and an AI mentor keeps you accountable — harshly if needed."
   },
   {
-    question: "How does the AI mentor know my weak areas?",
-    answer: "LeetRun syncs your LeetCode submission history, acceptance rates, topic-wise performance, and contest ratings. The AI mentor analyzes this data to identify weak DSA topics and injects them into your daily quests automatically."
+    question: "Which DSA sheets and question banks are included?",
+    answer: "Blind 75, NeetCode 150, Striver's SDE Sheet, Striver's A2Z, Love Babbar 450, and company-specific sets like Google and Amazon Top 100. You can pin focus sheets, track every problem, and your progress is saved automatically."
   },
   {
-    question: "What are the multiplayer Coding Rooms?",
-    answer: "Coding Rooms let you create a private session, invite friends, and race to solve LeetCode problems in real time. Rooms are great for mock contests, study sessions, or friendly rivalry to keep the prep energy high."
+    question: "What is Deep LeetCode Sync?",
+    answer: "Deep Sync imports your entire LeetCode solve history — every accepted problem, not just recent ones — and automatically checks them off across all of your sheets. It also powers accurate quest verification so you never have to manually mark what you've already done."
+  },
+  {
+    question: "How do interview patterns and configurable revision work?",
+    answer: "The Patterns page ranks the patterns interviewers ask most (DP, Graphs, Two Pointers, Sliding Window, and more) by weightage, then lets you drill into pattern-wise questions. Revision lets you generate a random practice set filtered by topic, difficulty, and whether you've already solved it."
   },
   {
     question: "Does LeetRun require a LeetCode Premium account?",
-    answer: "No! LeetRun works with any public LeetCode account. You simply connect your username during onboarding and LeetRun automatically syncs your stats, recent submissions, and solved counts."
+    answer: "No. LeetRun works with any public LeetCode account — connect your username during onboarding and we sync your stats, submissions, and solve counts. Deep Sync is an optional one-time step that imports your full solve history."
   },
   {
     question: "How is XP and the leaderboard calculated?",
-    answer: "XP is calculated based on your LeetCode solve counts (Easy = 15 XP, Medium = 40 XP, Hard = 120 XP), daily streaks, contest ratings, and completed platform quests. The leaderboard ranks users by total XP in real time."
-  },
-  {
-    question: "Is my data safe with LeetRun?",
-    answer: "Absolutely. LeetRun only reads your public LeetCode data. We use Supabase with enterprise-grade encryption and your personal data is never shared or used to train AI models."
+    answer: "XP comes from your LeetCode solve counts (Easy = 15, Medium = 40, Hard = 120), streaks, contest ratings, and completed quests. Leaderboards update in real time and can be ranked by XP, LeetRun level, current streak, solved counts, or contest rating."
   },
 ];
 

@@ -21,6 +21,7 @@ const RESERVED = new Set<string>([
   "side-quests",
   "quests",
   "sheets",
+  "patterns",
   "login",
   "signup",
   "logout",

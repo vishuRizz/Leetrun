@@ -15,11 +15,13 @@ import {
   Check,
   BadgeCheck,
   CheckCircle2,
+  Dices,
 } from "lucide-react";
 import { InviteFriendModal } from "@/components/InviteFriendModal";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import RevisionPanel from "./RevisionPanel";
 
 interface ChallengeProblem {
   id: string;
@@ -54,7 +56,7 @@ interface DashboardData {
   mentor: { name: string };
   daily: ChallengeData;
   weekly: ChallengeData;
-  revision: ChallengeData;
+  revision: ChallengeData | null;
   stats: {
     totalSolved: number;
     easySolved: number;
@@ -140,7 +142,7 @@ function normaliseResponse(payload: any): DashboardData {
     stats: payload.stats,
     daily: formatChallenge(payload.daily),
     weekly: formatChallenge(payload.weekly),
-    revision: formatChallenge(payload.revision),
+    revision: payload.revision ? formatChallenge(payload.revision) : null,
     leetcode: payload.leetcode,
   };
 }
@@ -157,6 +159,7 @@ export default function Dashboard() {
   );
   const [verifyingQuest, setVerifyingQuest] = useState(false);
   const [togglingProblem, setTogglingProblem] = useState<string | null>(null);
+  const [showRevisionConfig, setShowRevisionConfig] = useState(false);
   const [questMessage, setQuestMessage] = useState<{
     type: "success" | "info" | "error";
     text: string;
@@ -341,6 +344,11 @@ export default function Dashboard() {
       ? data.weekly
       : data.revision;
 
+  // The revision tab is fully configurable: show the builder when there's no
+  // active revision quest, or when the user explicitly asks for a new one.
+  const showRevisionBuilder =
+    activeTab === "revision" && (!data.revision || showRevisionConfig);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-150">
       <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
@@ -412,9 +420,9 @@ export default function Dashboard() {
                   },
                   {
                     id: "revision",
-                    name: "Revision Shield",
-                    xp: `+${data.revision.xpReward} XP`,
-                    done: data.revision.status === "COMPLETED",
+                    name: "Revision",
+                    xp: data.revision ? `+${data.revision.xpReward} XP` : "Custom",
+                    done: data.revision?.status === "COMPLETED",
                   },
                 ].map((tab) => (
                   <button
@@ -450,6 +458,31 @@ export default function Dashboard() {
             </CardHeader>
 
             <CardContent>
+              {showRevisionBuilder ? (
+                <div>
+                  <div className="mb-6">
+                    <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold tracking-wider uppercase">
+                      Custom revision
+                    </span>
+                    <h2 className="text-2xl font-black mt-1">
+                      Spin up a revision question
+                    </h2>
+                  </div>
+                  <RevisionPanel
+                    onGenerated={async () => {
+                      setShowRevisionConfig(false);
+                      setQuestMessage(null);
+                      await loadDashboard();
+                    }}
+                    onCancel={
+                      data.revision
+                        ? () => setShowRevisionConfig(false)
+                        : undefined
+                    }
+                  />
+                </div>
+              ) : currentChallenge ? (
+                <>
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold tracking-wider uppercase">
@@ -457,15 +490,30 @@ export default function Dashboard() {
                       ? "Daily accountability"
                       : activeTab === "weekly"
                       ? "Weekly Elite 5"
-                      : "Weakness reinforcement"}
+                      : "Your revision set"}
                   </span>
                   <h2 className="text-2xl font-black mt-1">
                     {currentChallenge.title}
                   </h2>
                 </div>
-                <span className="text-xs bg-muted border border-border px-2.5 py-1 rounded-md text-muted-foreground font-semibold uppercase">
-                  {currentChallenge.difficulty}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  {activeTab === "revision" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRevisionConfig(true);
+                        setQuestMessage(null);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold border border-border hover:border-indigo-500/50 text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-md transition"
+                      title="Configure a new revision"
+                    >
+                      <Dices className="w-3.5 h-3.5" /> New
+                    </button>
+                  )}
+                  <span className="text-xs bg-muted border border-border px-2.5 py-1 rounded-md text-muted-foreground font-semibold uppercase">
+                    {currentChallenge.difficulty}
+                  </span>
+                </div>
               </div>
 
               <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
@@ -598,6 +646,8 @@ export default function Dashboard() {
                   +{currentChallenge.xpReward} XP Reward
                 </span>
               </div>
+                </>
+              ) : null}
             </CardContent>
           </Card>
 

@@ -111,6 +111,17 @@ const jsonLd = {
       applicationCategory: "EducationalApplication",
       url: siteConfig.url,
       description: siteConfig.description,
+      featureList: [
+        "Curated DSA sheets: Blind 75, NeetCode 150, Striver's SDE & A2Z, Love Babbar 450",
+        "Company-specific question banks (Google & Amazon Top 100)",
+        "Interview patterns ranked by weightage with pattern-wise questions",
+        "Deep LeetCode sync that imports your entire solve history",
+        "Adaptive daily, weekly, and configurable revision quests",
+        "Smart leaderboards ranked by XP, level, streak, solves, or contest rating",
+        "Public shareable profiles with LeetCode analytics",
+        "Real-time multiplayer coding rooms",
+        "AI mentor that tracks weak topics and keeps you accountable",
+      ],
       offers: {
         "@type": "Offer",
         price: "0",
@@ -126,7 +137,23 @@ const jsonLd = {
           name: "What exactly is LeetRun, and how does it work?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "LeetRun is a gamified DSA preparation platform that syncs with your LeetCode profile and generates daily, weekly, and revision challenges personalized to your skill level and target company. An AI mentor tracks your progress and keeps you accountable.",
+            text: "LeetRun is a gamified DSA placement platform built around curated sheets (Blind 75, NeetCode 150, Striver's SDE & A2Z, company sets), interview patterns ranked by weightage, and adaptive quests. It syncs with your LeetCode profile and an AI mentor keeps you accountable.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Which DSA sheets and question banks are included?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Blind 75, NeetCode 150, Striver's SDE Sheet, Striver's A2Z, Love Babbar 450, and company-specific sets like Google and Amazon Top 100. You can pin focus sheets and your progress is tracked automatically.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What is Deep LeetCode Sync?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Deep Sync imports your entire LeetCode solve history — every accepted problem, not just recent ones — and automatically checks them off across all of your sheets, also powering accurate quest verification.",
           },
         },
         {
@@ -135,14 +162,6 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text: "No. LeetRun works with any public LeetCode account. You connect your username during onboarding and LeetRun automatically syncs your stats, recent submissions, and solved counts.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What are the multiplayer Coding Rooms?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Coding Rooms let you create a private session, invite friends, and race to solve LeetCode problems in real time — great for mock contests, study sessions, or friendly rivalry.",
           },
         },
       ],

@@ -22,6 +22,133 @@ export interface BankQuestion {
 
 const QUESTIONS = questionBankData.questions as BankQuestion[];
 
+/** Topics available for the configurable revision builder. */
+export function getRevisionTopics(): string[] {
+  const meta = (questionBankData as any).meta;
+  if (Array.isArray(meta?.topics) && meta.topics.length > 0) {
+    return [...meta.topics].sort((a: string, b: string) => a.localeCompare(b));
+  }
+  // Derive from the bank as a fallback.
+  return Array.from(new Set(QUESTIONS.map((q) => q.topic))).sort((a, b) =>
+    a.localeCompare(b)
+  );
+}
+
+function revisionXpFor(difficulty: "EASY" | "MEDIUM" | "HARD"): number {
+  return difficulty === "HARD" ? 40 : difficulty === "MEDIUM" ? 25 : 15;
+}
+
+export type RevisionSolvedFilter = "any" | "solved" | "unsolved";
+
+export interface RevisionConfig {
+  topics: string[];
+  difficulty: "EASY" | "MEDIUM" | "HARD" | "ANY";
+  solvedFilter: RevisionSolvedFilter;
+  count?: number;
+}
+
+/**
+ * Build a random revision quest from the question bank that matches a
+ * user-supplied configuration (topics, difficulty, solved/unsolved). Returns
+ * the created userChallenge plus how many candidates matched the filters.
+ */
+export async function generateConfigurableRevision(
+  userId: string,
+  config: RevisionConfig
+) {
+  const user = await db.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found.");
+
+  const solved = await getSolvedSlugSet(userId);
+  const wantTopics = (config.topics || [])
+    .map((t) => t.trim().toLowerCase())
+    .filter(Boolean);
+
+  const matches = QUESTIONS.filter((q) => {
+    if (wantTopics.length > 0 && !wantTopics.includes(q.topic.toLowerCase())) {
+      return false;
+    }
+    if (config.difficulty !== "ANY" && q.difficulty !== config.difficulty) {
+      return false;
+    }
+    if (config.solvedFilter === "solved" && !solved.has(q.slug)) return false;
+    if (config.solvedFilter === "unsolved" && solved.has(q.slug)) return false;
+    return true;
+  });
+
+  if (matches.length === 0) {
+    throw new Error(
+      "No questions match these filters. Try widening your selection."
+    );
+  }
+
+  // Fisher–Yates shuffle, then take the requested count.
+  const pool = [...matches];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const count = Math.min(Math.max(config.count ?? 1, 1), 5);
+  const selected = pool.slice(0, count);
+
+  const xpReward = selected.reduce(
+    (sum, q) => sum + revisionXpFor(q.difficulty),
+    0
+  );
+
+  const topicLabel =
+    wantTopics.length === 0
+      ? "Mixed topics"
+      : config.topics.length === 1
+      ? config.topics[0]
+      : `${config.topics.length} topics`;
+
+  const userChallenge = await db.$transaction(async (tx) => {
+    await tx.userChallenge.updateMany({
+      where: {
+        userId,
+        status: ChallengeStatus.ACTIVE,
+        challenge: { type: ChallengeType.REVISION },
+      },
+      data: { status: ChallengeStatus.FAILED },
+    });
+
+    const challenge = await tx.challenge.create({
+      data: {
+        title:
+          selected.length === 1
+            ? `Revision: ${selected[0].title}`
+            : `Revision: ${topicLabel}`,
+        description: `Custom revision set · ${topicLabel}. Solve ${
+          selected.length === 1 ? "this problem" : "these problems"
+        } and mark them done to claim your XP.`,
+        type: ChallengeType.REVISION,
+        difficulty: (selected[0]?.difficulty as Difficulty) || Difficulty.EASY,
+        xpReward,
+        problems: {
+          create: selected.map((t) => ({
+            problemName: t.title,
+            problemSlug: t.slug,
+            difficulty: t.difficulty,
+            topic: t.topic,
+          })),
+        },
+      },
+    });
+
+    return tx.userChallenge.create({
+      data: {
+        userId,
+        challengeId: challenge.id,
+        status: ChallengeStatus.ACTIVE,
+        progress: 0,
+      },
+    });
+  });
+
+  return { userChallenge, matchCount: matches.length, xpReward };
+}
+
 /**
  * Recommends personalized DSA problems based on user solved stats, target company, topics, and sheet curation.
  */
@@ -575,7 +702,14 @@ export async function verifyQuest(userId: string, userChallengeId: string) {
  */
 export async function verifyChallengeCompletion(userId: string) {
   const activeChallenges = await db.userChallenge.findMany({
-    where: { userId, status: ChallengeStatus.ACTIVE },
+    where: {
+      userId,
+      status: ChallengeStatus.ACTIVE,
+      // Revision quests are configured + self-claimed by the user, so we don't
+      // auto-complete them here (otherwise "already solved" picks would instantly
+      // claim XP, defeating the purpose of revising).
+      challenge: { type: { in: [ChallengeType.DAILY, ChallengeType.WEEKLY] } },
+    },
     select: { id: true },
   });
 
