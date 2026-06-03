@@ -16,6 +16,10 @@ import sheet79 from "@/sheets/striver-last-moment-79-sheet.json";
 import blind75Sheet from "@/sheets/blind-75-sheet.json";
 import neetcode150Sheet from "@/sheets/neetcode-150-sheet.json";
 import loveBabbar450Sheet from "@/sheets/love-babbar-450-sheet.json";
+import googleTop100Sheet from "@/sheets/Google Top 100.json";
+import amazonTop100Sheet from "@/sheets/Amazon Top 100.json";
+
+export type SheetCategory = "curated" | "company";
 
 export type SheetDifficulty = "easy" | "medium" | "hard";
 
@@ -43,6 +47,8 @@ export interface NormalizedSheet {
   total: number;
   source: string | null;
   description: string | null;
+  category: SheetCategory;
+  company: string | null;
   sections: NormalizedSection[];
 }
 
@@ -76,6 +82,8 @@ function normalizeSde(raw: typeof sdeSheet): NormalizedSheet {
     total: raw.total,
     source: raw.source ?? null,
     description: null,
+    category: "curated",
+    company: null,
     sections: raw.days.map((d) => ({
       id: `day-${d.day}`,
       title: `Day ${d.day} · ${d.title}`,
@@ -103,6 +111,8 @@ function normalizeA2z(raw: typeof a2zSheet): NormalizedSheet {
     total: raw.total,
     source: raw.source ?? null,
     description: null,
+    category: "curated",
+    company: null,
     sections,
   };
 }
@@ -113,16 +123,22 @@ interface RawTopicSheet {
   total: number;
   source?: string | null;
   description?: string;
+  company?: string;
   topics: { id: number | string; title: string; problems: RawProblem[] }[];
 }
 
-function normalizeTopicSheet(raw: RawTopicSheet): NormalizedSheet {
+function normalizeTopicSheet(
+  raw: RawTopicSheet,
+  category: SheetCategory = "curated"
+): NormalizedSheet {
   return {
     slug: raw.slug,
     name: raw.sheet,
     total: raw.total,
     source: raw.source ?? null,
     description: raw.description ?? null,
+    category,
+    company: raw.company ?? null,
     sections: raw.topics.map((t) => ({
       id: `topic-${t.id}`,
       title: t.title,
@@ -140,6 +156,8 @@ const SHEETS: NormalizedSheet[] = [
   normalizeA2z(a2zSheet),
   normalizeTopicSheet(sheet79),
   normalizeTopicSheet(loveBabbar450Sheet),
+  normalizeTopicSheet(googleTop100Sheet, "company"),
+  normalizeTopicSheet(amazonTop100Sheet, "company"),
 ];
 
 const SHEET_BY_SLUG = new Map(SHEETS.map((s) => [s.slug, s]));
@@ -150,6 +168,8 @@ export interface SheetSummary {
   total: number;
   description: string | null;
   source: string | null;
+  category: SheetCategory;
+  company: string | null;
   sectionCount: number;
   difficultyCounts: { easy: number; medium: number; hard: number };
 }
@@ -169,6 +189,8 @@ export function getSheetSummaries(): SheetSummary[] {
     total: s.total,
     description: s.description,
     source: s.source,
+    category: s.category,
+    company: s.company,
     sectionCount: s.sections.length,
     difficultyCounts: difficultyCounts(s),
   }));
