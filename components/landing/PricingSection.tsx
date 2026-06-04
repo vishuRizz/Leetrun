@@ -190,7 +190,9 @@ const PricingPage = () => {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative transition-all duration-300 hover:scale-[1.02] border-0 shadow-lg ${
+              className={`relative overflow-visible transition-all duration-300 hover:scale-[1.02] border-0 shadow-lg ${
+                plan.isPopular ? "mt-4 md:mt-0" : ""
+              } ${
                 plan.isDark
                   ? "text-white shadow-2xl bg-[#1a1b23] dark:bg-[#141414] dark:border dark:border-gray-800"
                   : "bg-white dark:bg-[#141414] dark:border dark:border-gray-800 shadow-md"
