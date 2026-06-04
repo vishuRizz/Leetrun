@@ -41,8 +41,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/leaderboard") ||
     path.startsWith("/sheets") ||
     path.startsWith("/patterns") ||
-    path.startsWith("/study-plan") ||
-    path.startsWith("/flashcards") ||
+    path.startsWith("/prep") ||
     path.startsWith("/profile") ||
     path.startsWith("/side-quests") ||
     path.startsWith("/notes");

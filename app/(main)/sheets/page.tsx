@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSheetSummaries } from "@/lib/sheets";
 import SheetsDeepSyncBanner from "@/components/SheetsDeepSyncBanner";
 import SheetsBrowser from "./SheetsBrowser";
+import AutoLeetcodeSync from "@/components/AutoLeetcodeSync";
 
 export const metadata: Metadata = {
   title: "DSA Sheets",
@@ -57,6 +58,7 @@ export default async function SheetsPage() {
       </nav>
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
+        {user && <AutoLeetcodeSync />}
         {user && <SheetsDeepSyncBanner />}
 
         <SheetsBrowser

@@ -24,6 +24,9 @@ import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
 import { readCache, writeCache } from "@/lib/cache/clientCache";
 import ProblemNoteButton from "@/components/ProblemNoteButton";
 import SpeedAnalyticsCard from "@/components/SpeedAnalyticsCard";
+import AutoLeetcodeSync, {
+  LEETCODE_SYNCED_EVENT,
+} from "@/components/AutoLeetcodeSync";
 
 interface AnalyticsResponse {
   user: {
@@ -116,6 +119,19 @@ export default function AnalyticsPage() {
     async (force = false) => {
       if (force) setRefreshing(true);
       try {
+        // A manual refresh should pull fresh data FROM LeetCode, not just
+        // re-read our DB. Trigger a forced profile sync first, then read.
+        if (force) {
+          try {
+            await fetch("/api/leetcode/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ force: true }),
+            });
+          } catch {
+            /* fall through and still refresh from DB */
+          }
+        }
         const res = await fetch("/api/analytics", {
           cache: force ? "no-store" : "default",
         });
@@ -144,6 +160,13 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     load(false);
+  }, [load]);
+
+  // When a background deep sync lands fresh solves, reload analytics data.
+  useEffect(() => {
+    const onSynced = () => load(false);
+    window.addEventListener(LEETCODE_SYNCED_EVENT, onSynced);
+    return () => window.removeEventListener(LEETCODE_SYNCED_EVENT, onSynced);
   }, [load]);
 
   if (loading && !data) {
@@ -194,6 +217,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {!guest && <AutoLeetcodeSync />}
       {/* Header */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">

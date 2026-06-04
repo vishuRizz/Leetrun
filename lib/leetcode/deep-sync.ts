@@ -218,6 +218,70 @@ export async function runDeepLeetcodeSync(
   };
 }
 
+/** How stale a deep sync can be before we auto-refresh it in the background. */
+export const AUTO_DEEP_SYNC_STALE_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+// In-process guard so concurrent tab visits don't kick off duplicate deep syncs
+// for the same user while one is already running.
+const autoSyncInflight = new Set<string>();
+
+export type AutoDeepSyncOutcome =
+  | { synced: true; result: DeepSyncResult }
+  | {
+      synced: false;
+      reason: "no-leetcode" | "no-cookie" | "fresh" | "in-progress" | "error";
+      deepSyncedAt: string | null;
+    };
+
+/**
+ * Background helper: if the user's deep sync is older than 6 hours (or never
+ * happened) AND they have a saved session cookie, re-run it silently. No-ops
+ * (returns a reason) when a sync isn't needed or possible. Safe to call on
+ * every relevant page visit - it self-throttles via the DB timestamp.
+ */
+export async function maybeAutoDeepSync(
+  userId: string
+): Promise<AutoDeepSyncOutcome> {
+  const profile = await db.leetcodeProfile.findUnique({
+    where: { userId },
+    select: { deepSyncedAt: true, sessionCookieEnc: true },
+  });
+
+  if (!profile) {
+    return { synced: false, reason: "no-leetcode", deepSyncedAt: null };
+  }
+
+  const deepSyncedAt = profile.deepSyncedAt?.toISOString() ?? null;
+
+  if (!profile.sessionCookieEnc) {
+    // Can't auto-sync without a saved cookie - the user must run a manual
+    // deep sync once to grant us a session.
+    return { synced: false, reason: "no-cookie", deepSyncedAt };
+  }
+
+  const isFresh =
+    profile.deepSyncedAt &&
+    Date.now() - profile.deepSyncedAt.getTime() < AUTO_DEEP_SYNC_STALE_MS;
+  if (isFresh) {
+    return { synced: false, reason: "fresh", deepSyncedAt };
+  }
+
+  if (autoSyncInflight.has(userId)) {
+    return { synced: false, reason: "in-progress", deepSyncedAt };
+  }
+
+  autoSyncInflight.add(userId);
+  try {
+    const result = await rerunSavedDeepSync(userId, true);
+    return { synced: true, result };
+  } catch (err) {
+    console.warn("Auto deep sync failed:", err);
+    return { synced: false, reason: "error", deepSyncedAt };
+  } finally {
+    autoSyncInflight.delete(userId);
+  }
+}
+
 /** Re-run deep sync using a previously saved encrypted cookie. */
 export async function rerunSavedDeepSync(
   userId: string,

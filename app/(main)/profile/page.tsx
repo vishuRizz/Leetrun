@@ -38,6 +38,9 @@ import DeepLeetcodeSyncModal from "@/components/DeepLeetcodeSyncModal";
 import ContributionCalendar from "@/components/ContributionCalendar";
 import GrowthChart from "@/components/GrowthChart";
 import ProblemNoteButton from "@/components/ProblemNoteButton";
+import AutoLeetcodeSync, {
+  LEETCODE_SYNCED_EVENT,
+} from "@/components/AutoLeetcodeSync";
 
 interface ProfileData {
   fullName: string | null;
@@ -194,6 +197,11 @@ export default function ProfilePage() {
       await fetchProfile();
     };
     void init();
+
+    // Reload profile data when a background deep sync brings fresh solves.
+    const onSynced = () => void fetchProfile();
+    window.addEventListener(LEETCODE_SYNCED_EVENT, onSynced);
+    return () => window.removeEventListener(LEETCODE_SYNCED_EVENT, onSynced);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -461,6 +469,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-150">
+      <AutoLeetcodeSync />
       {/* Top Navbar */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-2">

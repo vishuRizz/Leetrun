@@ -8,8 +8,7 @@ import {
   BarChart3,
   BookOpen,
   Bot,
-  Brain,
-  CalendarClock,
+  GraduationCap,
   Home,
   Layers,
   LogIn,
@@ -17,7 +16,6 @@ import {
   Network,
   Search,
   Shield,
-  Swords,
   Trophy,
   User,
   Users,
@@ -129,8 +127,9 @@ export function Sidebar() {
       items: [
         { name: "Sheets", href: "/sheets", icon: Layers },
         { name: "Patterns", href: "/patterns", icon: Network },
-        { name: "Study Plan", href: "/study-plan", icon: CalendarClock },
-        { name: "Side Quests", href: "/side-quests", icon: Swords },
+        { name: "Prep Kit", href: "/prep", icon: GraduationCap },
+        // Temporarily hidden - re-enable when Side Quests is ready.
+        // { name: "Side Quests", href: "/side-quests", icon: Swords },
         { name: "Lobbies", href: "/rooms", icon: Users },
       ],
     },
@@ -138,7 +137,6 @@ export function Sidebar() {
       label: "Learn",
       items: [
         { name: "System Design", href: "/notes", icon: BookOpen },
-        { name: "Flashcards", href: "/flashcards", icon: Brain },
       ],
     },
     {
