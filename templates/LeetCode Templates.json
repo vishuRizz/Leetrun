@@ -1,0 +1,443 @@
+{
+  "title": "DSA C++ Interview Templates",
+  "description": "Most frequently asked DSA patterns with ready-to-use C++ templates for interview prep",
+  "version": "1.0",
+  "patterns": [
+    {
+      "id": 1,
+      "pattern": "Two Pointers",
+      "frequency": "very_high",
+      "difficulty": "easy",
+      "tags": ["array", "string", "linked-list"],
+      "use_cases": [
+        "Pair with given sum in sorted array",
+        "Remove duplicates",
+        "Container with most water",
+        "Palindrome check",
+        "3Sum / 4Sum"
+      ],
+      "problems": [
+        { "title": "Two Sum II", "leetcode_id": 167 },
+        { "title": "3Sum", "leetcode_id": 15 },
+        { "title": "Container With Most Water", "leetcode_id": 11 },
+        { "title": "Trapping Rain Water", "leetcode_id": 42 },
+        { "title": "Valid Palindrome", "leetcode_id": 125 }
+      ],
+      "template": "// TWO POINTERS TEMPLATE\nvoid twoPointers(vector<int>& arr) {\n    int left = 0, right = arr.size() - 1;\n\n    while (left < right) {\n        int sum = arr[left] + arr[right];\n\n        if (sum == target) {\n            // found answer\n            left++; right--;\n        } else if (sum < target) {\n            left++;   // need bigger sum\n        } else {\n            right--;  // need smaller sum\n        }\n    }\n}\n\n// VARIANT: Fast & Slow (Floyd's Cycle)\nbool hasCycle(ListNode* head) {\n    ListNode* slow = head;\n    ListNode* fast = head;\n\n    while (fast && fast->next) {\n        slow = slow->next;\n        fast = fast->next->next;\n        if (slow == fast) return true;\n    }\n    return false;\n}"
+    },
+    {
+      "id": 2,
+      "pattern": "Sliding Window",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["array", "string", "hashmap"],
+      "use_cases": [
+        "Longest substring with K distinct chars",
+        "Max sum subarray of size K",
+        "Minimum window substring",
+        "Anagram in string",
+        "Longest substring without repeating"
+      ],
+      "problems": [
+        { "title": "Longest Substring Without Repeating Characters", "leetcode_id": 3 },
+        { "title": "Minimum Window Substring", "leetcode_id": 76 },
+        { "title": "Longest Repeating Character Replacement", "leetcode_id": 424 },
+        { "title": "Fruit Into Baskets", "leetcode_id": 904 },
+        { "title": "Sliding Window Maximum", "leetcode_id": 239 }
+      ],
+      "template": "// FIXED SIZE SLIDING WINDOW\nint maxSumSubarrayOfSizeK(vector<int>& arr, int k) {\n    int maxSum = 0, windowSum = 0;\n\n    for (int i = 0; i < arr.size(); i++) {\n        windowSum += arr[i];\n        if (i >= k - 1) {\n            maxSum = max(maxSum, windowSum);\n            windowSum -= arr[i - (k - 1)];\n        }\n    }\n    return maxSum;\n}\n\n// VARIABLE SIZE SLIDING WINDOW (most common in interviews)\nint longestSubstringKDistinct(string s, int k) {\n    unordered_map<char, int> freq;\n    int left = 0, maxLen = 0;\n\n    for (int right = 0; right < s.size(); right++) {\n        freq[s[right]]++;\n\n        // shrink window until valid\n        while (freq.size() > k) {\n            freq[s[left]]--;\n            if (freq[s[left]] == 0) freq.erase(s[left]);\n            left++;\n        }\n        maxLen = max(maxLen, right - left + 1);\n    }\n    return maxLen;\n}\n\n// TEMPLATE: Count valid subarrays (atMost trick)\n// count(exactly k) = count(atMost k) - count(atMost k-1)\nint atMost(vector<int>& arr, int k) {\n    unordered_map<int, int> freq;\n    int left = 0, count = 0;\n\n    for (int right = 0; right < arr.size(); right++) {\n        freq[arr[right]]++;\n        while (freq.size() > k) {\n            freq[arr[left]]--;\n            if (freq[arr[left]] == 0) freq.erase(arr[left]);\n            left++;\n        }\n        count += right - left + 1;\n    }\n    return count;\n}"
+    },
+    {
+      "id": 3,
+      "pattern": "Binary Search",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["array", "search", "answer-space"],
+      "use_cases": [
+        "Search in sorted array",
+        "Find boundary / first true",
+        "Binary search on answer (minimize max, maximize min)",
+        "Search in rotated array",
+        "Peak element"
+      ],
+      "problems": [
+        { "title": "Binary Search", "leetcode_id": 704 },
+        { "title": "Search in Rotated Sorted Array", "leetcode_id": 33 },
+        { "title": "Find Peak Element", "leetcode_id": 162 },
+        { "title": "Koko Eating Bananas", "leetcode_id": 875 },
+        { "title": "Median of Two Sorted Arrays", "leetcode_id": 4 }
+      ],
+      "template": "// STANDARD BINARY SEARCH\nint binarySearch(vector<int>& arr, int target) {\n    int left = 0, right = arr.size() - 1;\n\n    while (left <= right) {\n        int mid = left + (right - left) / 2; // avoids overflow\n\n        if (arr[mid] == target) return mid;\n        else if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}\n\n// LOWER BOUND: first index where arr[i] >= target\nint lowerBound(vector<int>& arr, int target) {\n    int left = 0, right = arr.size();\n    while (left < right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid;\n    }\n    return left;\n}\n\n// BINARY SEARCH ON ANSWER (most powerful pattern)\n// Use when: \"find minimum X such that condition(X) is true\"\nbool canAchieve(vector<int>& arr, int mid, int limit) {\n    // define your feasibility check here\n    return true;\n}\n\nint binarySearchOnAnswer(vector<int>& arr, int limit) {\n    int left = 1, right = *max_element(arr.begin(), arr.end());\n    int ans = right;\n\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (canAchieve(arr, mid, limit)) {\n            ans = mid;\n            right = mid - 1; // try smaller\n        } else {\n            left = mid + 1;\n        }\n    }\n    return ans;\n}\n\n// SEARCH IN ROTATED ARRAY\nint searchRotated(vector<int>& arr, int target) {\n    int left = 0, right = arr.size() - 1;\n\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] == target) return mid;\n\n        if (arr[left] <= arr[mid]) { // left half sorted\n            if (arr[left] <= target && target < arr[mid]) right = mid - 1;\n            else left = mid + 1;\n        } else { // right half sorted\n            if (arr[mid] < target && target <= arr[right]) left = mid + 1;\n            else right = mid - 1;\n        }\n    }\n    return -1;\n}"
+    },
+    {
+      "id": 4,
+      "pattern": "Depth First Search (DFS)",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["graph", "tree", "recursion", "backtracking"],
+      "use_cases": [
+        "Tree traversals",
+        "Path sum problems",
+        "Island counting",
+        "Cycle detection",
+        "Topological sort",
+        "Connected components"
+      ],
+      "problems": [
+        { "title": "Number of Islands", "leetcode_id": 200 },
+        { "title": "Clone Graph", "leetcode_id": 133 },
+        { "title": "Path Sum", "leetcode_id": 112 },
+        { "title": "Course Schedule", "leetcode_id": 207 },
+        { "title": "Word Search", "leetcode_id": 79 }
+      ],
+      "template": "// DFS ON GRAPH (iterative with visited)\nvoid dfs(vector<vector<int>>& adj, int node, vector<bool>& visited) {\n    visited[node] = true;\n    // process node\n\n    for (int neighbor : adj[node]) {\n        if (!visited[neighbor]) {\n            dfs(adj, neighbor, visited);\n        }\n    }\n}\n\n// DFS ON GRID (4-directional)\nint dirs[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};\n\nvoid dfsGrid(vector<vector<char>>& grid, int r, int c) {\n    int rows = grid.size(), cols = grid[0].size();\n    if (r < 0 || r >= rows || c < 0 || c >= cols) return;\n    if (grid[r][c] != '1') return;\n\n    grid[r][c] = '0'; // mark visited\n\n    for (auto& d : dirs)\n        dfsGrid(grid, r + d[0], c + d[1]);\n}\n\nint numIslands(vector<vector<char>>& grid) {\n    int count = 0;\n    for (int r = 0; r < grid.size(); r++)\n        for (int c = 0; c < grid[0].size(); c++)\n            if (grid[r][c] == '1') { dfsGrid(grid, r, c); count++; }\n    return count;\n}\n\n// DFS ON TREE\nint maxDepth(TreeNode* root) {\n    if (!root) return 0;\n    return 1 + max(maxDepth(root->left), maxDepth(root->right));\n}\n\n// DFS FOR CYCLE DETECTION IN DIRECTED GRAPH\n// States: 0=unvisited, 1=in stack, 2=done\nbool dfsCycle(vector<vector<int>>& adj, int node, vector<int>& state) {\n    state[node] = 1;\n    for (int nb : adj[node]) {\n        if (state[nb] == 1) return true; // back edge = cycle\n        if (state[nb] == 0 && dfsCycle(adj, nb, state)) return true;\n    }\n    state[node] = 2;\n    return false;\n}"
+    },
+    {
+      "id": 5,
+      "pattern": "Breadth First Search (BFS)",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["graph", "tree", "shortest-path"],
+      "use_cases": [
+        "Shortest path in unweighted graph",
+        "Level order traversal",
+        "Multi-source BFS (rotten oranges)",
+        "0-1 BFS",
+        "Word ladder"
+      ],
+      "problems": [
+        { "title": "Binary Tree Level Order Traversal", "leetcode_id": 102 },
+        { "title": "Rotting Oranges", "leetcode_id": 994 },
+        { "title": "Word Ladder", "leetcode_id": 127 },
+        { "title": "01 Matrix", "leetcode_id": 542 },
+        { "title": "Shortest Path in Binary Matrix", "leetcode_id": 1091 }
+      ],
+      "template": "// BFS ON GRAPH\nvoid bfs(vector<vector<int>>& adj, int start) {\n    vector<bool> visited(adj.size(), false);\n    queue<int> q;\n\n    q.push(start);\n    visited[start] = true;\n\n    while (!q.empty()) {\n        int node = q.front(); q.pop();\n        // process node\n\n        for (int neighbor : adj[node]) {\n            if (!visited[neighbor]) {\n                visited[neighbor] = true;\n                q.push(neighbor);\n            }\n        }\n    }\n}\n\n// BFS SHORTEST PATH\nvector<int> bfsShortestPath(vector<vector<int>>& adj, int src, int n) {\n    vector<int> dist(n, -1);\n    queue<int> q;\n    q.push(src); dist[src] = 0;\n\n    while (!q.empty()) {\n        int node = q.front(); q.pop();\n        for (int nb : adj[node]) {\n            if (dist[nb] == -1) {\n                dist[nb] = dist[node] + 1;\n                q.push(nb);\n            }\n        }\n    }\n    return dist;\n}\n\n// MULTI-SOURCE BFS (e.g. rotten oranges)\nvoid multiSourceBFS(vector<vector<int>>& grid) {\n    int rows = grid.size(), cols = grid[0].size();\n    queue<pair<int,int>> q;\n    int dirs[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};\n\n    // push all sources initially\n    for (int r = 0; r < rows; r++)\n        for (int c = 0; c < cols; c++)\n            if (grid[r][c] == 2) q.push({r, c});\n\n    int time = 0;\n    while (!q.empty()) {\n        int sz = q.size();\n        while (sz--) {\n            auto [r, c] = q.front(); q.pop();\n            for (auto& d : dirs) {\n                int nr = r + d[0], nc = c + d[1];\n                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 1) {\n                    grid[nr][nc] = 2;\n                    q.push({nr, nc});\n                }\n            }\n        }\n        time++;\n    }\n}\n\n// LEVEL ORDER TRAVERSAL\nvector<vector<int>> levelOrder(TreeNode* root) {\n    vector<vector<int>> result;\n    if (!root) return result;\n    queue<TreeNode*> q;\n    q.push(root);\n\n    while (!q.empty()) {\n        int sz = q.size();\n        vector<int> level;\n        while (sz--) {\n            auto node = q.front(); q.pop();\n            level.push_back(node->val);\n            if (node->left) q.push(node->left);\n            if (node->right) q.push(node->right);\n        }\n        result.push_back(level);\n    }\n    return result;\n}"
+    },
+    {
+      "id": 6,
+      "pattern": "Dynamic Programming - 1D",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["dp", "memoization", "tabulation"],
+      "use_cases": [
+        "Fibonacci variants",
+        "House robber",
+        "Climbing stairs",
+        "Coin change",
+        "Longest increasing subsequence"
+      ],
+      "problems": [
+        { "title": "Climbing Stairs", "leetcode_id": 70 },
+        { "title": "House Robber", "leetcode_id": 198 },
+        { "title": "Coin Change", "leetcode_id": 322 },
+        { "title": "Longest Increasing Subsequence", "leetcode_id": 300 },
+        { "title": "Word Break", "leetcode_id": 139 }
+      ],
+      "template": "// TOP-DOWN (Memoization) TEMPLATE\nunordered_map<int, int> memo;\n\nint solve(int n) {\n    if (n <= 1) return n; // base case\n    if (memo.count(n)) return memo[n]; // check cache\n\n    memo[n] = solve(n-1) + solve(n-2); // recurrence\n    return memo[n];\n}\n\n// BOTTOM-UP (Tabulation) TEMPLATE\nint climbStairs(int n) {\n    if (n <= 2) return n;\n    vector<int> dp(n + 1);\n    dp[1] = 1; dp[2] = 2;\n\n    for (int i = 3; i <= n; i++)\n        dp[i] = dp[i-1] + dp[i-2];\n\n    return dp[n];\n}\n\n// SPACE OPTIMIZED (when only prev states needed)\nint climbStairsOptimized(int n) {\n    int prev2 = 1, prev1 = 2;\n    for (int i = 3; i <= n; i++) {\n        int curr = prev1 + prev2;\n        prev2 = prev1;\n        prev1 = curr;\n    }\n    return prev1;\n}\n\n// LONGEST INCREASING SUBSEQUENCE (O(n log n))\nint lis(vector<int>& nums) {\n    vector<int> tails; // tails[i] = smallest tail of IS of length i+1\n\n    for (int num : nums) {\n        auto it = lower_bound(tails.begin(), tails.end(), num);\n        if (it == tails.end()) tails.push_back(num);\n        else *it = num;\n    }\n    return tails.size();\n}"
+    },
+    {
+      "id": 7,
+      "pattern": "Dynamic Programming - 2D (Grid / String)",
+      "frequency": "very_high",
+      "difficulty": "hard",
+      "tags": ["dp", "string", "grid", "lcs"],
+      "use_cases": [
+        "Longest Common Subsequence",
+        "Edit distance",
+        "Unique paths",
+        "Minimum path sum",
+        "Wildcard / regex matching"
+      ],
+      "problems": [
+        { "title": "Longest Common Subsequence", "leetcode_id": 1143 },
+        { "title": "Edit Distance", "leetcode_id": 72 },
+        { "title": "Unique Paths", "leetcode_id": 62 },
+        { "title": "Minimum Path Sum", "leetcode_id": 64 },
+        { "title": "Distinct Subsequences", "leetcode_id": 115 }
+      ],
+      "template": "// LCS TEMPLATE\nint lcs(string s1, string s2) {\n    int m = s1.size(), n = s2.size();\n    vector<vector<int>> dp(m+1, vector<int>(n+1, 0));\n\n    for (int i = 1; i <= m; i++) {\n        for (int j = 1; j <= n; j++) {\n            if (s1[i-1] == s2[j-1])\n                dp[i][j] = 1 + dp[i-1][j-1];\n            else\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);\n        }\n    }\n    return dp[m][n];\n}\n\n// EDIT DISTANCE TEMPLATE\nint editDistance(string s1, string s2) {\n    int m = s1.size(), n = s2.size();\n    vector<vector<int>> dp(m+1, vector<int>(n+1, 0));\n\n    for (int i = 0; i <= m; i++) dp[i][0] = i;\n    for (int j = 0; j <= n; j++) dp[0][j] = j;\n\n    for (int i = 1; i <= m; i++) {\n        for (int j = 1; j <= n; j++) {\n            if (s1[i-1] == s2[j-1])\n                dp[i][j] = dp[i-1][j-1];\n            else\n                dp[i][j] = 1 + min({dp[i-1][j],   // delete\n                                    dp[i][j-1],   // insert\n                                    dp[i-1][j-1]  // replace\n                                   });\n        }\n    }\n    return dp[m][n];\n}\n\n// GRID DP TEMPLATE (unique paths)\nint uniquePaths(int m, int n) {\n    vector<vector<int>> dp(m, vector<int>(n, 1));\n\n    for (int i = 1; i < m; i++)\n        for (int j = 1; j < n; j++)\n            dp[i][j] = dp[i-1][j] + dp[i][j-1];\n\n    return dp[m-1][n-1];\n}"
+    },
+    {
+      "id": 8,
+      "pattern": "Dynamic Programming - Knapsack",
+      "frequency": "very_high",
+      "difficulty": "hard",
+      "tags": ["dp", "knapsack", "subset"],
+      "use_cases": [
+        "0/1 Knapsack",
+        "Subset sum",
+        "Partition equal subset",
+        "Unbounded knapsack",
+        "Coin change variants"
+      ],
+      "problems": [
+        { "title": "Partition Equal Subset Sum", "leetcode_id": 416 },
+        { "title": "Coin Change", "leetcode_id": 322 },
+        { "title": "Coin Change II", "leetcode_id": 518 },
+        { "title": "Target Sum", "leetcode_id": 494 },
+        { "title": "Last Stone Weight II", "leetcode_id": 1049 }
+      ],
+      "template": "// 0/1 KNAPSACK\nint knapsack01(vector<int>& weights, vector<int>& values, int capacity) {\n    int n = weights.size();\n    vector<vector<int>> dp(n+1, vector<int>(capacity+1, 0));\n\n    for (int i = 1; i <= n; i++) {\n        for (int w = 0; w <= capacity; w++) {\n            dp[i][w] = dp[i-1][w]; // skip item\n            if (weights[i-1] <= w)\n                dp[i][w] = max(dp[i][w], values[i-1] + dp[i-1][w - weights[i-1]]);\n        }\n    }\n    return dp[n][capacity];\n}\n\n// SUBSET SUM (can we achieve sum T?)\nbool subsetSum(vector<int>& nums, int target) {\n    vector<bool> dp(target+1, false);\n    dp[0] = true;\n\n    for (int num : nums)\n        for (int j = target; j >= num; j--) // reverse to avoid reuse\n            dp[j] = dp[j] || dp[j - num];\n\n    return dp[target];\n}\n\n// UNBOUNDED KNAPSACK (item can be reused)\n// Coin Change: min coins to make amount\nint coinChange(vector<int>& coins, int amount) {\n    vector<int> dp(amount+1, INT_MAX);\n    dp[0] = 0;\n\n    for (int i = 1; i <= amount; i++) {\n        for (int coin : coins) {\n            if (coin <= i && dp[i - coin] != INT_MAX)\n                dp[i] = min(dp[i], 1 + dp[i - coin]);\n        }\n    }\n    return dp[amount] == INT_MAX ? -1 : dp[amount];\n}\n\n// COUNT WAYS (Coin Change 2)\nint change(int amount, vector<int>& coins) {\n    vector<int> dp(amount+1, 0);\n    dp[0] = 1;\n\n    for (int coin : coins)       // outer = items (avoids permutation counting)\n        for (int j = coin; j <= amount; j++)\n            dp[j] += dp[j - coin];\n\n    return dp[amount];\n}"
+    },
+    {
+      "id": 9,
+      "pattern": "Backtracking",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["recursion", "backtracking", "combinatorics"],
+      "use_cases": [
+        "Subsets / Power set",
+        "Permutations",
+        "Combination sum",
+        "N-Queens",
+        "Sudoku solver",
+        "Palindrome partitioning"
+      ],
+      "problems": [
+        { "title": "Subsets", "leetcode_id": 78 },
+        { "title": "Permutations", "leetcode_id": 46 },
+        { "title": "Combination Sum", "leetcode_id": 39 },
+        { "title": "N-Queens", "leetcode_id": 51 },
+        { "title": "Palindrome Partitioning", "leetcode_id": 131 }
+      ],
+      "template": "// BACKTRACKING MASTER TEMPLATE\n// choose -> explore -> unchoose\n\n// SUBSETS\nvoid subsets(vector<int>& nums, int start, vector<int>& curr, vector<vector<int>>& result) {\n    result.push_back(curr); // add at every node\n\n    for (int i = start; i < nums.size(); i++) {\n        curr.push_back(nums[i]);         // choose\n        subsets(nums, i+1, curr, result); // explore\n        curr.pop_back();                  // unchoose\n    }\n}\n\n// PERMUTATIONS\nvoid permutations(vector<int>& nums, vector<bool>& used, vector<int>& curr, vector<vector<int>>& result) {\n    if (curr.size() == nums.size()) { result.push_back(curr); return; }\n\n    for (int i = 0; i < nums.size(); i++) {\n        if (used[i]) continue;\n        used[i] = true;\n        curr.push_back(nums[i]);\n        permutations(nums, used, curr, result);\n        curr.pop_back();\n        used[i] = false;\n    }\n}\n\n// COMBINATION SUM (can reuse elements)\nvoid combinationSum(vector<int>& candidates, int target, int start, vector<int>& curr, vector<vector<int>>& result) {\n    if (target == 0) { result.push_back(curr); return; }\n    if (target < 0) return;\n\n    for (int i = start; i < candidates.size(); i++) {\n        curr.push_back(candidates[i]);\n        combinationSum(candidates, target - candidates[i], i, curr, result); // i (not i+1) = reuse allowed\n        curr.pop_back();\n    }\n}\n\n// COMBINATION SUM II (no reuse, skip duplicates)\nvoid combinationSum2(vector<int>& candidates, int target, int start, vector<int>& curr, vector<vector<int>>& result) {\n    if (target == 0) { result.push_back(curr); return; }\n\n    for (int i = start; i < candidates.size(); i++) {\n        if (i > start && candidates[i] == candidates[i-1]) continue; // skip duplicates\n        if (candidates[i] > target) break;\n        curr.push_back(candidates[i]);\n        combinationSum2(candidates, target - candidates[i], i+1, curr, result);\n        curr.pop_back();\n    }\n}"
+    },
+    {
+      "id": 10,
+      "pattern": "Monotonic Stack",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["stack", "array", "next-greater"],
+      "use_cases": [
+        "Next greater element",
+        "Previous smaller element",
+        "Largest rectangle in histogram",
+        "Daily temperatures",
+        "Sum of subarray minimums"
+      ],
+      "problems": [
+        { "title": "Daily Temperatures", "leetcode_id": 739 },
+        { "title": "Next Greater Element I", "leetcode_id": 496 },
+        { "title": "Largest Rectangle in Histogram", "leetcode_id": 84 },
+        { "title": "Trapping Rain Water", "leetcode_id": 42 },
+        { "title": "Sum of Subarray Minimums", "leetcode_id": 907 }
+      ],
+      "template": "// NEXT GREATER ELEMENT (monotonic decreasing stack)\nvector<int> nextGreater(vector<int>& nums) {\n    int n = nums.size();\n    vector<int> result(n, -1);\n    stack<int> st; // stores indices\n\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && nums[st.top()] < nums[i]) {\n            result[st.top()] = nums[i];\n            st.pop();\n        }\n        st.push(i);\n    }\n    return result;\n}\n\n// PREVIOUS SMALLER ELEMENT\nvector<int> prevSmaller(vector<int>& nums) {\n    int n = nums.size();\n    vector<int> result(n, -1);\n    stack<int> st;\n\n    for (int i = 0; i < n; i++) {\n        while (!st.empty() && nums[st.top()] >= nums[i]) st.pop();\n        if (!st.empty()) result[i] = nums[st.top()];\n        st.push(i);\n    }\n    return result;\n}\n\n// LARGEST RECTANGLE IN HISTOGRAM\nint largestRectangle(vector<int>& heights) {\n    stack<int> st;\n    int maxArea = 0;\n    heights.push_back(0); // sentinel\n\n    for (int i = 0; i < heights.size(); i++) {\n        while (!st.empty() && heights[st.top()] > heights[i]) {\n            int h = heights[st.top()]; st.pop();\n            int w = st.empty() ? i : i - st.top() - 1;\n            maxArea = max(maxArea, h * w);\n        }\n        st.push(i);\n    }\n    return maxArea;\n}"
+    },
+    {
+      "id": 11,
+      "pattern": "Heap / Priority Queue",
+      "frequency": "very_high",
+      "difficulty": "medium",
+      "tags": ["heap", "priority-queue", "greedy", "top-k"],
+      "use_cases": [
+        "Kth largest/smallest",
+        "Top K frequent elements",
+        "Merge K sorted lists",
+        "Find median from stream",
+        "Task scheduler"
+      ],
+      "problems": [
+        { "title": "Kth Largest Element in an Array", "leetcode_id": 215 },
+        { "title": "Top K Frequent Elements", "leetcode_id": 347 },
+        { "title": "Find Median from Data Stream", "leetcode_id": 295 },
+        { "title": "Merge K Sorted Lists", "leetcode_id": 23 },
+        { "title": "Task Scheduler", "leetcode_id": 621 }
+      ],
+      "template": "// MIN HEAP (default in C++)\npriority_queue<int, vector<int>, greater<int>> minHeap;\n\n// MAX HEAP (default)\npriority_queue<int> maxHeap;\n\n// KTH LARGEST (min heap of size K)\nint kthLargest(vector<int>& nums, int k) {\n    priority_queue<int, vector<int>, greater<int>> minH;\n\n    for (int num : nums) {\n        minH.push(num);\n        if (minH.size() > k) minH.pop();\n    }\n    return minH.top();\n}\n\n// TOP K FREQUENT\nvector<int> topKFrequent(vector<int>& nums, int k) {\n    unordered_map<int, int> freq;\n    for (int n : nums) freq[n]++;\n\n    // min heap by frequency\n    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> minH;\n    for (auto& [val, cnt] : freq) {\n        minH.push({cnt, val});\n        if (minH.size() > k) minH.pop();\n    }\n\n    vector<int> result;\n    while (!minH.empty()) { result.push_back(minH.top().second); minH.pop(); }\n    return result;\n}\n\n// FIND MEDIAN (two heaps)\nclass MedianFinder {\n    priority_queue<int> maxH; // lower half\n    priority_queue<int, vector<int>, greater<int>> minH; // upper half\npublic:\n    void addNum(int num) {\n        maxH.push(num);\n        minH.push(maxH.top()); maxH.pop();\n        if (minH.size() > maxH.size()) { maxH.push(minH.top()); minH.pop(); }\n    }\n    double findMedian() {\n        if (maxH.size() > minH.size()) return maxH.top();\n        return (maxH.top() + minH.top()) / 2.0;\n    }\n};"
+    },
+    {
+      "id": 12,
+      "pattern": "Trie",
+      "frequency": "high",
+      "difficulty": "medium",
+      "tags": ["trie", "string", "prefix"],
+      "use_cases": [
+        "Autocomplete / prefix search",
+        "Word search",
+        "Longest common prefix",
+        "Max XOR",
+        "Count distinct substrings"
+      ],
+      "problems": [
+        { "title": "Implement Trie (Prefix Tree)", "leetcode_id": 208 },
+        { "title": "Word Search II", "leetcode_id": 212 },
+        { "title": "Design Add and Search Words Data Structure", "leetcode_id": 211 },
+        { "title": "Maximum XOR of Two Numbers in an Array", "leetcode_id": 421 }
+      ],
+      "template": "// TRIE IMPLEMENTATION\nstruct TrieNode {\n    TrieNode* children[26];\n    bool isEnd;\n    TrieNode() : isEnd(false) { fill(children, children+26, nullptr); }\n};\n\nclass Trie {\n    TrieNode* root;\npublic:\n    Trie() { root = new TrieNode(); }\n\n    void insert(string word) {\n        TrieNode* node = root;\n        for (char c : word) {\n            int idx = c - 'a';\n            if (!node->children[idx])\n                node->children[idx] = new TrieNode();\n            node = node->children[idx];\n        }\n        node->isEnd = true;\n    }\n\n    bool search(string word) {\n        TrieNode* node = root;\n        for (char c : word) {\n            int idx = c - 'a';\n            if (!node->children[idx]) return false;\n            node = node->children[idx];\n        }\n        return node->isEnd;\n    }\n\n    bool startsWith(string prefix) {\n        TrieNode* node = root;\n        for (char c : prefix) {\n            int idx = c - 'a';\n            if (!node->children[idx]) return false;\n            node = node->children[idx];\n        }\n        return true;\n    }\n};"
+    },
+    {
+      "id": 13,
+      "pattern": "Union Find (Disjoint Set Union)",
+      "frequency": "high",
+      "difficulty": "medium",
+      "tags": ["graph", "union-find", "connected-components"],
+      "use_cases": [
+        "Connected components",
+        "Detect cycle in undirected graph",
+        "Kruskal's MST",
+        "Accounts merge",
+        "Number of islands (dynamic)"
+      ],
+      "problems": [
+        { "title": "Number of Provinces", "leetcode_id": 547 },
+        { "title": "Redundant Connection", "leetcode_id": 684 },
+        { "title": "Accounts Merge", "leetcode_id": 721 },
+        { "title": "Making a Large Island", "leetcode_id": 827 },
+        { "title": "Smallest String With Swaps", "leetcode_id": 1202 }
+      ],
+      "template": "// UNION FIND WITH PATH COMPRESSION + UNION BY RANK\nclass UnionFind {\n    vector<int> parent, rank;\npublic:\n    UnionFind(int n) : parent(n), rank(n, 0) {\n        iota(parent.begin(), parent.end(), 0); // parent[i] = i\n    }\n\n    int find(int x) {\n        if (parent[x] != x)\n            parent[x] = find(parent[x]); // path compression\n        return parent[x];\n    }\n\n    bool unite(int x, int y) {\n        int px = find(x), py = find(y);\n        if (px == py) return false; // already connected = cycle!\n\n        // union by rank\n        if (rank[px] < rank[py]) swap(px, py);\n        parent[py] = px;\n        if (rank[px] == rank[py]) rank[px]++;\n        return true;\n    }\n\n    bool connected(int x, int y) { return find(x) == find(y); }\n};\n\n// USAGE: Count connected components\nint countComponents(int n, vector<vector<int>>& edges) {\n    UnionFind uf(n);\n    int components = n;\n\n    for (auto& e : edges)\n        if (uf.unite(e[0], e[1])) components--;\n\n    return components;\n}"
+    },
+    {
+      "id": 14,
+      "pattern": "Topological Sort",
+      "frequency": "high",
+      "difficulty": "medium",
+      "tags": ["graph", "directed", "dag", "ordering"],
+      "use_cases": [
+        "Course schedule / prerequisites",
+        "Task ordering",
+        "Alien dictionary",
+        "Build order",
+        "Cycle detection in directed graph"
+      ],
+      "problems": [
+        { "title": "Course Schedule", "leetcode_id": 207 },
+        { "title": "Course Schedule II", "leetcode_id": 210 },
+        { "title": "Alien Dictionary", "leetcode_id": 269 },
+        { "title": "Find Eventual Safe States", "leetcode_id": 802 }
+      ],
+      "template": "// KAHN'S ALGORITHM (BFS-based)\nvector<int> topoSort(int n, vector<vector<int>>& edges) {\n    vector<vector<int>> adj(n);\n    vector<int> indegree(n, 0);\n\n    for (auto& e : edges) {\n        adj[e[0]].push_back(e[1]);\n        indegree[e[1]]++;\n    }\n\n    queue<int> q;\n    for (int i = 0; i < n; i++)\n        if (indegree[i] == 0) q.push(i);\n\n    vector<int> order;\n    while (!q.empty()) {\n        int node = q.front(); q.pop();\n        order.push_back(node);\n        for (int nb : adj[node]) {\n            if (--indegree[nb] == 0) q.push(nb);\n        }\n    }\n    // if order.size() != n => cycle exists\n    return order.size() == n ? order : vector<int>();\n}\n\n// DFS-BASED TOPO SORT\nvoid dfsTopoSort(int node, vector<vector<int>>& adj, vector<bool>& visited, stack<int>& st) {\n    visited[node] = true;\n    for (int nb : adj[node])\n        if (!visited[nb]) dfsTopoSort(nb, adj, visited, st);\n    st.push(node);\n}\n\nvector<int> topoSortDFS(int n, vector<vector<int>>& adj) {\n    vector<bool> visited(n, false);\n    stack<int> st;\n    for (int i = 0; i < n; i++)\n        if (!visited[i]) dfsTopoSort(i, adj, visited, st);\n\n    vector<int> order;\n    while (!st.empty()) { order.push_back(st.top()); st.pop(); }\n    return order;\n}"
+    },
+    {
+      "id": 15,
+      "pattern": "Dijkstra's Shortest Path",
+      "frequency": "high",
+      "difficulty": "medium",
+      "tags": ["graph", "shortest-path", "weighted", "greedy"],
+      "use_cases": [
+        "Shortest path in weighted graph",
+        "Network delay time",
+        "Cheapest flights within K stops",
+        "Path with minimum effort",
+        "Minimum cost to reach destination"
+      ],
+      "problems": [
+        { "title": "Network Delay Time", "leetcode_id": 743 },
+        { "title": "Path With Minimum Effort", "leetcode_id": 1631 },
+        { "title": "Cheapest Flights Within K Stops", "leetcode_id": 787 },
+        { "title": "Number of Ways to Arrive at Destination", "leetcode_id": 1976 }
+      ],
+      "template": "// DIJKSTRA'S ALGORITHM\nvector<int> dijkstra(int src, int n, vector<vector<pair<int,int>>>& adj) {\n    vector<int> dist(n, INT_MAX);\n    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq; // {dist, node}\n\n    dist[src] = 0;\n    pq.push({0, src});\n\n    while (!pq.empty()) {\n        auto [d, u] = pq.top(); pq.pop();\n\n        if (d > dist[u]) continue; // stale entry\n\n        for (auto [v, w] : adj[u]) {\n            if (dist[u] + w < dist[v]) {\n                dist[v] = dist[u] + w;\n                pq.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}"
+    },
+    {
+      "id": 16,
+      "pattern": "Tree DP / Path Problems",
+      "frequency": "very_high",
+      "difficulty": "hard",
+      "tags": ["tree", "dp", "path", "lca"],
+      "use_cases": [
+        "Max path sum in tree",
+        "Diameter of tree",
+        "Balanced tree check",
+        "LCA",
+        "Tree height"
+      ],
+      "problems": [
+        { "title": "Binary Tree Maximum Path Sum", "leetcode_id": 124 },
+        { "title": "Diameter of Binary Tree", "leetcode_id": 543 },
+        { "title": "Balanced Binary Tree", "leetcode_id": 110 },
+        { "title": "Lowest Common Ancestor of a Binary Tree", "leetcode_id": 236 }
+      ],
+      "template": "// TREE DP PATTERN: return value bubbles up\n// used for: max path sum, diameter, balanced check\n\n// MAX PATH SUM\nint maxPath = INT_MIN;\n\nint pathSum(TreeNode* root) {\n    if (!root) return 0;\n\n    int left  = max(0, pathSum(root->left));  // ignore negative paths\n    int right = max(0, pathSum(root->right));\n\n    maxPath = max(maxPath, left + right + root->val); // path through this node\n\n    return root->val + max(left, right); // return best single arm\n}\n\n// DIAMETER\nint diameter = 0;\n\nint depth(TreeNode* root) {\n    if (!root) return 0;\n    int left = depth(root->left);\n    int right = depth(root->right);\n    diameter = max(diameter, left + right);\n    return 1 + max(left, right);\n}\n\n// HEIGHT + BALANCED CHECK (combined)\nint heightBalanced(TreeNode* root) {\n    if (!root) return 0;\n    int left = heightBalanced(root->left);\n    int right = heightBalanced(root->right);\n    if (left == -1 || right == -1 || abs(left - right) > 1) return -1; // unbalanced\n    return 1 + max(left, right);\n}\n\n// LCA\nTreeNode* lca(TreeNode* root, TreeNode* p, TreeNode* q) {\n    if (!root || root == p || root == q) return root;\n    TreeNode* left  = lca(root->left, p, q);\n    TreeNode* right = lca(root->right, p, q);\n    if (left && right) return root; // p and q on different sides\n    return left ? left : right;\n}"
+    },
+    {
+      "id": 17,
+      "pattern": "Prefix Sum",
+      "frequency": "very_high",
+      "difficulty": "easy",
+      "tags": ["array", "hashmap", "range-query"],
+      "use_cases": [
+        "Range sum queries",
+        "Subarray sum equals K",
+        "Count subarrays with given XOR",
+        "Equilibrium index",
+        "2D prefix sums"
+      ],
+      "problems": [
+        { "title": "Subarray Sum Equals K", "leetcode_id": 560 },
+        { "title": "Range Sum Query - Immutable", "leetcode_id": 303 },
+        { "title": "Find Pivot Index", "leetcode_id": 724 },
+        { "title": "Contiguous Array", "leetcode_id": 525 }
+      ],
+      "template": "// 1D PREFIX SUM\nvector<int> buildPrefix(vector<int>& arr) {\n    int n = arr.size();\n    vector<int> prefix(n+1, 0);\n    for (int i = 0; i < n; i++)\n        prefix[i+1] = prefix[i] + arr[i];\n    return prefix;\n}\n// range sum [l, r] (0-indexed)\nint rangeSum(vector<int>& prefix, int l, int r) {\n    return prefix[r+1] - prefix[l];\n}\n\n// SUBARRAY SUM = K (prefix + hashmap)\nint subarraySum(vector<int>& nums, int k) {\n    unordered_map<int, int> prefixCount;\n    prefixCount[0] = 1;\n    int sum = 0, count = 0;\n\n    for (int num : nums) {\n        sum += num;\n        if (prefixCount.count(sum - k))\n            count += prefixCount[sum - k];\n        prefixCount[sum]++;\n    }\n    return count;\n}\n\n// 2D PREFIX SUM\nvector<vector<int>> build2DPrefix(vector<vector<int>>& grid) {\n    int m = grid.size(), n = grid[0].size();\n    vector<vector<int>> p(m+1, vector<int>(n+1, 0));\n\n    for (int i = 1; i <= m; i++)\n        for (int j = 1; j <= n; j++)\n            p[i][j] = grid[i-1][j-1] + p[i-1][j] + p[i][j-1] - p[i-1][j-1];\n    return p;\n}\n// sum of rectangle (r1,c1) to (r2,c2) (0-indexed)\nint rectSum(vector<vector<int>>& p, int r1, int c1, int r2, int c2) {\n    return p[r2+1][c2+1] - p[r1][c2+1] - p[r2+1][c1] + p[r1][c1];\n}"
+    },
+    {
+      "id": 18,
+      "pattern": "HashMap / Frequency Map",
+      "frequency": "very_high",
+      "difficulty": "easy",
+      "tags": ["hashmap", "array", "string", "counting"],
+      "use_cases": [
+        "Two sum",
+        "Group anagrams",
+        "Top K frequent",
+        "First unique character",
+        "Isomorphic strings",
+        "Subarray with given XOR"
+      ],
+      "problems": [
+        { "title": "Two Sum", "leetcode_id": 1 },
+        { "title": "Group Anagrams", "leetcode_id": 49 },
+        { "title": "Top K Frequent Elements", "leetcode_id": 347 },
+        { "title": "Longest Consecutive Sequence", "leetcode_id": 128 }
+      ],
+      "template": "// FREQUENCY MAP\nunordered_map<int, int> freq;\nfor (int num : nums) freq[num]++;\n\n// TWO SUM WITH HASHMAP\nvector<int> twoSum(vector<int>& nums, int target) {\n    unordered_map<int, int> seen; // val -> index\n    for (int i = 0; i < nums.size(); i++) {\n        int complement = target - nums[i];\n        if (seen.count(complement))\n            return {seen[complement], i};\n        seen[nums[i]] = i;\n    }\n    return {};\n}\n\n// GROUP ANAGRAMS\nvector<vector<string>> groupAnagrams(vector<string>& strs) {\n    unordered_map<string, vector<string>> groups;\n    for (string& s : strs) {\n        string key = s;\n        sort(key.begin(), key.end());\n        groups[key].push_back(s);\n    }\n    vector<vector<string>> result;\n    for (auto& [k, v] : groups) result.push_back(v);\n    return result;\n}\n\n// LONGEST CONSECUTIVE SEQUENCE O(n)\nint longestConsecutive(vector<int>& nums) {\n    unordered_set<int> numSet(nums.begin(), nums.end());\n    int longest = 0;\n\n    for (int num : numSet) {\n        if (!numSet.count(num - 1)) { // start of a sequence\n            int curr = num, length = 1;\n            while (numSet.count(curr + 1)) { curr++; length++; }\n            longest = max(longest, length);\n        }\n    }\n    return longest;\n}"
+    },
+    {
+      "id": 19,
+      "pattern": "Intervals",
+      "frequency": "high",
+      "difficulty": "medium",
+      "tags": ["array", "sorting", "greedy", "intervals"],
+      "use_cases": [
+        "Merge intervals",
+        "Insert interval",
+        "Meeting rooms",
+        "Non-overlapping intervals",
+        "Minimum meeting rooms"
+      ],
+      "problems": [
+        { "title": "Merge Intervals", "leetcode_id": 56 },
+        { "title": "Insert Interval", "leetcode_id": 57 },
+        { "title": "Non-overlapping Intervals", "leetcode_id": 435 },
+        { "title": "Meeting Rooms II", "leetcode_id": 253 }
+      ],
+      "template": "// MERGE INTERVALS\nvector<vector<int>> merge(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end()); // sort by start\n    vector<vector<int>> result;\n\n    for (auto& interval : intervals) {\n        if (result.empty() || result.back()[1] < interval[0]) {\n            result.push_back(interval); // no overlap\n        } else {\n            result.back()[1] = max(result.back()[1], interval[1]); // merge\n        }\n    }\n    return result;\n}\n\n// MINIMUM MEETING ROOMS (min heap)\nint minMeetingRooms(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end());\n    priority_queue<int, vector<int>, greater<int>> minH; // end times\n\n    for (auto& interval : intervals) {\n        if (!minH.empty() && minH.top() <= interval[0])\n            minH.pop(); // reuse room\n        minH.push(interval[1]);\n    }\n    return minH.size();\n}\n\n// NON-OVERLAPPING INTERVALS (min removals)\nint eraseOverlapIntervals(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {\n        return a[1] < b[1]; // sort by end time (greedy)\n    });\n    int count = 0, prevEnd = INT_MIN;\n\n    for (auto& interval : intervals) {\n        if (interval[0] >= prevEnd) prevEnd = interval[1];\n        else count++; // overlap, remove it\n    }\n    return count;\n}"
+    },
+    {
+      "id": 20,
+      "pattern": "Bit Manipulation",
+      "frequency": "medium",
+      "difficulty": "medium",
+      "tags": ["bit", "math", "xor"],
+      "use_cases": [
+        "Single number (XOR trick)",
+        "Power of two check",
+        "Count set bits",
+        "Subsets via bitmask",
+        "Max XOR"
+      ],
+      "problems": [
+        { "title": "Single Number", "leetcode_id": 136 },
+        { "title": "Number of 1 Bits", "leetcode_id": 191 },
+        { "title": "Counting Bits", "leetcode_id": 338 },
+        { "title": "Missing Number", "leetcode_id": 268 },
+        { "title": "Reverse Bits", "leetcode_id": 190 }
+      ],
+      "template": "// COMMON BIT TRICKS\nbool isPowerOfTwo(int n) { return n > 0 && (n & (n-1)) == 0; }\nint countSetBits(int n) { int c = 0; while (n) { n &= (n-1); c++; } return c; } // Brian Kernighan\nint getKthBit(int n, int k) { return (n >> k) & 1; }\nint setKthBit(int n, int k)   { return n | (1 << k); }\nint clearKthBit(int n, int k) { return n & ~(1 << k); }\nint toggleKthBit(int n, int k){ return n ^ (1 << k); }\n\n// SINGLE NUMBER (XOR trick: a ^ a = 0, a ^ 0 = a)\nint singleNumber(vector<int>& nums) {\n    int result = 0;\n    for (int num : nums) result ^= num;\n    return result;\n}\n\n// MISSING NUMBER\nint missingNumber(vector<int>& nums) {\n    int xorAll = 0;\n    for (int i = 0; i <= nums.size(); i++) xorAll ^= i;\n    for (int num : nums) xorAll ^= num;\n    return xorAll;\n}\n\n// GENERATE ALL SUBSETS via bitmask\nvoid allSubsets(vector<int>& nums) {\n    int n = nums.size();\n    for (int mask = 0; mask < (1 << n); mask++) {\n        vector<int> subset;\n        for (int i = 0; i < n; i++)\n            if (mask & (1 << i)) subset.push_back(nums[i]);\n        // use subset\n    }\n}"
+    }
+  ]
+}

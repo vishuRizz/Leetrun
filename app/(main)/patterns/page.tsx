@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Network } from "lucide-react";
 import { getPatternFamilies, getPatternsTotalQuestions } from "@/lib/patterns";
-import PatternsBrowser from "./PatternsBrowser";
+import { getPatternTemplates } from "@/lib/patterns/templates";
+import PatternsView from "./PatternsView";
 
 export const metadata: Metadata = {
   title: "DSA Patterns",
   description:
-    "The top coding patterns asked in technical interviews, ranked by weightage, with curated pattern-wise practice questions.",
+    "The top coding patterns asked in technical interviews, ranked by weightage, with curated pattern-wise practice questions and ready-to-use C++ templates.",
 };
 
 export default function PatternsPage() {
   const families = getPatternFamilies();
   const total = getPatternsTotalQuestions();
+  const templates = getPatternTemplates();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -23,16 +25,16 @@ export default function PatternsPage() {
       <main className="max-w-4xl mx-auto p-6 space-y-6">
         <div>
           <h2 className="text-lg font-black text-foreground">
-            Top interview patterns by weightage
+            Master the patterns interviewers love
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Master the recurring problem-solving patterns interviewers love most.
-            Patterns are ranked by how often they show up across our curated
-            question bank - expand any pattern to drill into the exact problems.
+            See the recurring problem-solving patterns ranked by weightage, or
+            switch to Templates for ready-to-use C++ snippets you can revise and
+            copy before an interview.
           </p>
         </div>
 
-        <PatternsBrowser families={families} total={total} />
+        <PatternsView families={families} total={total} templates={templates} />
       </main>
     </div>
   );
