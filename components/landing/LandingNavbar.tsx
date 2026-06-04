@@ -72,14 +72,14 @@ export default function LandingNavbar() {
             isScrolled ? 'shadow-2xl' : ''
           }`}
           style={{
-            minWidth: 'min(700px, 90vw)',
+            minWidth: 'min(820px, 92vw)',
             transform: isScrolled ? 'scale(0.97)' : 'scale(1)',
             transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
           }}
         >
           {/* Logo */}
           <div
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer mr-6 lg:mr-10"
             onClick={() => router.push('/')}
           >
             <Logo width={24} height={24} variant="dark" />

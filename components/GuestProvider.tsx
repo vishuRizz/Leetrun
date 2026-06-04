@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import Link from "next/link";
-import { Sparkles, X, LogIn, Rocket, Lock } from "lucide-react";
+import { Sparkles, X, LogIn, Rocket, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface GuestContextValue {
@@ -109,72 +109,48 @@ function SignupModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-card border border-border rounded-3xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-sm bg-card border border-border rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 fade-in duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition z-10"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition z-10"
           aria-label="Close"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-8 pt-10 pb-8 text-center text-white">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-white/15 flex items-center justify-center mb-4">
-            <Lock className="w-7 h-7" />
+        <div className="p-6 sm:p-7 text-center">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4">
+            <Rocket className="w-6 h-6 text-indigo-500" />
           </div>
-          <h2 className="text-2xl font-black">
-            {feature ? `Unlock ${feature}` : "Create your free account"}
+
+          <h2 className="text-xl font-bold tracking-tight leading-snug">
+            {feature ? `Sign up to unlock ${feature}` : "Sign up to continue"}
           </h2>
-          <p className="text-sm text-white/85 mt-2 leading-relaxed">
-            {feature
-              ? `Sign up to ${feature.toLowerCase()} and save your progress.`
-              : "This is a live preview. Sign up to make it yours."}
+          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+            Create a free account to save your progress.
           </p>
-        </div>
 
-        <div className="p-6 space-y-4">
-          <ul className="space-y-2.5">
-            {[
-              "Sync your real LeetCode stats & solve history",
-              "Personalized daily, weekly & revision quests",
-              "Track curated sheets and climb the leaderboards",
-            ].map((line) => (
-              <li
-                key={line}
-                className="flex items-start gap-2.5 text-sm text-foreground"
-              >
-                <Sparkles className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
-                {line}
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            href="/signup"
-            className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold px-4 py-3 rounded-xl transition shadow-sm"
-          >
-            <Rocket className="w-4 h-4" /> Get started free
-          </Link>
-          <Link
-            href="/login"
-            className="w-full inline-flex items-center justify-center gap-2 border border-border hover:bg-muted text-foreground font-bold px-4 py-3 rounded-xl transition"
-          >
-            <LogIn className="w-4 h-4" /> I already have an account
-          </Link>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full text-center text-xs font-medium text-muted-foreground hover:text-foreground transition pt-1"
-          >
-            Keep exploring as guest
-          </button>
+          <div className="mt-6 space-y-2.5">
+            <Link
+              href="/signup"
+              className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-3 rounded-xl transition shadow-sm"
+            >
+              Sign up free <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/login"
+              className="w-full inline-flex items-center justify-center gap-2 border border-border hover:bg-muted text-foreground font-semibold px-4 py-2.5 rounded-xl transition text-sm"
+            >
+              <LogIn className="w-4 h-4" /> I already have an account
+            </Link>
+          </div>
         </div>
       </div>
     </div>

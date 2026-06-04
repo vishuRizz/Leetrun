@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FAQSection from "@/components/landing/FAQSection";
 import FeaturesBenefits from "@/components/landing/FeaturesBenefits";
+import FeatureShowcase from "@/components/landing/FeatureShowcase";
 import HeroSection from "@/components/landing/HeroSection";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingNavbar from "@/components/landing/LandingNavbar";
@@ -22,6 +23,7 @@ export default function Home() {
       <HeroSection />
       <FeaturesBenefits />
       <PricingSection />
+      <FeatureShowcase />
       <FAQSection />
       <LandingFooter />
     </main>

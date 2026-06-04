@@ -46,6 +46,14 @@ export default async function SheetDetailPage({
       select: { problemKey: true },
     });
     initialCompleted = rows.map((r) => r.problemKey);
+  } else {
+    // Guest preview: scatter sample "solved" marks (~42%) across the sheet so
+    // the auto-tracking experience is obvious. Editing is gated behind signup.
+    const keys: string[] = [];
+    sheet.sections.forEach((sec) =>
+      sec.problems.forEach((p) => keys.push(p.key))
+    );
+    initialCompleted = keys.filter((_, i) => i % 12 < 5);
   }
 
   return (

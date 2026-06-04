@@ -202,8 +202,9 @@ const PricingPage = () => {
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {/* Cards - intentionally blurred + slashed to signal "free for now" */}
+        <div className="relative max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 blur-[0.8px] opacity-95 select-none">
           {plans.map((plan) => (
             <Card
               key={plan.name}
@@ -273,6 +274,27 @@ const PricingPage = () => {
               </CardContent>
             </Card>
           ))}
+          </div>
+
+          {/* Single diagonal slash across the whole pricing block */}
+          <div className="pointer-events-none absolute inset-0 z-10">
+            <svg
+              className="w-full h-full"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <line
+                x1="0"
+                y1="100%"
+                x2="100%"
+                y2="0"
+                stroke="rgba(0,0,0,0.7)"
+                strokeWidth="3"
+                className="dark:[stroke:rgba(255,255,255,0.7)]"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
         </div>
 
         {/* Footer note */}

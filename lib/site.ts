@@ -17,7 +17,7 @@ export const siteConfig = {
   ),
   ogImage: "/logo.png",
   creator: "LeetRun",
-  email: "support@leetrun.vercel.app",
+  email: "vishurizz0@gmail.com",
   twitter: "@leetrun",
   keywords: [
     "LeetRun",

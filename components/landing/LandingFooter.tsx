@@ -90,7 +90,7 @@ const LandingFooter = () => {
           <div className="flex items-center gap-6 text-sm text-gray-400">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-            <a href="mailto:support@leetrun.vercel.app" className="hover:text-white transition-colors">support@leetrun.vercel.app</a>
+            <a href="mailto:vishurizz0@gmail.com" className="hover:text-white transition-colors">vishurizz0@gmail.com</a>
           </div>
         </div>
       </div>

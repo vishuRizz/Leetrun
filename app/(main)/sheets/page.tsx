@@ -40,6 +40,13 @@ export default async function SheetsPage() {
       grouped.map((g) => [g.sheetSlug, g._count._all])
     );
     focus = focusRows.map((r) => r.sheetSlug);
+  } else {
+    // Guest preview: show sample progress so the auto-tracking feature is
+    // visible. Toggling is gated behind signup in the client.
+    completedBySlug = Object.fromEntries(
+      summaries.map((s) => [s.slug, Math.round(s.total * 0.42)])
+    );
+    focus = ["striver-sde", "love-babbar-450", "neetcode-150"];
   }
 
   return (
