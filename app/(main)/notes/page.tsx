@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { BookOpen, ExternalLink, Network } from "lucide-react";
-import NotesToc from "@/components/notes/NotesToc";
+import NotesNav from "@/components/notes/NotesNav";
 import {
   getSystemDesignNotes,
   resolveNotesUrl,
@@ -95,7 +95,7 @@ export default async function NotesPage() {
 
       {/* Body */}
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 flex gap-8 items-start">
-        {ok && toc.length > 0 && <NotesToc toc={toc} />}
+        {ok && toc.length > 0 && <NotesNav toc={toc} />}
 
         <article className="notes-prose min-w-0 flex-1 max-w-3xl">
           {ok ? (

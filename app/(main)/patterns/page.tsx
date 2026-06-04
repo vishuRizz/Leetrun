@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Network } from "lucide-react";
 import { getPatternFamilies, getPatternsTotalQuestions } from "@/lib/patterns";
 import { getPatternTemplates } from "@/lib/patterns/templates";
+import { createClient } from "@/lib/supabase/server";
+import { db } from "@/lib/db";
 import PatternsView from "./PatternsView";
 
 export const metadata: Metadata = {
@@ -10,10 +12,30 @@ export const metadata: Metadata = {
     "The top coding patterns asked in technical interviews, ranked by weightage, with curated pattern-wise practice questions and ready-to-use C++ templates.",
 };
 
-export default function PatternsPage() {
+export default async function PatternsPage() {
   const families = getPatternFamilies();
   const total = getPatternsTotalQuestions();
   const templates = getPatternTemplates();
+
+  // Pull the user's solved LeetCode slugs so we can show per-pattern progress.
+  let solvedSlugs: string[] = [];
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    const profile = await db.leetcodeProfile.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+    if (profile) {
+      const rows = await db.leetcodeSolvedProblem.findMany({
+        where: { profileId: profile.id },
+        select: { titleSlug: true },
+      });
+      solvedSlugs = rows.map((r) => r.titleSlug.toLowerCase());
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -34,7 +56,12 @@ export default function PatternsPage() {
           </p>
         </div>
 
-        <PatternsView families={families} total={total} templates={templates} />
+        <PatternsView
+          families={families}
+          total={total}
+          templates={templates}
+          solvedSlugs={solvedSlugs}
+        />
       </main>
     </div>
   );

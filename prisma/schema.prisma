@@ -108,6 +108,8 @@ model User {
   sheetProgress          SheetProgress[]
   focusSheets            UserFocusSheet[]
   problemNotes           ProblemNote[]
+  notesProgress          NotesProgress[]
+  notesReadingState      NotesReadingState?
 
   @@index([email])
 }
@@ -144,6 +146,30 @@ model ProblemNote {
 
   @@unique([userId, problemRef])
   @@index([userId])
+}
+
+/// Per-user "read" marks for System Design notes topics. A row's existence
+/// means the topic (keyed by its heading slug) has been marked as read.
+model NotesProgress {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug   String
+  readAt DateTime @default(now())
+
+  @@unique([userId, slug])
+  @@index([userId])
+}
+
+/// Remembers where a user last was in the System Design notes so we can offer
+/// a "continue reading" resume button on the dashboard.
+model NotesReadingState {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastSlug  String?
+  lastTitle String?
+  updatedAt DateTime @updatedAt
 }
 
 /// Sheets a user has pinned to their "Focus Sheets" list for quick access.

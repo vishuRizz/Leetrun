@@ -18,6 +18,7 @@ import {
   Dices,
 } from "lucide-react";
 import { InviteFriendModal } from "@/components/InviteFriendModal";
+import ContinueReadingCard from "@/components/notes/ContinueReadingCard";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -402,6 +403,7 @@ export default function Dashboard() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2 space-y-6">
+          {!guest && <ContinueReadingCard />}
           <Card className="relative overflow-hidden border-border bg-card">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
               <Brain className="w-40 h-40" />

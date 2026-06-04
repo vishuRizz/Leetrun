@@ -11,11 +11,17 @@ interface Props {
   families: PatternFamily[];
   total: number;
   templates: PatternTemplate[];
+  solvedSlugs?: string[];
 }
 
 type Tab = "weightage" | "templates";
 
-export default function PatternsView({ families, total, templates }: Props) {
+export default function PatternsView({
+  families,
+  total,
+  templates,
+  solvedSlugs = [],
+}: Props) {
   const [tab, setTab] = useState<Tab>("weightage");
 
   return (
@@ -46,7 +52,11 @@ export default function PatternsView({ families, total, templates }: Props) {
       </div>
 
       {tab === "weightage" ? (
-        <PatternsBrowser families={families} total={total} />
+        <PatternsBrowser
+          families={families}
+          total={total}
+          solvedSlugs={solvedSlugs}
+        />
       ) : (
         <TemplatesBrowser templates={templates} />
       )}
