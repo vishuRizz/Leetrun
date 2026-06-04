@@ -20,6 +20,7 @@ import UserAvatar from "@/components/UserAvatar";
 import Link from "next/link";
 import { useGuest } from "@/components/GuestProvider";
 import { readCache, writeCache } from "@/lib/cache/clientCache";
+import EmptyState from "@/components/EmptyState";
 
 const lbCacheKey = (filter: string, sortBy: string) =>
   `leaderboard:${filter}:${sortBy}`;
@@ -296,6 +297,7 @@ export default function LeaderboardPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <input
+                  id="add-friend-input"
                   type="email"
                   value={friendEmail}
                   onChange={(e) => setFriendEmail(e.target.value)}
@@ -362,14 +364,62 @@ export default function LeaderboardPage() {
         {/* Leaderboard Table List */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
           {loading ? (
-            <div className="p-20 text-center text-muted-foreground text-sm flex flex-col items-center justify-center">
-              <Loader2 className="w-6 h-6 text-indigo-500 animate-spin mb-2" />
-              Loading rankings...
+            <div className="divide-y divide-border">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-4 animate-pulse"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-6 h-4 bg-muted/60 rounded" />
+                    <div className="w-9 h-9 bg-muted/60 rounded-full" />
+                    <div className="space-y-1.5">
+                      <div className="h-3.5 w-32 bg-muted/60 rounded" />
+                      <div className="h-2.5 w-20 bg-muted/40 rounded" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-12 bg-muted/60 rounded" />
+                </div>
+              ))}
             </div>
           ) : rankings.length === 0 ? (
-            <div className="p-20 text-center text-muted-foreground text-sm">
-              No ranks available. Add friends or verify Leetcode sync to trigger leaderboard listings.
-            </div>
+            filter === "friends" ? (
+              <EmptyState
+                icon={Users}
+                title="No friends on the board yet"
+                description="Add friends by email to race them on XP, streaks, and solves. Their progress shows up here as soon as they accept."
+                actions={[
+                  {
+                    label: "Invite a friend",
+                    onClick: () =>
+                      isGuest
+                        ? promptSignup("friends & social")
+                        : document
+                            .getElementById("add-friend-input")
+                            ?.focus(),
+                  },
+                  {
+                    label: "View global board",
+                    variant: "secondary",
+                    onClick: () => setFilter("global"),
+                  },
+                ]}
+              />
+            ) : (
+              <EmptyState
+                icon={Trophy}
+                title="No rankings yet"
+                description="Connect and sync your LeetCode account so your solves count toward the global leaderboard."
+                actions={[
+                  { label: "Connect LeetCode", href: "/profile" },
+                  {
+                    label: "Browse sheets",
+                    href: "/sheets",
+                    variant: "secondary",
+                  },
+                ]}
+              />
+            )
           ) : (
             <div className="divide-y divide-border">
               {rankings.map((user, idx) => {

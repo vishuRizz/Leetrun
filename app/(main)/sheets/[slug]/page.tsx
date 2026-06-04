@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
-import { getSheet, getSheetSlugs } from "@/lib/sheets";
+import { getSheet, getSheetSlugs, problemRef } from "@/lib/sheets";
 import SheetView from "./SheetView";
 
 export function generateStaticParams() {
@@ -40,12 +40,30 @@ export default async function SheetDetailPage({
   } = await supabase.auth.getUser();
 
   let initialCompleted: string[] = [];
+  let initialNotes: Record<string, string> = {};
   if (user) {
-    const rows = await db.sheetProgress.findMany({
-      where: { userId: user.id, sheetSlug: slug },
-      select: { problemKey: true },
-    });
+    const [rows, noteRows] = await Promise.all([
+      db.sheetProgress.findMany({
+        where: { userId: user.id, sheetSlug: slug },
+        select: { problemKey: true },
+      }),
+      db.problemNote.findMany({
+        where: { userId: user.id },
+        select: { problemRef: true, content: true },
+      }),
+    ]);
     initialCompleted = rows.map((r) => r.problemKey);
+
+    // Keep only notes whose ref matches a problem in this sheet.
+    const refsInSheet = new Set<string>();
+    sheet.sections.forEach((sec) =>
+      sec.problems.forEach((p) => refsInSheet.add(problemRef(p, slug)))
+    );
+    const noteMap: Record<string, string> = {};
+    for (const n of noteRows) {
+      if (refsInSheet.has(n.problemRef)) noteMap[n.problemRef] = n.content;
+    }
+    initialNotes = noteMap;
   } else {
     // Guest preview: scatter sample "solved" marks (~42%) across the sheet so
     // the auto-tracking experience is obvious. Editing is gated behind signup.
@@ -60,6 +78,7 @@ export default async function SheetDetailPage({
     <SheetView
       sheet={sheet}
       initialCompleted={initialCompleted}
+      initialNotes={initialNotes}
       isGuest={!user}
     />
   );

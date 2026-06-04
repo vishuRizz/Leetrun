@@ -22,6 +22,7 @@ import {
 import { useGuest } from "@/components/GuestProvider";
 import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
 import { readCache, writeCache } from "@/lib/cache/clientCache";
+import ProblemNoteButton from "@/components/ProblemNoteButton";
 
 interface AnalyticsResponse {
   user: {
@@ -499,14 +500,17 @@ export default function AnalyticsPage() {
                       from {p.sheetName}
                     </Link>
                   </div>
-                  <a
-                    href={`https://leetcode.com/problems/${p.slug}/`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
-                  >
-                    Solve <ExternalLink className="w-3 h-3" />
-                  </a>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <ProblemNoteButton problemRef={p.slug.toLowerCase()} title={p.title} />
+                    <a
+                      href={`https://leetcode.com/problems/${p.slug}/`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
+                    >
+                      Solve <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>

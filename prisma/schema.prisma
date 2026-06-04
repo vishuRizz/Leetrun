@@ -107,6 +107,7 @@ model User {
 
   sheetProgress          SheetProgress[]
   focusSheets            UserFocusSheet[]
+  problemNotes           ProblemNote[]
 
   @@index([email])
 }
@@ -125,6 +126,24 @@ model SheetProgress {
 
   @@unique([userId, sheetSlug, problemKey])
   @@index([userId, sheetSlug])
+}
+
+/// Free-form notes a user attaches to a specific problem. Keyed by a canonical
+/// problem reference (the LeetCode slug when available) so the same note shows
+/// up wherever that problem appears - sheets, recommendations, submissions, etc.
+model ProblemNote {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemRef String
+  /// Cached display title so notes can be listed without re-resolving the ref.
+  title      String?
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, problemRef])
+  @@index([userId])
 }
 
 /// Sheets a user has pinned to their "Focus Sheets" list for quick access.

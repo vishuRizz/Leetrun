@@ -218,6 +218,21 @@ export function validProblemKeys(sheet: NormalizedSheet): Set<string> {
   return keys;
 }
 
+/**
+ * Canonical, stable reference for a problem used to key per-user notes. We
+ * prefer the LeetCode slug so a note follows the same problem across every
+ * sheet (and other surfaces). Falls back to GFG slug, then a sheet-scoped key
+ * for problems with no external slug.
+ */
+export function problemRef(
+  p: { leetcodeSlug: string | null; gfgSlug: string | null; key: string },
+  sheetSlug: string
+): string {
+  if (p.leetcodeSlug) return p.leetcodeSlug.toLowerCase();
+  if (p.gfgSlug) return `gfg:${p.gfgSlug.toLowerCase()}`;
+  return `sheet:${sheetSlug}:${p.key}`;
+}
+
 export interface SheetProblemRef {
   sheetSlug: string;
   problemKey: string;

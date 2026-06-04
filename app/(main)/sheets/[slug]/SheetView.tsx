@@ -11,12 +11,16 @@ import {
   Loader2,
 } from "lucide-react";
 import type { NormalizedSheet } from "@/lib/sheets";
+import { problemRef } from "@/lib/sheets";
 import SheetsDeepSyncBanner from "@/components/SheetsDeepSyncBanner";
+import ProblemNoteButton from "@/components/ProblemNoteButton";
 import { useGuest } from "@/components/GuestProvider";
 
 interface Props {
   sheet: NormalizedSheet;
   initialCompleted: string[];
+  /** Map of canonical problemRef -> note content for problems in this sheet. */
+  initialNotes?: Record<string, string>;
   isGuest?: boolean;
 }
 
@@ -29,6 +33,7 @@ const DIFF_STYLES: Record<string, string> = {
 export default function SheetView({
   sheet,
   initialCompleted,
+  initialNotes = {},
   isGuest = false,
 }: Props) {
   const { promptSignup } = useGuest();
@@ -262,6 +267,12 @@ export default function SheetView({
                   >
                     {p.difficulty}
                   </span>
+
+                  <ProblemNoteButton
+                    problemRef={problemRef(p, sheet.slug)}
+                    title={p.title}
+                    initialContent={initialNotes[problemRef(p, sheet.slug)] ?? ""}
+                  />
 
                   {url ? (
                     <a

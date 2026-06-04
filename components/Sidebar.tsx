@@ -13,6 +13,7 @@ import {
   LogIn,
   LogOut,
   Network,
+  Search,
   Shield,
   Swords,
   Trophy,
@@ -23,6 +24,7 @@ import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 import { isAdminEmail } from "@/lib/admin/config";
 import { clearClientCache } from "@/lib/cache/clientCache";
+import { OPEN_COMMAND_EVENT } from "./CommandPalette";
 
 interface JoinedRoom {
   id: string;
@@ -157,6 +159,26 @@ export function Sidebar() {
         <span className="font-heading font-black text-base tracking-wider text-foreground ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           LeetRun
         </span>
+      </div>
+
+      {/* Command palette trigger */}
+      <div className="px-3 pt-3 shrink-0">
+        <button
+          type="button"
+          onClick={() =>
+            window.dispatchEvent(new Event(OPEN_COMMAND_EVENT))
+          }
+          title="Search (⌘K)"
+          className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <Search className="w-5 h-5 shrink-0" />
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium flex-1 text-left">
+            Search
+          </span>
+          <kbd className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[10px] font-mono border border-border rounded px-1.5 py-0.5">
+            ⌘K
+          </kbd>
+        </button>
       </div>
 
       {/* Navigation Links */}

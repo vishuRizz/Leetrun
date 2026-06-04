@@ -2,6 +2,8 @@ import React, { Suspense } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { FounderGiftModal } from "@/components/FounderGiftModal";
 import GuestProvider from "@/components/GuestProvider";
+import CommandPalette from "@/components/CommandPalette";
+import { getSheetSummaries } from "@/lib/sheets";
 
 // Minimal placeholder shown while the real Sidebar (which reads
 // useSearchParams to highlight the active lobby) is being hydrated.
@@ -17,8 +19,13 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const sheets = getSheetSummaries().map((s) => ({
+    slug: s.slug,
+    name: s.name,
+  }));
   return (
     <div className="min-h-screen bg-background text-foreground flex">
+      <CommandPalette sheets={sheets} />
       <Suspense fallback={<SidebarFallback />}>
         <Sidebar />
       </Suspense>

@@ -36,6 +36,8 @@ import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import DeepLeetcodeSyncModal from "@/components/DeepLeetcodeSyncModal";
 import ContributionCalendar from "@/components/ContributionCalendar";
+import GrowthChart from "@/components/GrowthChart";
+import ProblemNoteButton from "@/components/ProblemNoteButton";
 
 interface ProfileData {
   fullName: string | null;
@@ -44,6 +46,7 @@ interface ProfileData {
   avatarUrl: string | null;
   collegeName: string | null;
   targetCompany: string | null;
+  createdAt: string;
   level: string;
   totalXp: number;
   coins: number;
@@ -106,6 +109,7 @@ export default function ProfilePage() {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const [authError, setAuthError] = useState<string | null>(null);
 
   // Inline name + avatar editor state
@@ -153,6 +157,18 @@ export default function ProfilePage() {
       setLcUsername(data.profile.leetcodeProfile?.username || "");
       if (!data.profile.leetcodeProfile) {
         setEditingLeetcode(true);
+      }
+
+      // Pull the user's problem notes so the recent-submissions rows can show
+      // which problems already have notes.
+      try {
+        const noteRes = await fetch("/api/notes", { credentials: "include" });
+        if (noteRes.ok) {
+          const noteData = await noteRes.json();
+          if (noteData?.notes) setNotes(noteData.notes);
+        }
+      } catch {
+        /* notes are non-critical */
       }
     } catch (e) {
       console.error(e);
@@ -908,6 +924,28 @@ export default function ProfilePage() {
           )}
         </section>
 
+        {/* Growth: consistency before vs after joining LeetRun */}
+        {profile.leetcodeProfile?.submissionCalendar && (
+          <section className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between gap-2 flex-wrap pb-2 border-b border-border">
+              <h3 className="font-extrabold text-sm text-foreground flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-indigo-500" /> Growth on LeetRun
+              </h3>
+              <span className="text-[11px] text-muted-foreground">
+                Joined{" "}
+                {new Date(profile.createdAt).toLocaleDateString(undefined, {
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <GrowthChart
+              calendar={profile.leetcodeProfile.submissionCalendar}
+              joinDate={profile.createdAt}
+            />
+          </section>
+        )}
+
         {/* Breakdown section grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Solved stats ring */}
@@ -1109,14 +1147,21 @@ export default function ProfilePage() {
                   {profile.leetcodeProfile.submissions.map((sub) => (
                     <tr key={sub.id} className="hover:bg-muted/40 transition">
                       <td className="py-3 font-bold text-foreground">
-                        <a
-                          href={`https://leetcode.com/problems/${sub.slug}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="hover:underline flex items-center gap-1.5"
-                        >
-                          {sub.title}
-                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <a
+                            href={`https://leetcode.com/problems/${sub.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline"
+                          >
+                            {sub.title}
+                          </a>
+                          <ProblemNoteButton
+                            problemRef={sub.slug.toLowerCase()}
+                            title={sub.title}
+                            initialContent={notes[sub.slug.toLowerCase()] ?? ""}
+                          />
+                        </div>
                       </td>
                       <td className="py-3">
                         <span className="bg-muted px-2 py-0.5 border border-border rounded text-muted-foreground font-semibold">
