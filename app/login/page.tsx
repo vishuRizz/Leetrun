@@ -184,10 +184,9 @@ function LoginForm() {
         <button
           onClick={handleGoogleLogin}
           type="button"
-          disabled
-          className="w-full py-2.5 bg-background hover:bg-muted border border-border text-muted-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
+          className="w-full py-2.5 bg-background hover:bg-muted border border-border text-foreground rounded-lg font-bold text-sm transition flex items-center justify-center gap-2"
         >
-          <Globe className="w-4 h-4 text-muted-foreground" /> Sign in with Google
+          <Globe className="w-4 h-4 text-indigo-500" /> Sign in with Google
         </button>
       </div>
     </main>

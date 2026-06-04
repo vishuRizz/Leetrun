@@ -1,12 +1,34 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
+import { Layers, Network, BarChart3 } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { createClient } from '@/lib/supabase/client';
 
 export default function HeroSection() {
   const router = useRouter();
+  const [isAuthed, setIsAuthed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+    supabase.auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        if (active) setIsAuthed(!!user);
+      })
+      .catch(() => {
+        if (active) setIsAuthed(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#fafbfa] dark:bg-black text-black dark:text-white overflow-hidden min-h-[70vh] max-sm:min-h-[60vh]">
       {/* Wavy background pattern - identical to ai-paper */}
@@ -102,18 +124,57 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <button
-              onClick={() => router.push('/signup')}
-              className="px-6 py-3 bg-[#1a1b23] dark:bg-white text-white dark:text-black cursor-pointer font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
+            {isAuthed ? (
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="px-6 py-3 bg-[#1a1b23] dark:bg-white text-white dark:text-black cursor-pointer font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
+              >
+                Go to Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => router.push('/signup')}
+                  className="px-6 py-3 bg-[#1a1b23] dark:bg-white text-white dark:text-black cursor-pointer font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
+                >
+                  Get Started Free
+                </button>
+                <button
+                  onClick={() => router.push('/login')}
+                  className="px-6 py-3 bg-transparent cursor-pointer text-black dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-[#141414] transition-colors"
+                >
+                  Sign In
+                </button>
+              </>
+            )}
+          </motion.div>
+
+          {/* Explore the product without signing up */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm text-gray-500 dark:text-gray-400"
+          >
+            <span className="font-medium">Explore free:</span>
+            <Link
+              href="/sheets"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors font-medium"
             >
-              Get Started Free
-            </button>
-            <button
-              onClick={() => router.push('/login')}
-              className="px-6 py-3 bg-transparent cursor-pointer text-black dark:text-white font-medium rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-[#141414] transition-colors"
+              <Layers className="w-3.5 h-3.5" /> Sheets
+            </Link>
+            <Link
+              href="/patterns"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors font-medium"
             >
-              Sign In
-            </button>
+              <Network className="w-3.5 h-3.5" /> Patterns
+            </Link>
+            <Link
+              href="/analytics"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors font-medium"
+            >
+              <BarChart3 className="w-3.5 h-3.5" /> Analytics
+            </Link>
           </motion.div>
         </motion.div>
       </main>
