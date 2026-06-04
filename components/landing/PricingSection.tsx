@@ -1,13 +1,35 @@
 "use client";
-import React, { useState } from 'react';
-import { Check, Flame } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Check, Flame, Crown, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 
+const FOUNDING_LIMIT = 200;
+
 const PricingPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [userCount, setUserCount] = useState<number | null>(null);
   const router = useRouter();
+
+  // Live signup momentum for the founding-members promo.
+  useEffect(() => {
+    let active = true;
+    fetch('/api/stats/users')
+      .then((r) => r.json())
+      .then((d) => {
+        if (active && typeof d?.count === 'number') setUserCount(d.count);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const registered = userCount ?? 0;
+  const spotsLeft = Math.max(0, FOUNDING_LIMIT - registered);
+  const promoFull = userCount !== null && spotsLeft === 0;
+  const filledPct = Math.min(100, Math.round((registered / FOUNDING_LIMIT) * 100));
 
   const plans = [
     {
@@ -84,6 +106,56 @@ const PricingPage = () => {
             Choose your plan and start your placement journey today.<br />
             Upgrade anytime as your ambition grows.
           </p>
+
+          {/* Founding-members promo: first 200 get Pro free */}
+          <div className="mx-auto max-w-2xl mb-10 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50 via-violet-50 to-fuchsia-50 dark:from-indigo-950/40 dark:via-violet-950/30 dark:to-fuchsia-950/40 p-5 sm:p-6 text-left shadow-sm">
+            <div className="flex items-center justify-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-base sm:text-lg">
+              <Crown className="w-5 h-5" />
+              {promoFull ? (
+                <span>Founding {FOUNDING_LIMIT} club is full</span>
+              ) : (
+                <span>Free Pro for the first {FOUNDING_LIMIT} users</span>
+              )}
+            </div>
+            <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-1.5">
+              {promoFull ? (
+                <>
+                  Thousands are already grinding. Sign up free and climb the
+                  leaderboard.
+                </>
+              ) : (
+                <>
+                  Founding members get{' '}
+                  <span className="font-bold text-gray-900 dark:text-white">
+                    Pro free
+                  </span>
+                  , no credit card needed.
+                </>
+              )}
+            </p>
+
+            <div className="mt-4">
+              <div className="h-2.5 rounded-full bg-white/70 dark:bg-black/40 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-[width] duration-700"
+                  style={{ width: `${promoFull ? 100 : filledPct}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-2.5 text-xs font-medium gap-3">
+                <span className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+                  <Users className="w-3.5 h-3.5" />
+                  {userCount === null
+                    ? 'Loading signups…'
+                    : `${registered.toLocaleString()} already registered`}
+                </span>
+                {userCount !== null && !promoFull && (
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
+                    {spotsLeft} spots left - join fast
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Monthly / Annual Toggle */}
           <div className="inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-full p-1 mb-12">

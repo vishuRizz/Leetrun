@@ -141,20 +141,38 @@ export async function GET() {
     const level = Math.floor((user.totalXp || 0) / 100) + 1;
     const xpIntoLevel = (user.totalXp || 0) % 100;
 
-    // Map topic perfs to a UI-friendly slice (top 4 strong, weakest 3).
-    const strongTopics = topicPerformances.slice(0, 4).map((p) => ({
+    // We only track *solved* problems per topic (no real failure data), so the
+    // stored masteryLevel/confidenceScore collapse to ~100% for everything.
+    // Instead, derive mastery relative to the user's most-practiced topic so the
+    // chart is meaningful and varied.
+    const practiced = topicPerformances.filter((p) => (p.solved || 0) > 0);
+    const maxSolved = Math.max(1, ...practiced.map((p) => p.solved || 0));
+    const relMastery = (solved: number) =>
+      Math.max(5, Math.min(100, Math.round((solved / maxSolved) * 100)));
+
+    const bySolvedDesc = [...practiced].sort(
+      (a, b) => (b.solved || 0) - (a.solved || 0)
+    );
+
+    // Strong: the topics you've practiced most.
+    const strongTopics = bySolvedDesc.slice(0, 4).map((p) => ({
       topic: p.topic,
-      mastery: Math.round((p.masteryLevel || 0) * 100),
-      solved: p.solved,
-      attempts: p.attempts,
+      mastery: relMastery(p.solved || 0),
+      solved: p.solved || 0,
+      attempts: p.attempts || 0,
     }));
-    const weakTopics = [...topicPerformances]
-      .sort((a, b) => (a.confidenceScore || 0) - (b.confidenceScore || 0))
-      .slice(0, 3)
+
+    // Needs work: the least-practiced topics you've actually touched, excluding
+    // the strong ones so the two lists never overlap.
+    const strongSet = new Set(strongTopics.map((t) => t.topic));
+    const weakTopics = bySolvedDesc
+      .filter((p) => !strongSet.has(p.topic))
+      .slice(-3)
+      .reverse()
       .map((p) => ({
         topic: p.topic,
-        mastery: Math.round((p.masteryLevel || 0) * 100),
-        confidence: Math.round((p.confidenceScore || 0) * 100),
+        mastery: relMastery(p.solved || 0),
+        confidence: relMastery(p.solved || 0),
       }));
 
     const response = NextResponse.json({

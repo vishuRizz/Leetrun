@@ -591,7 +591,6 @@ function MasteryRow({
   topic,
   mastery,
   solved,
-  attempts,
 }: {
   topic: string;
   mastery: number;
@@ -603,7 +602,7 @@ function MasteryRow({
       <div className="flex justify-between text-xs">
         <span className="font-medium truncate">{topic}</span>
         <span className="font-mono text-muted-foreground">
-          {mastery}% · {solved}/{attempts}
+          {solved} solved
         </span>
       </div>
       <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
