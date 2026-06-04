@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { syncUserProfile } from "@/lib/leetcode/service";
+import {
+  LEETCODE_USERNAME_TAKEN_MESSAGE,
+  syncUserProfile,
+} from "@/lib/leetcode/service";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -36,6 +39,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, profile });
   } catch (error: any) {
     console.error("Error in /api/leetcode/sync:", error);
+    if (error?.message === LEETCODE_USERNAME_TAKEN_MESSAGE) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return NextResponse.json(
       { error: error.message || "Failed to sync LeetCode profile." },
       { status: 500 }

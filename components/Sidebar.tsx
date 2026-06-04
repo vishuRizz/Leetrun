@@ -8,6 +8,8 @@ import {
   BarChart3,
   BookOpen,
   Bot,
+  Brain,
+  CalendarClock,
   Home,
   Layers,
   LogIn,
@@ -127,6 +129,7 @@ export function Sidebar() {
       items: [
         { name: "Sheets", href: "/sheets", icon: Layers },
         { name: "Patterns", href: "/patterns", icon: Network },
+        { name: "Study Plan", href: "/study-plan", icon: CalendarClock },
         { name: "Side Quests", href: "/side-quests", icon: Swords },
         { name: "Lobbies", href: "/rooms", icon: Users },
       ],
@@ -135,6 +138,7 @@ export function Sidebar() {
       label: "Learn",
       items: [
         { name: "System Design", href: "/notes", icon: BookOpen },
+        { name: "Flashcards", href: "/flashcards", icon: Brain },
       ],
     },
     {

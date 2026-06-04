@@ -14,6 +14,7 @@ import type { NormalizedSheet } from "@/lib/sheets";
 import { problemRef } from "@/lib/sheets";
 import SheetsDeepSyncBanner from "@/components/SheetsDeepSyncBanner";
 import ProblemNoteButton from "@/components/ProblemNoteButton";
+import SolveTimerButton from "@/components/SolveTimerButton";
 import { useGuest } from "@/components/GuestProvider";
 
 interface Props {
@@ -267,6 +268,12 @@ export default function SheetView({
                   >
                     {p.difficulty}
                   </span>
+
+                  <SolveTimerButton
+                    problemRef={problemRef(p, sheet.slug)}
+                    title={p.title}
+                    difficulty={p.difficulty}
+                  />
 
                   <ProblemNoteButton
                     problemRef={problemRef(p, sheet.slug)}

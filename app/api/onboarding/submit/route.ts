@@ -22,7 +22,6 @@ export async function POST(request: Request) {
       graduationYear,
       targetCompany,
       timeline,
-      lcUsername,
       quizScore,
       totalQuestions,
       mentorName,
@@ -38,16 +37,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Calibrate initial UserLevel
-    let totalSolved = 0;
-    if (lcUsername) {
-      const lcProfile = await db.leetcodeProfile.findUnique({
-        where: { userId: user.id },
-      });
-      if (lcProfile) {
-        totalSolved = lcProfile.totalSolved;
-      }
+    const linkedLeetCode = await db.leetcodeProfile.findUnique({
+      where: { userId: user.id },
+      select: { username: true, totalSolved: true },
+    });
+
+    if (!linkedLeetCode) {
+      return NextResponse.json(
+        { error: "Connect and verify your LeetCode account before continuing." },
+        { status: 400 }
+      );
     }
+
+    // 1. Calibrate initial UserLevel
+    const totalSolved = linkedLeetCode.totalSolved;
 
     let calibratedLevel: UserLevel = UserLevel.BEGINNER;
     if (totalSolved >= 300) {
@@ -169,7 +172,8 @@ export async function POST(request: Request) {
           metadata: {
             calibratedLevel,
             quizScore,
-            lcConnected: !!lcUsername,
+            lcConnected: true,
+            lcUsername: linkedLeetCode.username,
           },
         },
       });

@@ -44,18 +44,42 @@ export interface SyncOptions {
   force?: boolean;
 }
 
+export const LEETCODE_USERNAME_TAKEN_MESSAGE =
+  "That LeetCode username is already linked to another LeetRun account.";
+
+async function assertUsernameAvailableForUser(userId: string, username: string) {
+  const takenByOther = await db.leetcodeProfile.findFirst({
+    where: {
+      username: { equals: username, mode: "insensitive" },
+      NOT: { userId },
+    },
+    select: { userId: true },
+  });
+
+  if (takenByOther) {
+    throw new Error(LEETCODE_USERNAME_TAKEN_MESSAGE);
+  }
+}
+
 export async function syncUserProfile(
   userId: string,
   username: string,
   options: SyncOptions = {}
 ) {
   const trimmedUsername = username.trim();
+  if (!trimmedUsername) {
+    throw new Error("LeetCode username is required.");
+  }
 
   // De-dupe concurrent calls for the same user.
   const inflight = inflightSyncs.get(userId);
   if (inflight) return inflight;
 
   const job = (async () => {
+    // LeetCode usernames are globally unique in our DB. This must live in the
+    // shared sync path because onboarding calls /api/leetcode/sync directly.
+    await assertUsernameAvailableForUser(userId, trimmedUsername);
+
     // 1. Cooldown short-circuit - return whatever's in the DB without hitting LeetCode.
     if (!options.force) {
       const existing = await db.leetcodeProfile.findUnique({

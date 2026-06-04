@@ -110,6 +110,7 @@ model User {
   problemNotes           ProblemNote[]
   notesProgress          NotesProgress[]
   notesReadingState      NotesReadingState?
+  solveAttempts          SolveAttempt[]
 
   @@index([email])
 }
@@ -194,7 +195,27 @@ model UserPreference {
   reminderTime          String?
   aiProvider            AIProvider @default(OPENAI)
   mentorName            String @default("Buddy")
+  /// Target interview date used to generate a date-bound study plan.
+  interviewDate         DateTime?
   createdAt             DateTime @default(now())
+}
+
+/// A timed practice attempt at a problem. Powers solve-speed analytics
+/// (avg time per difficulty, trend, fastest solves).
+model SolveAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemRef String
+  title      String?
+  difficulty String?
+  seconds    Int
+  /// Self-rated difficulty after solving: "EASY" | "OK" | "HARD".
+  confidence String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, problemRef])
 }
 
 model UserStats {

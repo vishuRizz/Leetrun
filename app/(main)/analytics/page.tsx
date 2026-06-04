@@ -23,6 +23,7 @@ import { useGuest } from "@/components/GuestProvider";
 import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
 import { readCache, writeCache } from "@/lib/cache/clientCache";
 import ProblemNoteButton from "@/components/ProblemNoteButton";
+import SpeedAnalyticsCard from "@/components/SpeedAnalyticsCard";
 
 interface AnalyticsResponse {
   user: {
@@ -444,6 +445,9 @@ export default function AnalyticsPage() {
             )}
           </div>
         </div>
+
+        {/* Solve-speed analytics (only renders if the user has timed attempts) */}
+        <SpeedAnalyticsCard />
 
         {/* Recommended problems for the weakest topic */}
         {data.recommendations && data.recommendations.problems.length > 0 && (

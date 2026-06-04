@@ -289,15 +289,23 @@ export interface RecommendedProblem {
  * ones (as revision) if there aren't enough unsolved matches. Easier problems
  * come first to rebuild confidence in a weak area.
  */
-export function recommendProblemsForTopic(
+const DIFF_RANK: Record<SheetDifficulty, number> = {
+  easy: 0,
+  medium: 1,
+  hard: 2,
+};
+
+/**
+ * All curated problems for a topic, split into unsolved (easy→hard) then
+ * already-solved (easy→hard). Deduped by LeetCode slug across sheets.
+ */
+export function problemsForTopic(
   topicLabel: string,
-  solvedSlugs: Set<string>,
-  limit = 5
-): RecommendedProblem[] {
+  solvedSlugs: Set<string>
+): { unsolved: RecommendedProblem[]; solved: RecommendedProblem[] } {
   const key = (topicLabel || "").trim().toLowerCase();
   let keywords = TOPIC_SECTION_KEYWORDS[key];
   if (!keywords || keywords.length === 0) {
-    // Unknown label - match against the meaningful words in the label itself.
     keywords = key.split(/[^a-z]+/).filter((w) => w.length > 2);
   }
   if (keywords.length === 0) keywords = [key];
@@ -327,16 +335,19 @@ export function recommendProblemsForTopic(
     }
   }
 
-  const diffRank: Record<SheetDifficulty, number> = {
-    easy: 0,
-    medium: 1,
-    hard: 2,
-  };
   const byDiff = (a: RecommendedProblem, b: RecommendedProblem) =>
-    diffRank[a.difficulty] - diffRank[b.difficulty];
+    DIFF_RANK[a.difficulty] - DIFF_RANK[b.difficulty];
   unsolved.sort(byDiff);
   solved.sort(byDiff);
+  return { unsolved, solved };
+}
 
+export function recommendProblemsForTopic(
+  topicLabel: string,
+  solvedSlugs: Set<string>,
+  limit = 5
+): RecommendedProblem[] {
+  const { unsolved, solved } = problemsForTopic(topicLabel, solvedSlugs);
   const out = unsolved.slice(0, limit);
   if (out.length < limit) {
     out.push(...solved.slice(0, limit - out.length));
