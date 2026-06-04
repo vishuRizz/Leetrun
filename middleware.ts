@@ -33,24 +33,32 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/forgot-password") ||
     path === "/";
     
-  const isProtectedRoute =
+  // Preview routes: browsable by guests (with dummy data + signup prompts) so
+  // the product can be shown off for marketing. Guests are NOT redirected away.
+  const isPreviewRoute =
     path.startsWith("/dashboard") ||
-    path.startsWith("/onboarding") ||
+    path.startsWith("/analytics") ||
+    path.startsWith("/leaderboard") ||
+    path.startsWith("/sheets") ||
+    path.startsWith("/patterns") ||
     path.startsWith("/profile") ||
+    path.startsWith("/side-quests");
+
+  // Strict routes: require a real session (interactive / sensitive features).
+  const isStrictRoute =
+    path.startsWith("/onboarding") ||
     path.startsWith("/challenge") ||
     path.startsWith("/rooms") ||
     path.startsWith("/settings") ||
     path.startsWith("/pricing") ||
-    path.startsWith("/analytics") ||
-    path.startsWith("/leaderboard") ||
     path.startsWith("/chat") ||
-    path.startsWith("/sheets") ||
-    path.startsWith("/patterns") ||
-    path.startsWith("/side-quests") ||
     path.startsWith("/admin");
 
-  if (!user && isProtectedRoute) {
-    // Redirect to login if user is not authenticated and trying to access protected route
+  // Used below for the "must finish onboarding" redirect for logged-in users.
+  const isProtectedRoute = isPreviewRoute || isStrictRoute;
+
+  if (!user && isStrictRoute) {
+    // Guests can preview, but interactive/sensitive routes still require login.
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

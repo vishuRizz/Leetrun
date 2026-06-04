@@ -50,12 +50,13 @@ export default async function SheetsPage() {
       </nav>
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
-        <SheetsDeepSyncBanner />
+        {user && <SheetsDeepSyncBanner />}
 
         <SheetsBrowser
           summaries={summaries}
           completedBySlug={completedBySlug}
           initialFocus={focus}
+          isGuest={!user}
         />
       </main>
     </div>

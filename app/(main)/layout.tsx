@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { FounderGiftModal } from "@/components/FounderGiftModal";
+import GuestProvider from "@/components/GuestProvider";
 
 // Minimal placeholder shown while the real Sidebar (which reads
 // useSearchParams to highlight the active lobby) is being hydrated.
@@ -28,7 +29,7 @@ export default function MainLayout({
         pushing it.
       */}
       <div className="flex-1 pl-16 min-w-0">
-        {children}
+        <GuestProvider>{children}</GuestProvider>
       </div>
       {/* Renders only for users still eligible for the gift; otherwise null. */}
       <FounderGiftModal />

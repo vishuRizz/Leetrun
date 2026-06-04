@@ -16,6 +16,8 @@ import {
   Trophy,
   Users as UsersIcon,
 } from "lucide-react";
+import { useGuest } from "@/components/GuestProvider";
+import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
 
 interface AnalyticsResponse {
   user: {
@@ -107,29 +109,42 @@ function formatRelative(iso: string | null) {
 }
 
 export default function AnalyticsPage() {
+  const { promptSignup } = useGuest();
+  const [guest, setGuest] = useState(false);
   const [data, setData] = useState<AnalyticsResponse | null>(() => readCache());
   const [loading, setLoading] = useState<boolean>(!data);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (force = false) => {
-    if (force) setRefreshing(true);
-    try {
-      const res = await fetch("/api/analytics", {
-        cache: force ? "no-store" : "default",
-      });
-      if (!res.ok) throw new Error("Failed to load analytics");
-      const json = (await res.json()) as AnalyticsResponse;
-      setData(json);
-      writeCache(json);
-      setError(null);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load analytics");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+  const load = useCallback(
+    async (force = false) => {
+      if (force) setRefreshing(true);
+      try {
+        const res = await fetch("/api/analytics", {
+          cache: force ? "no-store" : "default",
+        });
+        if (res.status === 401) {
+          // Guest preview: render full analytics structure with dummy data.
+          setGuest(true);
+          setData(SAMPLE_ANALYTICS as unknown as AnalyticsResponse);
+          setError(null);
+          promptSignup("full analytics");
+          return;
+        }
+        if (!res.ok) throw new Error("Failed to load analytics");
+        const json = (await res.json()) as AnalyticsResponse;
+        setData(json);
+        writeCache(json);
+        setError(null);
+      } catch (e: any) {
+        setError(e?.message || "Failed to load analytics");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [promptSignup]
+  );
 
   useEffect(() => {
     load(false);
@@ -201,7 +216,7 @@ export default function AnalyticsPage() {
             LeetCode synced {formatRelative(lc.syncedAt)}
           </span>
           <button
-            onClick={() => load(true)}
+            onClick={() => (guest ? promptSignup("live analytics") : load(true))}
             disabled={refreshing}
             className="p-2 rounded-lg border border-border hover:bg-muted text-foreground transition"
             title="Refresh"

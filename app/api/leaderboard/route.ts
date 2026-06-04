@@ -95,9 +95,6 @@ export async function GET(request: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const filter = searchParams.get("filter") || "global";
@@ -106,8 +103,14 @@ export async function GET(request: Request) {
       ? (requestedSort as SortKey)
       : "xp";
 
+    // The global leaderboard is public (great for marketing); only the
+    // friends view requires a logged-in user.
+    if (filter === "friends" && !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     let rows: UserRow[];
-    if (filter === "friends") {
+    if (filter === "friends" && user) {
       const friends = await getFriendsList(user.id);
       const me = await db.user.findUnique({
         where: { id: user.id },

@@ -18,6 +18,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import Link from "next/link";
+import { useGuest } from "@/components/GuestProvider";
 
 type SortKey = "xp" | "level" | "streak" | "total" | "easy" | "medium" | "hard" | "contest";
 
@@ -100,6 +101,7 @@ function formatMetric(u: RankingUser, k: SortKey): { value: string; label: strin
 export default function LeaderboardPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { isGuest, promptSignup } = useGuest();
 
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"global" | "friends">("global");
@@ -163,6 +165,10 @@ export default function LeaderboardPage() {
 
   const handleSendFriendRequest = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isGuest) {
+      promptSignup("friends & social");
+      return;
+    }
     if (!friendEmail.trim()) return;
     setSendingRequest(true);
     setFriendMessage("");
@@ -220,7 +226,11 @@ export default function LeaderboardPage() {
                 Global Rank
               </button>
               <button
-                onClick={() => setFilter("friends")}
+                onClick={() =>
+                  isGuest
+                    ? promptSignup("friends & social")
+                    : setFilter("friends")
+                }
                 className={`flex-1 sm:flex-none py-2 px-4 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
                   filter === "friends"
                     ? "bg-primary text-primary-foreground"

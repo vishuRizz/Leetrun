@@ -22,6 +22,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import RevisionPanel from "./RevisionPanel";
+import { useGuest } from "@/components/GuestProvider";
+import { SAMPLE_DASHBOARD } from "@/lib/guest/sample-data";
 
 interface ChallengeProblem {
   id: string;
@@ -150,6 +152,8 @@ function normaliseResponse(payload: any): DashboardData {
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
+  const { promptSignup } = useGuest();
+  const [guest, setGuest] = useState(false);
   const [data, setData] = useState<DashboardData | null>(() => readCache());
   const [loading, setLoading] = useState<boolean>(() => readCache() === null);
   const [syncing, setSyncing] = useState(false);
@@ -175,7 +179,12 @@ export default function Dashboard() {
           cache: "default",
         });
         if (res.status === 401) {
-          router.push("/login");
+          // Guest preview: show the full dashboard structure with dummy data
+          // and nudge them to sign up.
+          setGuest(true);
+          setData(SAMPLE_DASHBOARD as unknown as DashboardData);
+          setLoading(false);
+          promptSignup();
           return;
         }
         if (!res.ok) throw new Error("Dashboard fetch failed");
@@ -189,7 +198,7 @@ export default function Dashboard() {
         setLoading(false);
       }
     },
-    [router, data]
+    [router, data, promptSignup]
   );
 
   const triggerBackgroundSync = useCallback(
@@ -218,7 +227,10 @@ export default function Dashboard() {
         data: { user: authUser },
       } = await supabase.auth.getUser();
       if (!authUser) {
-        router.push("/login");
+        setGuest(true);
+        setData(SAMPLE_DASHBOARD as unknown as DashboardData);
+        setLoading(false);
+        promptSignup();
         return;
       }
 
@@ -235,6 +247,10 @@ export default function Dashboard() {
   }, []);
 
   const handleManualSync = async () => {
+    if (guest) {
+      promptSignup("LeetCode sync");
+      return;
+    }
     setSyncing(true);
     try {
       await triggerBackgroundSync(true);
@@ -244,6 +260,10 @@ export default function Dashboard() {
   };
 
   const handleVerifyQuest = async (userChallengeId: string | null) => {
+    if (guest) {
+      promptSignup("quests");
+      return;
+    }
     if (!userChallengeId) return;
     setVerifyingQuest(true);
     setQuestMessage(null);
@@ -282,6 +302,10 @@ export default function Dashboard() {
     problemId: string,
     completed: boolean
   ) => {
+    if (guest) {
+      promptSignup("quests");
+      return;
+    }
     if (!userChallengeId) return;
     setTogglingProblem(problemId);
     setQuestMessage(null);
@@ -316,6 +340,10 @@ export default function Dashboard() {
   };
 
   const handleUpgradePlan = async () => {
+    if (guest) {
+      promptSignup("Premium");
+      return;
+    }
     setActionLoading(true);
     try {
       const res = await fetch("/api/subscription/upgrade", {
@@ -501,6 +529,10 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => {
+                        if (guest) {
+                          promptSignup("custom revision");
+                          return;
+                        }
                         setShowRevisionConfig(true);
                         setQuestMessage(null);
                       }}

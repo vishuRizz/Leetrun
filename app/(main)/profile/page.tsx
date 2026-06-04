@@ -367,12 +367,42 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
+    // Guest / unauthenticated: show a friendly "you're a guest" card that
+    // invites signup, rather than an error.
+    if (authError === "session") {
+      return (
+        <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-full max-w-md bg-card border border-border rounded-3xl p-8">
+            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mb-5">
+              <span className="text-3xl font-black text-white">?</span>
+            </div>
+            <h1 className="text-2xl font-black">You&apos;re browsing as Guest</h1>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              Your public profile, LeetCode analytics, XP and streaks live here
+              once you sign in. Create a free account to claim your profile.
+            </p>
+            <div className="flex flex-col gap-3 mt-6">
+              <Link
+                href="/signup"
+                className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-6 py-3 rounded-xl text-sm font-bold transition"
+              >
+                Sign up free
+              </Link>
+              <Link
+                href="/login"
+                className="border border-border hover:bg-muted px-6 py-3 rounded-xl text-sm font-bold transition"
+              >
+                I already have an account
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 text-center">
         <p className="text-muted-foreground mb-2 max-w-md">
-          {authError === "session"
-            ? "Your session expired or could not be verified. Please sign in again."
-            : authError || "We couldn't load your profile right now."}
+          {authError || "We couldn't load your profile right now."}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
           <Link
@@ -381,18 +411,16 @@ export default function ProfilePage() {
           >
             Go to Login
           </Link>
-          {authError !== "session" && (
-            <button
-              type="button"
-              onClick={() => {
-                setLoading(true);
-                void fetchProfile();
-              }}
-              className="border border-border hover:bg-muted px-6 py-2.5 rounded-lg text-sm font-bold transition"
-            >
-              Retry
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              void fetchProfile();
+            }}
+            className="border border-border hover:bg-muted px-6 py-2.5 rounded-lg text-sm font-bold transition"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );

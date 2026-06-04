@@ -48,5 +48,11 @@ export default async function SheetDetailPage({
     initialCompleted = rows.map((r) => r.problemKey);
   }
 
-  return <SheetView sheet={sheet} initialCompleted={initialCompleted} />;
+  return (
+    <SheetView
+      sheet={sheet}
+      initialCompleted={initialCompleted}
+      isGuest={!user}
+    />
+  );
 }

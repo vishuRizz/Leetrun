@@ -9,6 +9,7 @@ import {
   Bot,
   Home,
   Layers,
+  LogIn,
   LogOut,
   Network,
   Shield,
@@ -34,6 +35,7 @@ export function Sidebar() {
 
   const [joinedLobbies, setJoinedLobbies] = useState<JoinedRoom[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
 
   // Reveal the Admin tab only for allow-listed accounts. The /admin routes are
   // also gated server-side, so this is purely a UI affordance.
@@ -44,7 +46,10 @@ export function Sidebar() {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (active) setIsAdmin(isAdminEmail(user?.email));
+        if (active) {
+          setIsAdmin(isAdminEmail(user?.email));
+          setIsGuest(!user);
+        }
       } catch {
         /* noop */
       }
@@ -261,16 +266,29 @@ export function Sidebar() {
           </span>
         </div>
 
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors w-full text-left"
-          title="Logout"
-        >
-          <LogOut className="w-5 h-5 shrink-0" />
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-bold">
-            Logout
-          </span>
-        </button>
+        {isGuest ? (
+          <Link
+            href="/login"
+            className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors w-full text-left font-bold"
+            title="Log in"
+          >
+            <LogIn className="w-5 h-5 shrink-0" />
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-bold">
+              Log in
+            </span>
+          </Link>
+        ) : (
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors w-full text-left"
+            title="Logout"
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-bold">
+              Logout
+            </span>
+          </button>
+        )}
       </div>
     </aside>
   );

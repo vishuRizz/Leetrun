@@ -14,18 +14,22 @@ import {
   Building2,
 } from "lucide-react";
 import type { SheetSummary } from "@/lib/sheets";
+import { useGuest } from "@/components/GuestProvider";
 
 interface Props {
   summaries: SheetSummary[];
   completedBySlug: Record<string, number>;
   initialFocus: string[];
+  isGuest?: boolean;
 }
 
 export default function SheetsBrowser({
   summaries,
   completedBySlug,
   initialFocus,
+  isGuest = false,
 }: Props) {
+  const { promptSignup } = useGuest();
   const [focus, setFocus] = useState<Set<string>>(() => new Set(initialFocus));
   const [pending, setPending] = useState<Set<string>>(() => new Set());
 
@@ -52,6 +56,10 @@ export default function SheetsBrowser({
   );
 
   const toggleFocus = async (slug: string) => {
+    if (isGuest) {
+      promptSignup("focus sheets");
+      return;
+    }
     if (pending.has(slug)) return;
     const isFocused = focus.has(slug);
 
