@@ -59,8 +59,8 @@ export default function NotesToc({ toc }: { toc: NotesTocItem[] }) {
   }, [activeSlug]);
 
   return (
-    <aside className="hidden lg:block w-64 xl:w-72 shrink-0">
-      <div className="sticky top-6 max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
+    <aside className="hidden lg:block w-64 xl:w-72 shrink-0 self-start sticky top-6">
+      <div className="max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
         <div className="px-4 pt-4 pb-3 border-b border-border/60">
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
             <ListTree className="w-3.5 h-3.5" />
