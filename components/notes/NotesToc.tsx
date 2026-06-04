@@ -41,13 +41,21 @@ export default function NotesToc({ toc }: { toc: NotesTocItem[] }) {
     return () => observer.disconnect();
   }, [toc]);
 
-  // Keep the active item visible within the (independently scrolling) nav.
+  // Keep the active item visible WITHIN the nav only. We scroll the nav's own
+  // scrollTop rather than calling scrollIntoView(), because scrollIntoView
+  // also scrolls ancestor scroll containers (including the page window), which
+  // would yank the reader back to the top as the active topic changes.
   useEffect(() => {
     if (!activeSlug || !navRef.current) return;
-    const link = navRef.current.querySelector<HTMLElement>(
-      `[data-slug="${activeSlug}"]`
-    );
-    link?.scrollIntoView({ block: "nearest" });
+    const nav = navRef.current;
+    const link = nav.querySelector<HTMLElement>(`[data-slug="${activeSlug}"]`);
+    if (!link) return;
+    const navRect = nav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    if (linkRect.top < navRect.top || linkRect.bottom > navRect.bottom) {
+      nav.scrollTop +=
+        linkRect.top - navRect.top - navRect.height / 2 + linkRect.height / 2;
+    }
   }, [activeSlug]);
 
   return (

@@ -85,15 +85,6 @@ export default async function NotesPage() {
                 real-world case studies like WhatsApp, Twitter, Netflix and
                 Uber.
               </p>
-              <a
-                href={NOTES_REPO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-sm font-semibold"
-              >
-                <ExternalLink className="w-4 h-4" />
-                View source on GitHub
-              </a>
             </div>
             <div className="hidden md:flex items-center justify-center w-28 h-28 rounded-3xl bg-indigo-500/10 text-indigo-500 shrink-0">
               <Network className="w-12 h-12" />
