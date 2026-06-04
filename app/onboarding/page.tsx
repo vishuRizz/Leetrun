@@ -88,33 +88,53 @@ export default function OnboardingPage() {
   const [timeline, setTimeline] = useState("6 months");
   const [favoriteSeries, setFavoriteSeries] = useState("NARUTO");
 
-  // Step 3: LeetCode
+  // Step 3: LeetCode (required - username OR profile URL)
   const [lcUsername, setLcUsername] = useState("");
+  const [lcProfileUrl, setLcProfileUrl] = useState("");
   const [lcValidating, setLcValidating] = useState(false);
   const [lcVerified, setLcVerified] = useState(false);
 
-  // Step 4: Quiz
-  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
-  const [quizTimeLeft, setQuizTimeLeft] = useState(120);
-
-  // Step 5: Mentor
+  // Step 4: Mentor
   const [mentorName, setMentorName] = useState("Sensei");
   const [mentorVibe, setMentorVibe] = useState("Friendly");
+
+  // Step 5: Quiz (optional)
+  const [testStarted, setTestStarted] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [quizTimeLeft, setQuizTimeLeft] = useState(120);
 
   // Step 6: Results
   const [results, setResults] = useState<any>(null);
   const [quizScore, setQuizScore] = useState(0);
 
-  // Quiz Timer
+  // Quiz Timer (only runs once the optional test has been started)
   useEffect(() => {
-    if (step !== 4) return;
+    if (step !== 5 || !testStarted) return;
     if (quizTimeLeft <= 0) {
-      setStep(5);
+      void handleSubmit(false);
       return;
     }
     const timer = setTimeout(() => setQuizTimeLeft(quizTimeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [quizTimeLeft, step]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizTimeLeft, step, testStarted]);
+
+  // Resolve the LeetCode username from either the username field or a pasted
+  // profile URL (e.g. https://leetcode.com/u/name/ or leetcode.com/name).
+  const resolveUsername = (): string => {
+    if (lcUsername.trim()) return lcUsername.trim();
+    const raw = lcProfileUrl.trim();
+    if (!raw) return "";
+    try {
+      const u = new URL(raw.startsWith("http") ? raw : `https://${raw}`);
+      const parts = u.pathname.split("/").filter(Boolean);
+      if (parts[0] === "u" && parts[1]) return parts[1];
+      if (parts[0] && parts[0] !== "u") return parts[0];
+      return "";
+    } catch {
+      return "";
+    }
+  };
 
   const handleNext = () => {
     setError("");
@@ -130,8 +150,10 @@ export default function OnboardingPage() {
         return;
       }
     }
-    if (step === 3 && !lcVerified && lcUsername.trim()) {
-      setError("Please verify your LeetCode username first, or leave it blank to skip.");
+    if (step === 3 && !lcVerified) {
+      setError(
+        "Your LeetCode account is required. Enter your username or profile URL, then tap Connect."
+      );
       return;
     }
     setStep(step + 1);
@@ -139,21 +161,31 @@ export default function OnboardingPage() {
 
   const handleBack = () => {
     setError("");
+    // From the quiz, go back to the test choice rather than the previous step.
+    if (step === 5 && testStarted) {
+      setTestStarted(false);
+      return;
+    }
     setStep(step - 1);
   };
 
   const verifyLeetcode = async () => {
-    if (!lcUsername.trim()) return;
+    const uname = resolveUsername();
+    if (!uname) {
+      setError("Enter your LeetCode username or paste your profile URL.");
+      return;
+    }
     setLcValidating(true);
     setError("");
     try {
       const res = await fetch("/api/leetcode/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: lcUsername.trim() }),
+        body: JSON.stringify({ username: uname }),
       });
       const data = await res.json();
       if (data.success) {
+        setLcUsername(uname);
         setLcVerified(true);
       } else {
         setError(data.error || "LeetCode user not found. Please verify the spelling.");
@@ -165,14 +197,16 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (skipTest = false) => {
     setLoading(true);
     setError("");
 
     let correctCount = 0;
-    ASSESSMENT_QUESTIONS.forEach((q) => {
-      if (quizAnswers[q.id] === q.correct) correctCount++;
-    });
+    if (!skipTest) {
+      ASSESSMENT_QUESTIONS.forEach((q) => {
+        if (quizAnswers[q.id] === q.correct) correctCount++;
+      });
+    }
     setQuizScore(correctCount);
 
     try {
@@ -188,6 +222,7 @@ export default function OnboardingPage() {
           lcUsername: lcVerified ? lcUsername.trim() : null,
           quizScore: correctCount,
           totalQuestions: ASSESSMENT_QUESTIONS.length,
+          quizTaken: !skipTest,
           mentorName,
           mentorVibe,
           favoriteSeries,
@@ -196,6 +231,11 @@ export default function OnboardingPage() {
 
       const data = await res.json();
       if (res.ok) {
+        if (skipTest) {
+          // Straight to the dashboard - hard nav so middleware sees fresh state.
+          window.location.href = "/dashboard";
+          return;
+        }
         setResults(data);
         setStep(6);
       } else {
@@ -377,114 +417,94 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            {/* ───────── STEP 3: LeetCode ───────── */}
+            {/* ───────── STEP 3: LeetCode (required) ───────── */}
             {step === 3 && (
               <div className="space-y-6">
                 <div>
                   <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Connect LeetCode <Link className="w-6 h-6 text-blue-500" /></h1>
                   <p className="text-muted-foreground text-sm">
-                    We'll sync your coding stats to calibrate your difficulty level.
+                    Required - we sync your coding stats to calibrate your level.
+                    Fill <strong className="text-foreground">either</strong> your
+                    username or your profile URL.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <div>
                     <label className={labelCls}>LeetCode Username</label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Code className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                          type="text"
-                          value={lcUsername}
-                          disabled={lcVerified}
-                          onChange={(e) => setLcUsername(e.target.value)}
-                          className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
-                          placeholder="your-leetcode-username"
-                        />
-                      </div>
-                      <button
-                        onClick={verifyLeetcode}
-                        disabled={lcValidating || lcVerified || !lcUsername.trim()}
-                        type="button"
-                        className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white px-4 rounded-lg font-semibold text-sm transition-colors flex items-center gap-2 whitespace-nowrap"
-                      >
-                        {lcValidating ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : lcVerified ? (
-                          <>
-                            <CheckCircle className="w-4 h-4" /> Connected
-                          </>
-                        ) : (
-                          "Connect"
-                        )}
-                      </button>
+                    <div className="relative">
+                      <Code className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={lcUsername}
+                        disabled={lcVerified}
+                        onChange={(e) => setLcUsername(e.target.value)}
+                        className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
+                        placeholder="your-leetcode-username"
+                      />
                     </div>
                   </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-border" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      or
+                    </span>
+                    <div className="flex-1 h-px bg-border" />
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>LeetCode Profile URL</label>
+                    <div className="relative">
+                      <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={lcProfileUrl}
+                        disabled={lcVerified}
+                        onChange={(e) => setLcProfileUrl(e.target.value)}
+                        className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
+                        placeholder="https://leetcode.com/u/your-username/"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={verifyLeetcode}
+                    disabled={
+                      lcValidating ||
+                      lcVerified ||
+                      (!lcUsername.trim() && !lcProfileUrl.trim())
+                    }
+                    type="button"
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                  >
+                    {lcValidating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : lcVerified ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" /> Connected
+                      </>
+                    ) : (
+                      "Connect LeetCode"
+                    )}
+                  </button>
 
                   {lcVerified ? (
                     <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-2 text-sm font-medium">
                       <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                      LeetCode account verified and linked successfully!
+                      LeetCode <strong>@{lcUsername}</strong> verified and linked!
                     </div>
                   ) : (
                     <div className="p-4 bg-muted/50 border border-border rounded-xl text-muted-foreground text-xs leading-relaxed">
-                      <Lightbulb className="w-4 h-4 inline mr-1 text-yellow-500" /> Make sure your LeetCode profile is public. Don't have one? You can skip by clicking <strong>Next</strong>.
+                      <Lightbulb className="w-4 h-4 inline mr-1 text-yellow-500" /> Make sure your LeetCode profile is public. A LeetCode account is required to continue.
                     </div>
                   )}
                 </div>
               </div>
             )}
 
-            {/* ───────── STEP 4: Quiz ───────── */}
+            {/* ───────── STEP 4: Mentor ───────── */}
             {step === 4 && (
-              <div className="space-y-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Quick Assessment <Brain className="w-6 h-6 text-pink-500" /></h1>
-                    <p className="text-muted-foreground text-sm">5 DSA questions · 2 minutes</p>
-                  </div>
-                  <div className={`px-3 py-1.5 rounded-lg border font-bold font-mono text-sm ${
-                    quizTimeLeft <= 30
-                      ? "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400"
-                      : "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400"
-                  }`}>
-                    {Math.floor(quizTimeLeft / 60)}:{(quizTimeLeft % 60).toString().padStart(2, "0")}
-                  </div>
-                </div>
-                <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1 -mr-1">
-                  {ASSESSMENT_QUESTIONS.map((q, idx) => (
-                    <div key={q.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
-                      <p className="font-semibold text-sm text-foreground leading-snug">
-                        <span className="text-indigo-500 dark:text-indigo-400 font-bold mr-1">Q{idx + 1}.</span>
-                        {q.text}
-                      </p>
-                      <div className="grid gap-2">
-                        {q.options.map((opt, optIdx) => (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={() => setQuizAnswers({ ...quizAnswers, [q.id]: optIdx })}
-                            className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
-                              quizAnswers[q.id] === optIdx
-                                ? "bg-indigo-500/10 border-indigo-500 text-indigo-700 dark:text-indigo-300"
-                                : "bg-background border-border text-muted-foreground hover:border-indigo-400 hover:text-foreground"
-                            }`}
-                          >
-                            <span className="font-bold mr-2 text-muted-foreground">
-                              {String.fromCharCode(65 + optIdx)}.
-                            </span>
-                            {opt}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ───────── STEP 5: Mentor ───────── */}
-            {step === 5 && (
               <div className="space-y-6">
                 <div>
                   <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Meet your AI Mentor <Bot className="w-6 h-6 text-indigo-500" /></h1>
@@ -530,6 +550,102 @@ export default function OnboardingPage() {
                       ))}
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ───────── STEP 5: Optional revision test ───────── */}
+            {step === 5 && !testStarted && (
+              <div className="space-y-6 text-center">
+                <div>
+                  <div className="w-16 h-16 bg-pink-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Brain className="w-8 h-8 text-pink-500" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-foreground mb-1">
+                    Quick revision test?
+                  </h1>
+                  <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+                    Take an optional 5-question, 2-minute DSA check to calibrate
+                    your level - or head straight to your dashboard. You can
+                    always take it later.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTestStarted(true);
+                      setQuizTimeLeft(120);
+                    }}
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Brain className="w-4 h-4" /> Take the quick test
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSubmit(true)}
+                    disabled={loading}
+                    className="w-full py-3 border border-border hover:bg-muted text-foreground font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Setting up...
+                      </>
+                    ) : (
+                      <>
+                        Skip - go to dashboard <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ───────── STEP 5: Quiz (after choosing to take it) ───────── */}
+            {step === 5 && testStarted && (
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground mb-1">Quick Assessment <Brain className="w-6 h-6 text-pink-500" /></h1>
+                    <p className="text-muted-foreground text-sm">5 DSA questions · 2 minutes</p>
+                  </div>
+                  <div className={`px-3 py-1.5 rounded-lg border font-bold font-mono text-sm ${
+                    quizTimeLeft <= 30
+                      ? "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400"
+                      : "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400"
+                  }`}>
+                    {Math.floor(quizTimeLeft / 60)}:{(quizTimeLeft % 60).toString().padStart(2, "0")}
+                  </div>
+                </div>
+                <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1 -mr-1">
+                  {ASSESSMENT_QUESTIONS.map((q, idx) => (
+                    <div key={q.id} className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
+                      <p className="font-semibold text-sm text-foreground leading-snug">
+                        <span className="text-indigo-500 dark:text-indigo-400 font-bold mr-1">Q{idx + 1}.</span>
+                        {q.text}
+                      </p>
+                      <div className="grid gap-2">
+                        {q.options.map((opt, optIdx) => (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setQuizAnswers({ ...quizAnswers, [q.id]: optIdx })}
+                            className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
+                              quizAnswers[q.id] === optIdx
+                                ? "bg-indigo-500/10 border-indigo-500 text-indigo-700 dark:text-indigo-300"
+                                : "bg-background border-border text-muted-foreground hover:border-indigo-400 hover:text-foreground"
+                            }`}
+                          >
+                            <span className="font-bold mr-2 text-muted-foreground">
+                              {String.fromCharCode(65 + optIdx)}.
+                            </span>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -623,7 +739,7 @@ export default function OnboardingPage() {
                   <div />
                 )}
 
-                {step < 5 ? (
+                {step <= 4 ? (
                   <button
                     onClick={handleNext}
                     type="button"
@@ -631,9 +747,9 @@ export default function OnboardingPage() {
                   >
                     Next <ArrowRight className="w-4 h-4" />
                   </button>
-                ) : (
+                ) : testStarted ? (
                   <button
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(false)}
                     disabled={loading}
                     type="button"
                     className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
@@ -644,10 +760,12 @@ export default function OnboardingPage() {
                       </>
                     ) : (
                       <>
-                        Finish <ArrowRight className="w-4 h-4" />
+                        Submit test <ArrowRight className="w-4 h-4" />
                       </>
                     )}
                   </button>
+                ) : (
+                  <div />
                 )}
               </div>
             )}
