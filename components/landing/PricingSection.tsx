@@ -108,51 +108,68 @@ const PricingPage = () => {
           </p>
 
           {/* Founding-members promo: first 200 get Pro free */}
-          <div className="mx-auto max-w-2xl mb-10 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50 via-violet-50 to-fuchsia-50 dark:from-indigo-950/40 dark:via-violet-950/30 dark:to-fuchsia-950/40 p-5 sm:p-6 text-left shadow-sm">
-            <div className="flex items-center justify-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-base sm:text-lg">
-              <Crown className="w-5 h-5" />
-              {promoFull ? (
-                <span>Founding {FOUNDING_LIMIT} club is full</span>
-              ) : (
-                <span>Free Pro for the first {FOUNDING_LIMIT} users</span>
-              )}
-            </div>
-            <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-1.5">
-              {promoFull ? (
-                <>
-                  Thousands are already grinding. Sign up free and climb the
-                  leaderboard.
-                </>
-              ) : (
-                <>
-                  Founding members get{' '}
-                  <span className="font-bold text-gray-900 dark:text-white">
-                    Pro free
-                  </span>
-                  , no credit card needed.
-                </>
-              )}
-            </p>
-
-            <div className="mt-4">
-              <div className="h-2.5 rounded-full bg-white/70 dark:bg-black/40 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 transition-[width] duration-700"
-                  style={{ width: `${promoFull ? 100 : filledPct}%` }}
-                />
+          <div className="mx-auto max-w-3xl mb-12 rounded-3xl bg-[#1a1b23] dark:bg-[#141414] dark:border dark:border-gray-800 p-6 sm:p-8 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+              {/* Left: headline */}
+              <div className="flex-1 text-left">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/15 text-orange-400 text-xs font-bold uppercase tracking-wide mb-3">
+                  <Crown className="w-3.5 h-3.5" />
+                  Founding offer
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                  {promoFull ? (
+                    <>The founding {FOUNDING_LIMIT} club is full</>
+                  ) : (
+                    <>
+                      Pro is{' '}
+                      <span className="text-orange-400">free</span> for the
+                      first {FOUNDING_LIMIT} users
+                    </>
+                  )}
+                </h3>
+                <p className="text-sm text-gray-400 mt-2">
+                  {promoFull
+                    ? 'Thousands are already grinding. Sign up free and climb the leaderboard.'
+                    : 'Founding members keep Pro at no cost. No credit card needed.'}
+                </p>
               </div>
-              <div className="flex items-center justify-between mt-2.5 text-xs font-medium gap-3">
-                <span className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+
+              {/* Right: progress + CTA */}
+              <div className="sm:w-64 shrink-0">
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-2xl font-bold text-white">
+                    {userCount === null
+                      ? '—'
+                      : promoFull
+                      ? registered.toLocaleString()
+                      : spotsLeft}
+                  </span>
+                  <span className="text-xs font-medium text-gray-400">
+                    {userCount === null
+                      ? 'loading…'
+                      : promoFull
+                      ? 'members'
+                      : 'spots left'}
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400 transition-[width] duration-700"
+                    style={{ width: `${promoFull ? 100 : filledPct}%` }}
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-400">
                   <Users className="w-3.5 h-3.5" />
                   {userCount === null
                     ? 'Loading signups…'
                     : `${registered.toLocaleString()} already registered`}
-                </span>
-                {userCount !== null && !promoFull && (
-                  <span className="text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
-                    {spotsLeft} spots left - join fast
-                  </span>
-                )}
+                </div>
+                <Button
+                  onClick={() => router.push('/signup')}
+                  className="w-full mt-4 py-3 text-sm font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-all"
+                >
+                  {promoFull ? 'Join free' : 'Claim your free Pro'}
+                </Button>
               </div>
             </div>
           </div>
