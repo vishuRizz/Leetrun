@@ -42,7 +42,8 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/sheets") ||
     path.startsWith("/patterns") ||
     path.startsWith("/profile") ||
-    path.startsWith("/side-quests");
+    path.startsWith("/side-quests") ||
+    path.startsWith("/notes");
 
   // Strict routes: require a real session (interactive / sensitive features).
   const isStrictRoute =

@@ -180,3 +180,170 @@ code, pre, kbd, samp {
     @apply font-sans;
   }
 }
+
+/* ------------------------------------------------------------------
+ * System Design notes - typographic styling for GitHub-flavoured
+ * markdown rendered via react-markdown. Scoped to `.notes-prose` so it
+ * never leaks into the rest of the app. Colors use theme tokens so the
+ * notes look great in both light and dark mode.
+ * ------------------------------------------------------------------ */
+.notes-prose {
+  color: var(--foreground);
+  font-size: 0.975rem;
+  line-height: 1.75;
+  word-wrap: break-word;
+}
+
+.notes-prose :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-heading), var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  scroll-margin-top: 5rem;
+  line-height: 1.25;
+}
+
+.notes-prose h1 {
+  font-size: 1.9rem;
+  margin: 2.5rem 0 1.1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.notes-prose h1:first-child {
+  margin-top: 0;
+}
+.notes-prose h2 {
+  font-size: 1.45rem;
+  margin: 2.2rem 0 0.9rem;
+}
+.notes-prose h3 {
+  font-size: 1.2rem;
+  margin: 1.8rem 0 0.7rem;
+}
+.notes-prose h4 {
+  font-size: 1.05rem;
+  margin: 1.4rem 0 0.6rem;
+}
+
+.notes-prose p {
+  margin: 0.9rem 0;
+}
+
+.notes-prose a {
+  color: oklch(0.55 0.2 264);
+  text-decoration: none;
+  font-weight: 500;
+}
+.notes-prose a:hover {
+  text-decoration: underline;
+}
+.dark .notes-prose a {
+  color: oklch(0.72 0.16 264);
+}
+
+.notes-prose strong {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.notes-prose ul,
+.notes-prose ol {
+  margin: 0.9rem 0;
+  padding-left: 1.5rem;
+}
+.notes-prose ul {
+  list-style: disc;
+}
+.notes-prose ol {
+  list-style: decimal;
+}
+.notes-prose li {
+  margin: 0.4rem 0;
+}
+.notes-prose li::marker {
+  color: var(--muted-foreground);
+}
+
+.notes-prose blockquote {
+  margin: 1.2rem 0;
+  padding: 0.6rem 1.1rem;
+  border-left: 3px solid oklch(0.62 0.19 264);
+  background: color-mix(in oklch, var(--muted) 60%, transparent);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--muted-foreground);
+}
+.notes-prose blockquote p {
+  margin: 0.3rem 0;
+}
+
+/* Inline code */
+.notes-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.35rem;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  white-space: break-spaces;
+}
+
+/* Code blocks */
+.notes-prose pre {
+  margin: 1.2rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 0.85rem;
+  background: oklch(0.16 0 0);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.notes-prose pre code {
+  font-family: var(--font-mono);
+  color: oklch(0.92 0 0);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.notes-prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  border-radius: 0.85rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0.5rem;
+}
+
+.notes-prose hr {
+  margin: 2.5rem 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* Tables (horizontally scrollable on small screens) */
+.notes-prose .notes-table-wrap {
+  margin: 1.2rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+.notes-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.notes-prose th,
+.notes-prose td {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.notes-prose th {
+  background: var(--muted);
+  font-weight: 700;
+}
+.notes-prose tr:last-child td {
+  border-bottom: none;
+}

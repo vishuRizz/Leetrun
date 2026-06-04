@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Logo from "./Logo";
 import {
   BarChart3,
+  BookOpen,
   Bot,
   Home,
   Layers,
@@ -122,6 +123,12 @@ export function Sidebar() {
         { name: "Patterns", href: "/patterns", icon: Network },
         { name: "Side Quests", href: "/side-quests", icon: Swords },
         { name: "Lobbies", href: "/rooms", icon: Users },
+      ],
+    },
+    {
+      label: "Learn",
+      items: [
+        { name: "System Design", href: "/notes", icon: BookOpen },
       ],
     },
     {
