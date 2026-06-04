@@ -19,6 +19,10 @@ import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import Link from "next/link";
 import { useGuest } from "@/components/GuestProvider";
+import { readCache, writeCache } from "@/lib/cache/clientCache";
+
+const lbCacheKey = (filter: string, sortBy: string) =>
+  `leaderboard:${filter}:${sortBy}`;
 
 type SortKey = "xp" | "level" | "streak" | "total" | "easy" | "medium" | "hard" | "contest";
 
@@ -103,10 +107,14 @@ export default function LeaderboardPage() {
   const supabase = createClient();
   const { isGuest, promptSignup } = useGuest();
 
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"global" | "friends">("global");
   const [sortBy, setSortBy] = useState<SortKey>("xp");
-  const [rankings, setRankings] = useState<RankingUser[]>([]);
+  const [rankings, setRankings] = useState<RankingUser[]>(
+    () => readCache<RankingUser[]>(lbCacheKey("global", "xp")) || []
+  );
+  const [loading, setLoading] = useState(
+    () => readCache<RankingUser[]>(lbCacheKey("global", "xp")) === null
+  );
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [friendEmail, setFriendEmail] = useState("");
   const [sendingRequest, setSendingRequest] = useState(false);
@@ -126,12 +134,23 @@ export default function LeaderboardPage() {
   };
 
   const fetchRankings = async () => {
-    setLoading(true);
+    // Stale-while-revalidate: paint cached rankings for this exact
+    // filter+sort instantly, then refresh silently. Only show the spinner
+    // when we have nothing cached to display.
+    const key = lbCacheKey(filter, sortBy);
+    const cached = readCache<RankingUser[]>(key);
+    if (cached) {
+      setRankings(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     try {
       const res = await fetch(`/api/leaderboard?filter=${filter}&sortBy=${sortBy}`);
       const data = await res.json();
       if (res.ok) {
         setRankings(data.rankings || []);
+        writeCache(key, data.rankings || []);
       }
     } catch (err) {
       console.error(err);

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { ChallengeStatus } from "@prisma/client";
+import { recommendProblemsForTopic } from "@/lib/sheets";
 
 export async function GET() {
   try {
@@ -175,6 +176,32 @@ export async function GET() {
         confidence: relMastery(p.solved || 0),
       }));
 
+    // Recommend curated problems for the user's weakest topic, excluding ones
+    // they've already solved (from the deep-synced solve history). This is the
+    // "you're weak in X -> here are N problems" hook that links analytics
+    // directly into the sheets.
+    const recoTopic =
+      weakTopics[0]?.topic ||
+      bySolvedDesc[bySolvedDesc.length - 1]?.topic ||
+      "Graph";
+
+    let solvedSlugs = new Set<string>();
+    if (leetcodeProfile?.id) {
+      const solvedRows = await db.leetcodeSolvedProblem.findMany({
+        where: { profileId: leetcodeProfile.id },
+        select: { titleSlug: true },
+      });
+      solvedSlugs = new Set(
+        solvedRows.map((r) => r.titleSlug.toLowerCase())
+      );
+    }
+
+    const recommendedProblems = recommendProblemsForTopic(
+      recoTopic,
+      solvedSlugs,
+      5
+    );
+
     const response = NextResponse.json({
       success: true,
       user: {
@@ -210,6 +237,10 @@ export async function GET() {
       topics: {
         strong: strongTopics,
         weak: weakTopics,
+      },
+      recommendations: {
+        topic: recoTopic,
+        problems: recommendedProblems,
       },
       quests: {
         completedByType,

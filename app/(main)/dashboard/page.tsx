@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import RevisionPanel from "./RevisionPanel";
 import { useGuest } from "@/components/GuestProvider";
 import { SAMPLE_DASHBOARD } from "@/lib/guest/sample-data";
+import { readCache, writeCache } from "@/lib/cache/clientCache";
 
 interface ChallengeProblem {
   id: string;
@@ -75,35 +76,6 @@ interface DashboardData {
 }
 
 const CACHE_KEY = "dashboard:v2";
-// How long the cached UI is considered "fresh enough" to render instantly
-// while we revalidate in the background.
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-
-function readCache(): DashboardData | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed?.data || !parsed?.ts) return null;
-    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null;
-    return parsed.data as DashboardData;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(data: DashboardData) {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ data, ts: Date.now() })
-    );
-  } catch {
-    // Storage quota / privacy mode - silently ignore
-  }
-}
 
 function formatChallenge(raw: any): ChallengeData {
   const progressById = new Map<string, { completed: boolean; verified: boolean }>();
@@ -154,8 +126,12 @@ export default function Dashboard() {
   const supabase = createClient();
   const { promptSignup } = useGuest();
   const [guest, setGuest] = useState(false);
-  const [data, setData] = useState<DashboardData | null>(() => readCache());
-  const [loading, setLoading] = useState<boolean>(() => readCache() === null);
+  const [data, setData] = useState<DashboardData | null>(() =>
+    readCache<DashboardData>(CACHE_KEY)
+  );
+  const [loading, setLoading] = useState<boolean>(
+    () => readCache<DashboardData>(CACHE_KEY) === null
+  );
   const [syncing, setSyncing] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"daily" | "weekly" | "revision">(
@@ -191,7 +167,7 @@ export default function Dashboard() {
         const json = await res.json();
         const normalised = normaliseResponse(json);
         setData(normalised);
-        writeCache(normalised);
+        writeCache(CACHE_KEY, normalised);
       } catch (err) {
         console.error("Failed to load dashboard:", err);
       } finally {

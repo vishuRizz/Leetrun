@@ -151,6 +151,16 @@ export const SAMPLE_ANALYTICS = {
       { topic: "Tree DP", mastery: 31, confidence: 35 },
     ],
   },
+  recommendations: {
+    topic: "Dynamic Programming",
+    problems: [
+      { title: "Climbing Stairs", slug: "climbing-stairs", difficulty: "easy", sheetSlug: "neetcode-150", sheetName: "NeetCode 150" },
+      { title: "House Robber", slug: "house-robber", difficulty: "medium", sheetSlug: "neetcode-150", sheetName: "NeetCode 150" },
+      { title: "Coin Change", slug: "coin-change", difficulty: "medium", sheetSlug: "blind-75", sheetName: "Blind 75" },
+      { title: "Longest Increasing Subsequence", slug: "longest-increasing-subsequence", difficulty: "medium", sheetSlug: "neetcode-150", sheetName: "NeetCode 150" },
+      { title: "Word Break", slug: "word-break", difficulty: "medium", sheetSlug: "blind-75", sheetName: "Blind 75" },
+    ],
+  },
   quests: {
     completedByType: { DAILY: 34, WEEKLY: 6, REVISION: 12, FRIEND: 3 },
     xpFromQuests: 2480,

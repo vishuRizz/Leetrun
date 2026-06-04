@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   Activity,
   Award,
   BarChart3,
   CircleDollarSign,
   Code2,
+  ExternalLink,
   Flame,
   Layers,
+  Lightbulb,
   RotateCw,
   Sparkles,
   Target,
@@ -18,6 +21,7 @@ import {
 } from "lucide-react";
 import { useGuest } from "@/components/GuestProvider";
 import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
+import { readCache, writeCache } from "@/lib/cache/clientCache";
 
 interface AnalyticsResponse {
   user: {
@@ -51,6 +55,16 @@ interface AnalyticsResponse {
     strong: { topic: string; mastery: number; solved: number; attempts: number }[];
     weak: { topic: string; mastery: number; confidence: number }[];
   };
+  recommendations?: {
+    topic: string;
+    problems: {
+      title: string;
+      slug: string;
+      difficulty: "easy" | "medium" | "hard";
+      sheetSlug: string;
+      sheetName: string;
+    }[];
+  };
   quests: {
     completedByType: Record<string, number>;
     xpFromQuests: number;
@@ -68,28 +82,6 @@ interface AnalyticsResponse {
 }
 
 const CACHE_KEY = "analytics:v1";
-const CACHE_TTL_MS = 5 * 60 * 1000;
-
-function readCache(): AnalyticsResponse | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL_MS) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-function writeCache(data: AnalyticsResponse) {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
-  } catch {
-    /* ignore */
-  }
-}
 
 function compact(n: number | null | undefined) {
   if (n == null) return "-";
@@ -111,7 +103,9 @@ function formatRelative(iso: string | null) {
 export default function AnalyticsPage() {
   const { promptSignup } = useGuest();
   const [guest, setGuest] = useState(false);
-  const [data, setData] = useState<AnalyticsResponse | null>(() => readCache());
+  const [data, setData] = useState<AnalyticsResponse | null>(() =>
+    readCache<AnalyticsResponse>(CACHE_KEY)
+  );
   const [loading, setLoading] = useState<boolean>(!data);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -134,7 +128,7 @@ export default function AnalyticsPage() {
         if (!res.ok) throw new Error("Failed to load analytics");
         const json = (await res.json()) as AnalyticsResponse;
         setData(json);
-        writeCache(json);
+        writeCache(CACHE_KEY, json);
         setError(null);
       } catch (e: any) {
         setError(e?.message || "Failed to load analytics");
@@ -449,6 +443,75 @@ export default function AnalyticsPage() {
             )}
           </div>
         </div>
+
+        {/* Recommended problems for the weakest topic */}
+        {data.recommendations && data.recommendations.problems.length > 0 && (
+          <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-indigo-500" />
+                <h2 className="font-heading font-bold text-lg">
+                  Recommended for you
+                </h2>
+              </div>
+              <Link
+                href="/sheets"
+                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+              >
+                Browse all sheets
+              </Link>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              You&apos;re lighter on{" "}
+              <span className="font-bold text-foreground">
+                {data.recommendations.topic}
+              </span>
+              . Knock out these {data.recommendations.problems.length} hand-picked
+              problems to level it up.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {data.recommendations.problems.map((p) => (
+                <div
+                  key={p.slug}
+                  className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-muted/30 hover:border-indigo-500/40 transition"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
+                          p.difficulty === "hard"
+                            ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                            : p.difficulty === "medium"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
+                        {p.difficulty}
+                      </span>
+                      <span className="font-semibold text-sm truncate">
+                        {p.title}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/sheets/${p.sheetSlug}`}
+                      className="text-[11px] text-muted-foreground hover:text-indigo-500 transition"
+                    >
+                      from {p.sheetName}
+                    </Link>
+                  </div>
+                  <a
+                    href={`https://leetcode.com/problems/${p.slug}/`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition"
+                  >
+                    Solve <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Quests + Recent XP + Social */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

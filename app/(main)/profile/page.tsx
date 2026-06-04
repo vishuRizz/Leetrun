@@ -35,6 +35,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
 import DeepLeetcodeSyncModal from "@/components/DeepLeetcodeSyncModal";
+import ContributionCalendar from "@/components/ContributionCalendar";
 
 interface ProfileData {
   fullName: string | null;
@@ -68,6 +69,7 @@ interface ProfileData {
     mediumSolved: number;
     hardSolved: number;
     acceptanceRate: number | null;
+    submissionCalendar: string | null;
     deepSyncedAt: string | null;
     deepSyncCount: number;
     hasSavedCookie: boolean;
@@ -888,6 +890,23 @@ export default function ProfilePage() {
           leetcodeUsername={profile.leetcodeProfile?.username}
           onSuccess={() => fetchProfile()}
         />
+
+        {/* Activity contribution calendar (GitHub-style) */}
+        <section className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
+          <h3 className="font-extrabold text-sm text-foreground flex items-center gap-2 pb-2 border-b border-border">
+            <Calendar className="w-4 h-4 text-indigo-500" /> Activity Calendar
+          </h3>
+          {profile.leetcodeProfile?.submissionCalendar ? (
+            <ContributionCalendar
+              calendar={profile.leetcodeProfile.submissionCalendar}
+            />
+          ) : (
+            <p className="text-muted-foreground text-xs py-8 text-center">
+              Connect and sync your LeetCode account to see your daily solving
+              activity here.
+            </p>
+          )}
+        </section>
 
         {/* Breakdown section grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

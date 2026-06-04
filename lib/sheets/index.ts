@@ -223,6 +223,112 @@ export interface SheetProblemRef {
   problemKey: string;
 }
 
+/**
+ * Maps a coarse topic label (as produced by the analytics topic classifier:
+ * Arrays, Strings, Graph, DP, ...) to keywords we look for in sheet *section*
+ * titles. This lets us pull real, curated problems for a weak topic straight
+ * from the sheets the user already browses.
+ */
+const TOPIC_SECTION_KEYWORDS: Record<string, string[]> = {
+  arrays: ["array", "hashing", "prefix"],
+  array: ["array", "hashing", "prefix"],
+  strings: ["string"],
+  string: ["string"],
+  "binary search": ["binary search"],
+  trees: ["tree", "trie", "bst"],
+  tree: ["tree", "trie", "bst"],
+  "tree dp": ["tree", "dynamic programming"],
+  graph: ["graph"],
+  graphs: ["graph"],
+  dp: ["dynamic programming", "dp"],
+  "dynamic programming": ["dynamic programming", "dp"],
+  "linked list": ["linked list"],
+  sorting: ["sort"],
+  hashmap: ["hashing", "hash"],
+  hashing: ["hashing", "hash"],
+  heap: ["heap", "priority"],
+  greedy: ["greedy"],
+  backtracking: ["backtrack"],
+  "sliding window": ["sliding window"],
+  "two pointers": ["two pointer"],
+  stack: ["stack"],
+  intervals: ["interval"],
+  "bit manipulation": ["bit"],
+  math: ["math", "geometry"],
+  design: ["design"],
+};
+
+export interface RecommendedProblem {
+  title: string;
+  /** LeetCode title slug (for the Solve link). */
+  slug: string;
+  difficulty: SheetDifficulty;
+  sheetSlug: string;
+  sheetName: string;
+}
+
+/**
+ * Recommend up to `limit` curated problems for a weak topic, drawn from the
+ * bundled sheets. Already-solved problems (by LeetCode slug) are pushed to the
+ * back so the user gets fresh practice first, but we still fall back to solved
+ * ones (as revision) if there aren't enough unsolved matches. Easier problems
+ * come first to rebuild confidence in a weak area.
+ */
+export function recommendProblemsForTopic(
+  topicLabel: string,
+  solvedSlugs: Set<string>,
+  limit = 5
+): RecommendedProblem[] {
+  const key = (topicLabel || "").trim().toLowerCase();
+  let keywords = TOPIC_SECTION_KEYWORDS[key];
+  if (!keywords || keywords.length === 0) {
+    // Unknown label - match against the meaningful words in the label itself.
+    keywords = key.split(/[^a-z]+/).filter((w) => w.length > 2);
+  }
+  if (keywords.length === 0) keywords = [key];
+
+  const seen = new Set<string>();
+  const unsolved: RecommendedProblem[] = [];
+  const solved: RecommendedProblem[] = [];
+
+  for (const sheet of SHEETS) {
+    for (const section of sheet.sections) {
+      const title = section.title.toLowerCase();
+      if (!keywords.some((k) => k && title.includes(k))) continue;
+      for (const p of section.problems) {
+        if (!p.leetcodeSlug) continue;
+        const slug = p.leetcodeSlug.toLowerCase();
+        if (seen.has(slug)) continue;
+        seen.add(slug);
+        const rec: RecommendedProblem = {
+          title: p.title,
+          slug: p.leetcodeSlug,
+          difficulty: p.difficulty,
+          sheetSlug: sheet.slug,
+          sheetName: sheet.name,
+        };
+        (solvedSlugs.has(slug) ? solved : unsolved).push(rec);
+      }
+    }
+  }
+
+  const diffRank: Record<SheetDifficulty, number> = {
+    easy: 0,
+    medium: 1,
+    hard: 2,
+  };
+  const byDiff = (a: RecommendedProblem, b: RecommendedProblem) =>
+    diffRank[a.difficulty] - diffRank[b.difficulty];
+  unsolved.sort(byDiff);
+  solved.sort(byDiff);
+
+  const out = unsolved.slice(0, limit);
+  if (out.length < limit) {
+    out.push(...solved.slice(0, limit - out.length));
+  }
+  return out;
+}
+
 /** Map LeetCode titleSlug → sheet problem refs across all sheets. */
 export function buildLeetcodeSlugIndex(): Map<string, SheetProblemRef[]> {
   const map = new Map<string, SheetProblemRef[]>();

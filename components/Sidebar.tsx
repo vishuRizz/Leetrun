@@ -22,6 +22,7 @@ import {
 import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 import { isAdminEmail } from "@/lib/admin/config";
+import { clearClientCache } from "@/lib/cache/clientCache";
 
 interface JoinedRoom {
   id: string;
@@ -91,6 +92,9 @@ export function Sidebar() {
   }, [pathname]);
 
   const handleSignOut = async () => {
+    // Drop any cached dashboard/analytics/leaderboard data so the next user on
+    // this browser never sees the previous account's information.
+    clearClientCache();
     try {
       await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     } catch {
