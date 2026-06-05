@@ -200,6 +200,48 @@ export function getSheet(slug: string): NormalizedSheet | null {
   return SHEET_BY_SLUG.get(slug) ?? null;
 }
 
+export interface FlatProblem {
+  title: string;
+  difficulty: SheetDifficulty;
+  leetcodeSlug: string | null;
+  /** Names of the sheets this problem appears in. */
+  sheets: string[];
+}
+
+let cachedFlatProblems: FlatProblem[] | null = null;
+
+/**
+ * Flat, deduped list of every problem across all sheets (keyed by LeetCode slug
+ * when available, else title). Used by the AI retrieval layer to ground problem
+ * recommendations in real, curated questions.
+ */
+export function getAllProblems(): FlatProblem[] {
+  if (cachedFlatProblems) return cachedFlatProblems;
+
+  const byKey = new Map<string, FlatProblem>();
+  for (const sheet of SHEETS) {
+    for (const section of sheet.sections) {
+      for (const p of section.problems) {
+        const key = (p.leetcodeSlug || p.title).toLowerCase();
+        const existing = byKey.get(key);
+        if (existing) {
+          if (!existing.sheets.includes(sheet.name)) existing.sheets.push(sheet.name);
+        } else {
+          byKey.set(key, {
+            title: p.title,
+            difficulty: p.difficulty,
+            leetcodeSlug: p.leetcodeSlug,
+            sheets: [sheet.name],
+          });
+        }
+      }
+    }
+  }
+
+  cachedFlatProblems = Array.from(byKey.values());
+  return cachedFlatProblems;
+}
+
 export function getSheetSlugs(): string[] {
   return SHEETS.map((s) => s.slug);
 }

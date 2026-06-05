@@ -13,6 +13,24 @@ interface Message {
   content: string;
 }
 
+/** Human-readable description of the page the user is on, for AI context. */
+function describePage(pathname: string): string | undefined {
+  if (pathname.startsWith("/sheets/")) {
+    const slug = pathname.split("/")[2]?.replace(/-/g, " ");
+    return slug ? `Viewing the "${slug}" DSA sheet.` : "Browsing a DSA sheet.";
+  }
+  if (pathname.startsWith("/sheets")) return "Browsing the DSA sheets list.";
+  if (pathname.startsWith("/patterns")) return "On the Patterns page (interview pattern families).";
+  if (pathname.startsWith("/analytics")) return "Looking at their Analytics dashboard.";
+  if (pathname.startsWith("/profile")) return "On their Profile page.";
+  if (pathname.startsWith("/prep")) return "On the Prep Kit (study plan + flashcards).";
+  if (pathname.startsWith("/notes")) return "Reading the System Design notes.";
+  if (pathname.startsWith("/leaderboard")) return "On the Leaderboard.";
+  if (pathname.startsWith("/rooms")) return "In a competitive Lobby.";
+  if (pathname.startsWith("/dashboard")) return "On their Dashboard.";
+  return undefined;
+}
+
 export function FloatingChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -54,10 +72,12 @@ export function FloatingChatWidget() {
             setMessages([{
               id: "g1",
               role: "assistant",
-              content: JSON.stringify({
-                reply: `Hey! I am ${data.mentorName}, your AI coach. How can I help you right now?`,
-                suggestions: ["Help me with a DSA problem", "Review my progress"]
-              })
+              content:
+                data.greeting ||
+                JSON.stringify({
+                  reply: `Hey! I am ${data.mentorName}, your AI coach. How can I help you right now?`,
+                  suggestions: ["Help me with a DSA problem", "Review my progress"],
+                }),
             }]);
           }
         }
@@ -84,7 +104,7 @@ export function FloatingChatWidget() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, pageContext: describePage(pathname) }),
       });
       const data = await res.json();
 

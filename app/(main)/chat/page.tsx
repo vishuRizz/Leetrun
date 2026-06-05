@@ -65,10 +65,12 @@ export default function ChatPage() {
             const initialGreeting: Message = {
               id: "g1",
               role: "assistant",
-              content: JSON.stringify({
-                reply: `Hey! I am ${data.mentorName || "Sensei"}, your AI coach. How is your DSA preparation going?`,
-                suggestions: ["Roast my streak!", "Check my weak topics", "Recommend a problem"]
-              }),
+              content:
+                data.greeting ||
+                JSON.stringify({
+                  reply: `Hey! I am ${data.mentorName || "Sensei"}, your AI coach. How is your DSA preparation going?`,
+                  suggestions: ["Roast my streak!", "Check my weak topics", "Recommend a problem"],
+                }),
               createdAt: new Date().toISOString(),
             };
             setMessages([initialGreeting]);

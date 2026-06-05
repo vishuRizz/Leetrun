@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { buildSystemPrompt } from "@/lib/ai/prompt";
 import { getModel } from "@/lib/ai/gemini";
+import { retrieveKnowledge, renderKnowledgeBlock } from "@/lib/ai/retrieval";
+import { getProactiveGreeting } from "@/lib/ai/proactive";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +17,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { message } = await request.json();
+    const body = await request.json();
+    const message = body?.message;
+    const pageContext =
+      typeof body?.pageContext === "string" && body.pageContext.trim()
+        ? body.pageContext.trim().slice(0, 500)
+        : undefined;
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required." }, { status: 400 });
     }
@@ -42,8 +49,21 @@ export async function POST(request: Request) {
       take: 15,
     });
 
-    // 3. Build dynamic system instructions
-    const systemInstruction = await buildSystemPrompt(user.id);
+    // 3. Retrieve grounding material for this message + build dynamic system
+    //    instructions enriched with deep context, retrieved knowledge, and the
+    //    page the user is currently viewing.
+    let knowledge = "";
+    try {
+      const chunks = await retrieveKnowledge(message, { k: 5 });
+      knowledge = renderKnowledgeBlock(chunks);
+    } catch (e) {
+      console.warn("Knowledge retrieval failed (continuing without grounding):", e);
+    }
+
+    const systemInstruction = await buildSystemPrompt(user.id, {
+      pageContext,
+      knowledge,
+    });
 
     // 4. Attempt response generation via Groq, falling back to Gemini if it fails
     let aiResponseText = "";
@@ -144,9 +164,22 @@ export async function GET(request: Request) {
       });
     }
 
+    // No history yet → open with a personalized, proactive greeting (recap /
+    // streak nudge / interview countdown) instead of a static hello.
+    let greeting: string | null = null;
+    if (chatMessages.length === 0) {
+      try {
+        const g = await getProactiveGreeting(user.id, mentorName);
+        greeting = JSON.stringify(g);
+      } catch (e) {
+        console.warn("Proactive greeting failed:", e);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       mentorName,
+      greeting,
       messages: chatMessages.map((msg: any) => ({
         id: msg.id,
         role: msg.role,
