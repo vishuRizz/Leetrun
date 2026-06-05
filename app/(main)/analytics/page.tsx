@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
-  Activity,
   Award,
   BarChart3,
   Calendar,
@@ -197,28 +196,6 @@ export default function AnalyticsPage() {
     (data.quests.completedByType.REVISION || 0) +
     (data.quests.completedByType.FRIEND || 0);
 
-  // Build week-column heatmap from the daily series.
-  const heatmapGrid: { date: string; count: number }[][] = [];
-  const cells = data.activity.heatmap;
-  if (cells.length > 0) {
-    const firstDay = new Date(cells[0].date).getDay();
-    const padded = [
-      ...Array(firstDay).fill({ date: "", count: -1 }),
-      ...cells,
-    ];
-    for (let i = 0; i < padded.length; i += 7) {
-      heatmapGrid.push(padded.slice(i, i + 7));
-    }
-  }
-  const heatColor = (count: number) => {
-    if (count < 0) return "bg-transparent";
-    if (count === 0) return "bg-muted/50";
-    if (count < 2) return "bg-indigo-300/70 dark:bg-indigo-900/80";
-    if (count < 4) return "bg-indigo-400 dark:bg-indigo-700";
-    if (count < 7) return "bg-indigo-500 dark:bg-indigo-500";
-    return "bg-indigo-600 dark:bg-indigo-300";
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {!guest && <AutoLeetcodeSync />}
@@ -285,10 +262,8 @@ export default function AnalyticsPage() {
           />
         </div>
 
-        {/* LeetCode + Activity heatmap */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LeetCode card */}
-          <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 space-y-5">
+        {/* LeetCode card */}
+        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Code2 className="w-5 h-5 text-indigo-500" />
@@ -355,51 +330,6 @@ export default function AnalyticsPage() {
               />
             </div>
           </div>
-
-          {/* Activity heatmap */}
-          <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-indigo-500" />
-                <h2 className="font-heading font-bold text-lg">Activity</h2>
-              </div>
-              <span className="text-xs font-mono text-muted-foreground">
-                {data.activity.activeDays}d active
-              </span>
-            </div>
-
-            <div className="flex gap-1">
-              {heatmapGrid.map((week, wi) => (
-                <div key={wi} className="flex flex-col gap-1">
-                  {week.map((cell, di) => (
-                    <div
-                      key={`${wi}-${di}`}
-                      className={`w-3 h-3 rounded-[3px] ${heatColor(cell.count)}`}
-                      title={
-                        cell.date
-                          ? `${cell.date}: ${cell.count} submission${cell.count === 1 ? "" : "s"}`
-                          : ""
-                      }
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground">
-              <span>{data.activity.totalRecentSubmissions} subs (12wk)</span>
-              <div className="flex items-center gap-1">
-                <span>less</span>
-                <div className="w-2.5 h-2.5 rounded-[2px] bg-muted/50" />
-                <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-300/70 dark:bg-indigo-900/80" />
-                <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-400 dark:bg-indigo-700" />
-                <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-500" />
-                <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-600 dark:bg-indigo-300" />
-                <span>more</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Full-year activity calendar (GitHub-style, like profile) */}
         {lc.submissionCalendar && (
