@@ -336,6 +336,7 @@ export async function createHostQuestion(
     difficulty: Difficulty;
     topic?: string;
     deadlineHours?: number;
+    comment?: string;
   }
 ) {
   const room = await db.challengeRoom.findUnique({
@@ -398,6 +399,7 @@ export async function createHostQuestion(
           typeof params.problemNumber === "number" && params.problemNumber > 0
             ? params.problemNumber
             : null,
+        comment: params.comment?.trim() ? params.comment.trim().slice(0, 500) : null,
       },
     });
 
@@ -414,6 +416,33 @@ export async function createHostQuestion(
 
     return rc;
   });
+}
+
+/**
+ * Set (or replace/clear) the single comment on a question. Only the member who
+ * added the question may do this. Passing an empty string clears the comment.
+ */
+export async function setRoomQuestionComment(
+  userId: string,
+  roomChallengeId: string,
+  comment: string
+) {
+  const rc = await db.roomChallenge.findUnique({
+    where: { id: roomChallengeId },
+    select: { id: true, addedById: true },
+  });
+  if (!rc) throw new Error("Room challenge not found.");
+  if (rc.addedById !== userId) {
+    throw new Error("Only the member who added this question can comment on it.");
+  }
+
+  const trimmed = (comment || "").trim().slice(0, 500);
+  const updated = await db.roomChallenge.update({
+    where: { id: roomChallengeId },
+    data: { comment: trimmed || null },
+    select: { id: true, comment: true },
+  });
+  return updated;
 }
 
 /**

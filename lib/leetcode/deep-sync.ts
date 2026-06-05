@@ -158,8 +158,13 @@ export async function runDeepLeetcodeSync(
 
   const solved = await fetchAllSolvedProblems(auth);
   if (solved.length === 0) {
+    // A session that *looks* valid but returns zero solved problems almost
+    // always means the cookie is logged-out/expired - LeetCode quietly returns
+    // an empty "AC" list instead of an auth error. Drop any stale saved cookie
+    // so background auto-sync stops retrying, and ask for a fresh session.
+    await clearSavedLeetcodeCookie(userId).catch(() => {});
     throw new Error(
-      "No solved problems found for this account. Make sure you're logged into the correct LeetCode profile."
+      "Your LeetCode session has expired. Please paste a fresh session cookie and run the deep sync again."
     );
   }
 

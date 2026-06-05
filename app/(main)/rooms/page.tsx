@@ -28,6 +28,8 @@ import {
   ArrowUpRight,
   ChevronDown,
   UserCircle2,
+  MessageSquareText,
+  Pencil,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
@@ -58,6 +60,7 @@ interface RoomChallenge {
   deadline: string;
   isHostQuestion?: boolean;
   problemNumber?: number | null;
+  comment?: string | null;
   addedBy?: {
     id: string;
     fullName: string | null;
@@ -150,8 +153,16 @@ function RoomsPageInner() {
   const [questionNumber, setQuestionNumber] = useState("");
   const [questionDifficulty, setQuestionDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("EASY");
   const [questionTopic, setQuestionTopic] = useState("Arrays");
+  const [questionComment, setQuestionComment] = useState("");
   const [questionLoading, setQuestionLoading] = useState(false);
   const [questionError, setQuestionError] = useState("");
+
+  // Per-question comment popup: which card's comment is open, the in-progress
+  // edit state, and a busy flag while saving.
+  const [openCommentId, setOpenCommentId] = useState<string | null>(null);
+  const [commentEditing, setCommentEditing] = useState(false);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentBusy, setCommentBusy] = useState(false);
 
   // Per-room leaderboard + per-question action loading state
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -265,6 +276,7 @@ function RoomsPageInner() {
             : undefined,
           difficulty: questionDifficulty,
           topic: questionTopic,
+          comment: questionComment.trim() || undefined,
         }),
       });
       const data = await res.json();
@@ -274,12 +286,41 @@ function RoomsPageInner() {
         setQuestionUrl("");
         setQuestionName("");
         setQuestionNumber("");
+        setQuestionComment("");
         fetchActiveRoomDetails(activeRoomId);
       }
     } catch (e) {
       setQuestionError("Network error while adding question.");
     } finally {
       setQuestionLoading(false);
+    }
+  };
+
+  const handleSaveComment = async (roomChallengeId: string) => {
+    setCommentBusy(true);
+    try {
+      const res = await fetch("/api/room/question", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomChallengeId, comment: commentDraft }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // Patch the local state so the popup reflects the saved value instantly.
+        setRoomChallenges((prev) =>
+          prev.map((rc) =>
+            rc.id === roomChallengeId
+              ? { ...rc, comment: data.comment ?? null }
+              : rc
+          )
+        );
+        setCommentEditing(false);
+        if (!data.comment) setOpenCommentId(null);
+      }
+    } catch {
+      /* ignore - keep editor open so the user can retry */
+    } finally {
+      setCommentBusy(false);
     }
   };
 
@@ -839,11 +880,101 @@ function RoomsPageInner() {
                       const canDelete = (isHost || isAdder) && rc.isHostQuestion;
                       const isExpanded = expandedCards.has(rc.id);
 
+                      const hasComment = !!(rc.comment && rc.comment.trim());
+                      const commentOpen = openCommentId === rc.id;
+                      const startCommentEdit = () => {
+                        setOpenCommentId(rc.id);
+                        setCommentDraft(rc.comment || "");
+                        setCommentEditing(true);
+                      };
+                      const toggleCommentView = () => {
+                        if (commentOpen) {
+                          setOpenCommentId(null);
+                          setCommentEditing(false);
+                        } else {
+                          setOpenCommentId(rc.id);
+                          setCommentDraft(rc.comment || "");
+                          // Adder with no note yet → jump straight into editing.
+                          setCommentEditing(isAdder && !hasComment);
+                        }
+                      };
+                      const closeComment = () => {
+                        setCommentEditing(false);
+                        if (!hasComment) setOpenCommentId(null);
+                      };
+
                       return (
-                        <div
-                          key={rc.id}
-                          className="bg-muted/30 border border-border rounded-xl overflow-hidden transition-colors"
-                        >
+                        <div key={rc.id} className="relative">
+                          {/* Comment note popup, anchored to the LEFT of the card */}
+                          {commentOpen && (
+                            <div className="absolute top-2 right-full mr-3 w-64 z-30 animate-in fade-in slide-in-from-right-2 duration-150">
+                              <div className="relative bg-popover border border-border rounded-xl shadow-xl p-3">
+                                <div className="absolute top-4 -right-1.5 w-3 h-3 rotate-45 bg-popover border-r border-b border-border" />
+                                <div className="flex items-center justify-between gap-2 mb-1.5">
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                                    <MessageSquareText className="w-3 h-3" /> Note
+                                    {adderName && (
+                                      <span className="normal-case font-semibold text-foreground/80">
+                                        · {isAdder ? "you" : adderName}
+                                      </span>
+                                    )}
+                                  </span>
+                                  {isAdder && !commentEditing && (
+                                    <button
+                                      type="button"
+                                      onClick={startCommentEdit}
+                                      title={hasComment ? "Edit note" : "Add note"}
+                                      className="text-muted-foreground hover:text-indigo-500 transition"
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                                {commentEditing && isAdder ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      value={commentDraft}
+                                      onChange={(e) => setCommentDraft(e.target.value)}
+                                      maxLength={500}
+                                      rows={4}
+                                      autoFocus
+                                      placeholder="Add a hint, approach, or why you picked this…"
+                                      className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs outline-none resize-none"
+                                    />
+                                    <div className="flex items-center justify-end gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={closeComment}
+                                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-muted hover:bg-muted/70 border border-border transition"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSaveComment(rc.id)}
+                                        disabled={commentBusy}
+                                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50 inline-flex items-center gap-1"
+                                      >
+                                        {commentBusy && <Loader2 className="w-3 h-3 animate-spin" />}
+                                        Save
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : hasComment ? (
+                                  <p className="text-xs text-foreground whitespace-pre-wrap break-words leading-relaxed">
+                                    {rc.comment}
+                                  </p>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground italic">
+                                    {isAdder
+                                      ? "Add a note for your lobby."
+                                      : "No note yet."}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          <div className="bg-muted/30 border border-border rounded-xl overflow-hidden transition-colors">
                           {/* Always-visible header - clicking anywhere toggles
                               the body. Delete button stops propagation. */}
                           <button
@@ -898,6 +1029,40 @@ function RoomsPageInner() {
                               <span className="text-xs font-bold text-indigo-400">
                                 +{rc.challenge.xpReward} XP
                               </span>
+                              {(hasComment || isAdder) && (
+                                <span
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCommentView();
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      toggleCommentView();
+                                    }
+                                  }}
+                                  title={
+                                    hasComment
+                                      ? "View note"
+                                      : "Add a note (only you can)"
+                                  }
+                                  className={`relative p-1.5 rounded-md transition ${
+                                    commentOpen
+                                      ? "text-indigo-500 bg-indigo-500/10"
+                                      : hasComment
+                                      ? "text-indigo-500 hover:bg-indigo-500/10"
+                                      : "text-muted-foreground hover:text-indigo-500 hover:bg-muted"
+                                  }`}
+                                >
+                                  <MessageSquareText className="w-3.5 h-3.5" />
+                                  {hasComment && (
+                                    <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                  )}
+                                </span>
+                              )}
                               {canDelete && (
                                 <span
                                   role="button"
@@ -1102,6 +1267,7 @@ function RoomsPageInner() {
                           </div>
                             </div>
                           )}
+                          </div>
                         </div>
                       );
                     };
@@ -1238,6 +1404,14 @@ function RoomsPageInner() {
                         ))}
                       </select>
                     </div>
+                    <textarea
+                      value={questionComment}
+                      onChange={(e) => setQuestionComment(e.target.value)}
+                      maxLength={500}
+                      rows={2}
+                      placeholder="Add a note for the lobby (optional) — a hint, approach, or why you picked it"
+                      className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition resize-none"
+                    />
                     {questionError && (
                       <p className="text-rose-500 text-[10.5px] font-medium">{questionError}</p>
                     )}

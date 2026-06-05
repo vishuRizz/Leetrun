@@ -475,6 +475,9 @@ model RoomChallenge {
   // and for bank-generated batches (where no single user is responsible).
   addedById        String?
   addedBy          User? @relation("RoomChallengeAdder", fields: [addedById], references: [id], onDelete: SetNull)
+  // A single optional note from the member who added the question (a hint,
+  // why they picked it, etc.). Only the adder can set/edit it.
+  comment          String? @db.Text
   createdAt        DateTime @default(now())
   progress         RoomChallengeProgress[]
 

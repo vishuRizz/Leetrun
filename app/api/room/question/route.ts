@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createHostQuestion, deleteRoomQuestion } from "@/lib/services/room";
+import {
+  createHostQuestion,
+  deleteRoomQuestion,
+  setRoomQuestionComment,
+} from "@/lib/services/room";
 import { Difficulty } from "@prisma/client";
 
 export async function POST(request: Request) {
@@ -23,6 +27,7 @@ export async function POST(request: Request) {
       difficulty,
       topic,
       deadlineHours,
+      comment,
     } = body || {};
 
     if (!roomId || typeof roomId !== "string") {
@@ -58,6 +63,7 @@ export async function POST(request: Request) {
       topic: topic?.toString(),
       deadlineHours:
         typeof deadlineHours === "number" ? deadlineHours : undefined,
+      comment: typeof comment === "string" ? comment : undefined,
     });
 
     return NextResponse.json({ success: true, challenge });
@@ -65,6 +71,43 @@ export async function POST(request: Request) {
     console.error("Error in /api/room/question:", error);
     return NextResponse.json(
       { error: error.message || "Failed to add question." },
+      { status: 400 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const { roomChallengeId, comment } = body || {};
+
+    if (!roomChallengeId || typeof roomChallengeId !== "string") {
+      return NextResponse.json(
+        { error: "roomChallengeId is required." },
+        { status: 400 }
+      );
+    }
+
+    const updated = await setRoomQuestionComment(
+      user.id,
+      roomChallengeId,
+      typeof comment === "string" ? comment : ""
+    );
+
+    return NextResponse.json({ success: true, ...updated });
+  } catch (error: any) {
+    console.error("Error in PATCH /api/room/question:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to save comment." },
       { status: 400 }
     );
   }
