@@ -6,6 +6,7 @@ import {
   Activity,
   Award,
   BarChart3,
+  Calendar,
   CircleDollarSign,
   Code2,
   ExternalLink,
@@ -24,6 +25,8 @@ import { SAMPLE_ANALYTICS } from "@/lib/guest/sample-data";
 import { readCache, writeCache } from "@/lib/cache/clientCache";
 import ProblemNoteButton from "@/components/ProblemNoteButton";
 import SpeedAnalyticsCard from "@/components/SpeedAnalyticsCard";
+import ContributionCalendar from "@/components/ContributionCalendar";
+import GrowthChart from "@/components/GrowthChart";
 import AutoLeetcodeSync, {
   LEETCODE_SYNCED_EVENT,
 } from "@/components/AutoLeetcodeSync";
@@ -46,6 +49,7 @@ interface AnalyticsResponse {
     ranking: number | null;
     contestRating: number | null;
     syncedAt: string | null;
+    submissionCalendar: string | null;
     languages: { language: string; solved: number }[];
   };
   progression: {
@@ -396,6 +400,40 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
+
+        {/* Full-year activity calendar (GitHub-style, like profile) */}
+        {lc.submissionCalendar && (
+          <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-border">
+              <Calendar className="w-5 h-5 text-indigo-500" />
+              <h2 className="font-heading font-bold text-lg">Activity Calendar</h2>
+            </div>
+            <ContributionCalendar calendar={lc.submissionCalendar} />
+          </div>
+        )}
+
+        {/* Growth on LeetRun: consistency before vs after joining */}
+        {lc.submissionCalendar && (
+          <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap pb-2 border-b border-border">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-indigo-500" />
+                <h2 className="font-heading font-bold text-lg">Growth on LeetRun</h2>
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                Joined{" "}
+                {new Date(data.user.memberSince).toLocaleDateString(undefined, {
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <GrowthChart
+              calendar={lc.submissionCalendar}
+              joinDate={data.user.memberSince}
+            />
+          </div>
+        )}
 
         {/* Languages + Topic mastery */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

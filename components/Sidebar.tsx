@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import Logo from "./Logo";
@@ -13,7 +13,6 @@ import {
   Home,
   Layers,
   LogIn,
-  LogOut,
   Network,
   MessageSquarePlus,
   Search,
@@ -27,7 +26,6 @@ import {
 import ThemeToggle from "./ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
 import { isAdminEmail } from "@/lib/admin/config";
-import { clearClientCache } from "@/lib/cache/clientCache";
 import { OPEN_COMMAND_EVENT } from "./CommandPalette";
 import { OPEN_FEEDBACK_EVENT } from "./FeedbackWidget";
 
@@ -35,6 +33,164 @@ interface JoinedRoom {
   id: string;
   name: string;
   roomCode: string;
+}
+
+/**
+ * Bottom-of-sidebar "Settings" trigger. Hovering (or tapping) the gear fans out
+ * four circular quick-actions in a radial arc: Settings, Invite & Earn,
+ * Feedback and What's new. Keeps the footer compact while staying discoverable.
+ */
+function SettingsCluster({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // The fanned circles sit beyond the trigger's hit-box, so crossing the empty
+  // gap between them briefly leaves the wrapper. Delay the close so the cursor
+  // has time to reach a circle (re-entering cancels the pending close).
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const openNow = () => {
+    cancelClose();
+    setOpen(true);
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpen(false), 600);
+  };
+  const closeNow = () => {
+    cancelClose();
+    setOpen(false);
+  };
+
+  useEffect(() => cancelClose, []);
+
+  // Radial offsets (px) for each fanned icon: an arc sweeping from the right
+  // up to straight-above the trigger so nothing escapes the sidebar bounds.
+  const actions: {
+    name: string;
+    icon: typeof Settings;
+    href?: string;
+    onClick?: () => void;
+    accent: string;
+    offset: { x: number; y: number };
+  }[] = [
+    {
+      name: "Settings",
+      icon: Settings,
+      href: "/settings",
+      accent: "text-foreground",
+      offset: { x: 84, y: 6 },
+    },
+    {
+      name: "Invite & Earn",
+      icon: Gift,
+      href: "/invite",
+      accent: "text-indigo-500",
+      offset: { x: 74, y: -46 },
+    },
+    {
+      name: "Feedback",
+      icon: MessageSquarePlus,
+      onClick: () => window.dispatchEvent(new Event(OPEN_FEEDBACK_EVENT)),
+      accent: "text-emerald-500",
+      offset: { x: 42, y: -80 },
+    },
+    {
+      name: "What's new",
+      icon: Sparkles,
+      href: "/changelog",
+      accent: "text-amber-500",
+      offset: { x: -4, y: -94 },
+    },
+  ];
+
+  const isActive = pathname.startsWith("/settings");
+
+  return (
+    <div
+      className="relative shrink-0"
+      onMouseEnter={openNow}
+      onMouseLeave={scheduleClose}
+    >
+      {/* Fanned circular actions */}
+      {actions.map((a, i) => {
+        const Icon = a.icon;
+        const common =
+          "group/fan absolute bottom-1.5 left-2.5 w-12 h-12 rounded-full border border-border bg-card shadow-lg shadow-black/10 flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 hover:border-indigo-400/60 z-50";
+        const style: React.CSSProperties = {
+          transform: open
+            ? `translate(${a.offset.x}px, ${a.offset.y}px) scale(1)`
+            : "translate(0px, 0px) scale(0.2)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transitionDelay: `${(open ? i : actions.length - 1 - i) * 45}ms`,
+        };
+        const inner = (
+          <>
+            <Icon className={`w-5 h-5 ${a.accent}`} />
+            <span className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md bg-popover border border-border text-foreground text-xs font-semibold whitespace-nowrap shadow-md opacity-0 -translate-x-1 group-hover/fan:opacity-100 group-hover/fan:translate-x-0 transition-all duration-200">
+              {a.name}
+            </span>
+          </>
+        );
+        return a.href ? (
+          <Link
+            key={a.name}
+            href={a.href}
+            title={a.name}
+            aria-label={a.name}
+            className={common}
+            style={style}
+            onClick={closeNow}
+          >
+            {inner}
+          </Link>
+        ) : (
+          <button
+            key={a.name}
+            type="button"
+            title={a.name}
+            aria-label={a.name}
+            className={common}
+            style={style}
+            onClick={() => {
+              a.onClick?.();
+              closeNow();
+            }}
+          >
+            {inner}
+          </button>
+        );
+      })}
+
+      {/* Trigger */}
+      <button
+        type="button"
+        title="Settings & more"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => (open ? closeNow() : openNow())}
+        className={`relative z-10 flex items-center gap-3 px-2 py-2.5 rounded-lg w-full text-left transition-colors ${
+          isActive || open
+            ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium"
+        }`}
+      >
+        <Settings
+          className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
+            open ? "rotate-90" : ""
+          }`}
+        />
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+          Settings
+        </span>
+      </button>
+    </div>
+  );
 }
 
 export function Sidebar() {
@@ -98,23 +254,6 @@ export function Sidebar() {
     // in sync after create/leave/join actions there.
   }, [pathname]);
 
-  const handleSignOut = async () => {
-    // Drop any cached dashboard/analytics/leaderboard data so the next user on
-    // this browser never sees the previous account's information.
-    clearClientCache();
-    try {
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-    } catch {
-      /* continue with client cleanup */
-    }
-    try {
-      await supabase.auth.signOut({ scope: "local" });
-    } catch {
-      /* ignore */
-    }
-    window.location.href = "/login";
-  };
-
   const navGroups: {
     label: string;
     items: { name: string; href: string; icon: typeof Home }[];
@@ -132,7 +271,7 @@ export function Sidebar() {
       items: [
         { name: "Sheets", href: "/sheets", icon: Layers },
         { name: "Patterns", href: "/patterns", icon: Network },
-        { name: "Prep Kit", href: "/prep", icon: GraduationCap },
+        { name: "Roadmap", href: "/prep", icon: GraduationCap },
         // Temporarily hidden - re-enable when Side Quests is ready.
         // { name: "Side Quests", href: "/side-quests", icon: Swords },
         { name: "Lobbies", href: "/rooms", icon: Users },
@@ -149,8 +288,6 @@ export function Sidebar() {
       items: [
         { name: "Profile", href: "/profile", icon: User },
         { name: "AI Coach", href: "/chat", icon: Bot },
-        { name: "Invite & Earn", href: "/invite", icon: Gift },
-        { name: "Settings", href: "/settings", icon: Settings },
       ],
     },
   ];
@@ -296,27 +433,7 @@ export function Sidebar() {
             </span>
           </Link>
         )}
-        <Link
-          href="/changelog"
-          title="What's new"
-          className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors font-medium"
-        >
-          <Sparkles className="w-5 h-5 shrink-0" />
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
-            What&apos;s new
-          </span>
-        </Link>
-
-        <button
-          onClick={() => window.dispatchEvent(new Event(OPEN_FEEDBACK_EVENT))}
-          title="Send feedback"
-          className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors w-full text-left font-medium"
-        >
-          <MessageSquarePlus className="w-5 h-5 shrink-0" />
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
-            Feedback
-          </span>
-        </button>
+        <SettingsCluster pathname={pathname} />
 
         <div
           className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground"
@@ -330,7 +447,7 @@ export function Sidebar() {
           </span>
         </div>
 
-        {isGuest ? (
+        {isGuest && (
           <Link
             href="/login"
             className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors w-full text-left font-bold"
@@ -341,17 +458,6 @@ export function Sidebar() {
               Log in
             </span>
           </Link>
-        ) : (
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors w-full text-left"
-            title="Logout"
-          >
-            <LogOut className="w-5 h-5 shrink-0" />
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-bold">
-              Logout
-            </span>
-          </button>
         )}
       </div>
     </aside>

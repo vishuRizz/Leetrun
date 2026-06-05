@@ -25,6 +25,7 @@ import {
   Smile,
   Dumbbell,
   Laugh,
+  Gift,
 } from "lucide-react";
 
 interface Question {
@@ -82,6 +83,9 @@ export default function OnboardingPage() {
   const [fullName, setFullName] = useState("");
   const [collegeName, setCollegeName] = useState("");
   const [graduationYear, setGraduationYear] = useState(new Date().getFullYear() + 2);
+  const [referralCode, setReferralCode] = useState("");
+  // True when the code was auto-applied from an invite link (read-only display).
+  const [referralFromLink, setReferralFromLink] = useState(false);
 
   // Step 2: Goals
   const [targetCompany, setTargetCompany] = useState("");
@@ -106,6 +110,16 @@ export default function OnboardingPage() {
   // Step 6: Results
   const [results, setResults] = useState<any>(null);
   const [quizScore, setQuizScore] = useState(0);
+
+  // Prefill the referral code if the user arrived via an invite link (the code
+  // is stashed in a cookie on the signup page).
+  useEffect(() => {
+    const match = document.cookie.match(/(?:^|;\s*)leetrun_ref=([^;]+)/);
+    if (match?.[1]) {
+      setReferralCode(decodeURIComponent(match[1]).toUpperCase());
+      setReferralFromLink(true);
+    }
+  }, []);
 
   // Quiz Timer (only runs once the optional test has been started)
   useEffect(() => {
@@ -136,7 +150,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setError("");
     if (step === 1) {
       if (!fullName.trim() || !collegeName.trim()) {
@@ -151,8 +165,15 @@ export default function OnboardingPage() {
       }
     }
     if (step === 3 && !lcVerified) {
+      // If the user typed a username/URL but hasn't tapped Connect, link it now
+      // and advance automatically on success - smoother than blocking them.
+      if (lcUsername.trim() || lcProfileUrl.trim()) {
+        const ok = await verifyLeetcode();
+        if (ok) setStep(4);
+        return;
+      }
       setError(
-        "Your LeetCode account is required. Enter your username or profile URL, then tap Connect."
+        "Your LeetCode account is required. Enter your username or profile URL to continue."
       );
       return;
     }
@@ -169,11 +190,11 @@ export default function OnboardingPage() {
     setStep(step - 1);
   };
 
-  const verifyLeetcode = async () => {
+  const verifyLeetcode = async (): Promise<boolean> => {
     const uname = resolveUsername();
     if (!uname) {
       setError("Enter your LeetCode username or paste your profile URL.");
-      return;
+      return false;
     }
     setLcValidating(true);
     setError("");
@@ -187,11 +208,13 @@ export default function OnboardingPage() {
       if (data.success) {
         setLcUsername(uname);
         setLcVerified(true);
-      } else {
-        setError(data.error || "LeetCode user not found. Please verify the spelling.");
+        return true;
       }
+      setError(data.error || "LeetCode user not found. Please verify the spelling.");
+      return false;
     } catch {
       setError("Failed to verify LeetCode account.");
+      return false;
     } finally {
       setLcValidating(false);
     }
@@ -226,6 +249,7 @@ export default function OnboardingPage() {
           mentorName,
           mentorVibe,
           favoriteSeries,
+          referralCode: referralCode.trim() || null,
         }),
       });
 
@@ -351,6 +375,32 @@ export default function OnboardingPage() {
                         max={2035}
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>Referral code (optional)</label>
+                    <div className="relative">
+                      <Gift className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={referralCode}
+                        onChange={(e) =>
+                          setReferralCode(e.target.value.toUpperCase().trim())
+                        }
+                        className={`${inputCls} uppercase tracking-wider`}
+                        placeholder="Got an invite code? Enter it here"
+                        maxLength={12}
+                      />
+                    </div>
+                    {referralFromLink ? (
+                      <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1.5 font-medium flex items-center gap-1">
+                        <Gift className="w-3 h-3" /> Invite applied — you and your friend both earn coins!
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-muted-foreground mt-1.5">
+                        You&apos;ll both get 50 coins when you finish onboarding.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -743,9 +793,18 @@ export default function OnboardingPage() {
                   <button
                     onClick={handleNext}
                     type="button"
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
+                    disabled={lcValidating}
+                    className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800/50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
                   >
-                    Next <ArrowRight className="w-4 h-4" />
+                    {lcValidating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Linking...
+                      </>
+                    ) : (
+                      <>
+                        Next <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
                 ) : testStarted ? (
                   <button

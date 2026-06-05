@@ -13,8 +13,10 @@ import {
   Mail,
   KeyRound,
   Trash2,
+  LogOut,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { signOutAndRedirect } from "@/lib/auth/signOut";
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
@@ -144,6 +146,7 @@ export default function SettingsPage() {
   const [confirmText, setConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [deleteErr, setDeleteErr] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
@@ -293,6 +296,7 @@ export default function SettingsPage() {
     } catch (e: any) {
       setDeleteErr(e.message);
       setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -535,6 +539,20 @@ export default function SettingsPage() {
           </button>
         </Section>
 
+        {/* Session */}
+        <Section
+          icon={LogOut}
+          title="Session"
+          description="Sign out of LeetRun on this device."
+        >
+          <button
+            onClick={() => signOutAndRedirect()}
+            className="inline-flex items-center gap-2 bg-muted hover:bg-muted/70 border border-border text-sm font-bold px-4 py-2 rounded-lg transition"
+          >
+            <LogOut className="w-4 h-4" /> Sign out
+          </button>
+        </Section>
+
         {/* Danger zone */}
         <Section
           icon={ShieldAlert}
@@ -554,7 +572,7 @@ export default function SettingsPage() {
               placeholder="DELETE"
             />
             <button
-              onClick={deleteAccount}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={confirmText !== "DELETE" || deleting}
               className="shrink-0 inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -571,6 +589,54 @@ export default function SettingsPage() {
           )}
         </Section>
       </main>
+
+      {/* Final confirmation before irreversible account deletion */}
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => !deleting && setShowDeleteConfirm(false)}
+        >
+          <div
+            className="w-full max-w-md bg-card border border-rose-300 dark:border-rose-900/60 rounded-2xl shadow-xl p-6 animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-5 h-5 text-rose-500" />
+              </div>
+              <h3 className="font-black text-lg text-foreground">
+                Delete account permanently?
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              This <strong className="text-foreground">cannot be undone</strong>.
+              Your profile, LeetCode sync, progress, notes, streaks, and all other
+              data will be erased immediately. Consider exporting your data first.
+            </p>
+            <div className="flex items-center justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+                className="text-sm font-bold px-4 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteAccount}
+                disabled={deleting}
+                className="inline-flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white transition disabled:opacity-50"
+              >
+                {deleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                Yes, delete forever
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

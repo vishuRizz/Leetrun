@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       mentorName,
       mentorVibe,
       favoriteSeries,
+      referralCode,
     } = body;
 
     // Validate essential fields
@@ -194,14 +195,16 @@ export async function POST(request: Request) {
       targetCompany,
     });
 
-    // Credit a referral if this user signed up via someone's invite link. The
-    // ref code was stashed in a cookie on the signup page. Best-effort.
+    // Credit a referral if this user was invited. The code can come from the
+    // onboarding form, or from a cookie stashed on the signup page (invite
+    // link). The explicit form value wins. Best-effort.
     try {
       const jar = await cookies();
-      const refCode = jar.get(REFERRAL_COOKIE)?.value;
-      if (refCode) {
-        await recordReferral(user.id, refCode);
-        jar.delete(REFERRAL_COOKIE);
+      const cookieCode = jar.get(REFERRAL_COOKIE)?.value;
+      const code = (referralCode || cookieCode || "").trim();
+      if (code) {
+        await recordReferral(user.id, code);
+        if (cookieCode) jar.delete(REFERRAL_COOKIE);
       }
     } catch (e) {
       console.warn("Referral attribution skipped:", e);

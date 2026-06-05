@@ -221,6 +221,7 @@ export async function GET() {
         ranking: leetcodeProfile?.ranking ?? null,
         contestRating: leetcodeProfile?.contestRating ?? null,
         syncedAt: leetcodeProfile?.syncedAt ?? null,
+        submissionCalendar: leetcodeProfile?.submissionCalendar ?? null,
         languages: (leetcodeProfile?.languageStats || []).map((l) => ({
           language: l.language,
           solved: l.solved,

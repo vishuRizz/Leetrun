@@ -30,6 +30,8 @@ import {
   Link2,
   RefreshCw,
   Cookie,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -41,6 +43,7 @@ import ProblemNoteButton from "@/components/ProblemNoteButton";
 import AutoLeetcodeSync, {
   LEETCODE_SYNCED_EVENT,
 } from "@/components/AutoLeetcodeSync";
+import { signOutAndRedirect } from "@/lib/auth/signOut";
 
 interface ProfileData {
   fullName: string | null;
@@ -475,6 +478,21 @@ export default function ProfilePage() {
         <div className="flex items-center gap-2">
           <Award className="w-5 h-5 text-indigo-500" />
           <h1 className="font-extrabold text-xl text-foreground">User Profile</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/settings"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-lg transition"
+          >
+            <Settings className="w-4 h-4" /> Settings
+          </Link>
+          <button
+            type="button"
+            onClick={() => signOutAndRedirect()}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 px-3 py-1.5 rounded-lg transition"
+          >
+            <LogOut className="w-4 h-4" /> Sign out
+          </button>
         </div>
       </nav>
 

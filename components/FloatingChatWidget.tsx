@@ -23,7 +23,7 @@ function describePage(pathname: string): string | undefined {
   if (pathname.startsWith("/patterns")) return "On the Patterns page (interview pattern families).";
   if (pathname.startsWith("/analytics")) return "Looking at their Analytics dashboard.";
   if (pathname.startsWith("/profile")) return "On their Profile page.";
-  if (pathname.startsWith("/prep")) return "On the Prep Kit (study plan + flashcards).";
+  if (pathname.startsWith("/prep")) return "On the Roadmap (study plan + flashcards).";
   if (pathname.startsWith("/notes")) return "Reading the System Design notes.";
   if (pathname.startsWith("/leaderboard")) return "On the Leaderboard.";
   if (pathname.startsWith("/rooms")) return "In a competitive Lobby.";

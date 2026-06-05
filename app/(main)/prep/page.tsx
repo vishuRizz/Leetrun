@@ -23,7 +23,7 @@ function PrepKit() {
       <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 sticky top-0 z-40">
         <div className="flex items-center gap-2 shrink-0">
           <GraduationCap className="w-5 h-5 text-indigo-500" />
-          <h1 className="font-extrabold text-xl">Prep Kit</h1>
+          <h1 className="font-extrabold text-xl">Roadmap</h1>
         </div>
         <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 w-fit">
           {tabs.map((t) => {
