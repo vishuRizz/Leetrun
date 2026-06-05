@@ -47,7 +47,7 @@ export async function buildSystemPrompt(
   return `${ctx.baseVibe}
 ${savageMode}
 
-You are the AI Mentor "${ctx.mentorName}" for the LeetRun interview-prep app. Address the user as ${ctx.name}.
+You are the AI Mentor "${ctx.mentorName}" for the LeetRun interview-prep app. Always address the user by their first name only: ${ctx.name}.
 You have deep, live knowledge of their prep state — use it to be specific, never generic.
 
 USER PREP SNAPSHOT:

@@ -24,6 +24,66 @@ function classifyTopic(slug: string): string {
   return "Arrays"; // Default fallback
 }
 
+const SECONDS_PER_DAY = 86400;
+
+/**
+ * Compute the user's real LeetCode activity streak from their submission
+ * calendar (a `{ unixSecondsAtUtcMidnight: submissionCount }` map). A day
+ * "counts" if it has at least one submission.
+ *
+ * `current` is the run of consecutive active days ending today (or yesterday,
+ * so a user who hasn't solved yet *today* still keeps their streak until the
+ * day rolls over). `longest` is the longest consecutive run ever.
+ */
+export function computeStreakFromCalendar(
+  calendarJson: string | null | undefined
+): { current: number; longest: number } {
+  if (!calendarJson) return { current: 0, longest: 0 };
+
+  let map: Record<string, number>;
+  try {
+    map = JSON.parse(calendarJson);
+  } catch {
+    return { current: 0, longest: 0 };
+  }
+  if (!map || typeof map !== "object") return { current: 0, longest: 0 };
+
+  // Set of active day-indices (days since epoch, UTC).
+  const activeDays = new Set<number>();
+  for (const [ts, count] of Object.entries(map)) {
+    if ((count as number) > 0) {
+      const day = Math.floor(Number(ts) / SECONDS_PER_DAY);
+      if (!Number.isNaN(day)) activeDays.add(day);
+    }
+  }
+  if (activeDays.size === 0) return { current: 0, longest: 0 };
+
+  const todayDay = Math.floor(Date.now() / 1000 / SECONDS_PER_DAY);
+
+  // Current streak: anchor on today if active, else yesterday (grace period).
+  let current = 0;
+  let cursor = activeDays.has(todayDay) ? todayDay : todayDay - 1;
+  while (activeDays.has(cursor)) {
+    current++;
+    cursor--;
+  }
+
+  // Longest streak: scan sorted unique days for the longest consecutive run.
+  const sorted = Array.from(activeDays).sort((a, b) => a - b);
+  let longest = 1;
+  let run = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === sorted[i - 1] + 1) {
+      run++;
+    } else {
+      run = 1;
+    }
+    if (run > longest) longest = run;
+  }
+
+  return { current, longest };
+}
+
 export async function validateUsername(username: string): Promise<boolean> {
   try {
     const data = await fetchLeetcodeStats(username.trim());
@@ -294,7 +354,26 @@ async function runSyncWrites(
   const weakestTopic = performances[0]?.topic || null;
   const strongestTopic = performances[performances.length - 1]?.topic || null;
 
+  // ---- LeetCode activity streak (derived from the submission calendar) ----
+  // The streak now reflects real LeetCode solving days rather than only
+  // in-app quest completions, so daily LeetCode practice keeps it alive.
+  const { current: lcStreak, longest: lcLongest } =
+    computeStreakFromCalendar(submissionCalendar);
+  const existingUser = await db.user.findUnique({
+    where: { id: userId },
+    select: { longestStreak: true },
+  });
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      currentStreak: lcStreak,
+      longestStreak: Math.max(existingUser?.longestStreak || 0, lcLongest, lcStreak),
+      lastStreakAt: lcStreak > 0 ? new Date() : null,
+    },
+  });
+
   // Fire UserStats upsert, the event log, badges, and points recalculation in parallel.
+  // (Points recalc reads currentStreak, so it must run *after* the streak update above.)
   const { checkAndAwardBadges } = await import("../services/badges");
   const { recalculateUserUniversalPoints } = await import(
     "../services/progression"

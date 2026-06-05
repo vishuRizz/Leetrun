@@ -61,6 +61,12 @@ function daysBetween(from: Date, to: Date): number {
   return Math.round((to.getTime() - from.getTime()) / 86400000);
 }
 
+/** First name only, so the mentor addresses the user casually. */
+function firstName(fullName: string | null | undefined): string {
+  const first = (fullName || "").trim().split(/\s+/)[0];
+  return first || "Code Runner";
+}
+
 export async function buildUserContext(userId: string): Promise<UserAIContext | null> {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -172,7 +178,7 @@ export async function buildUserContext(userId: string): Promise<UserAIContext | 
     : null;
 
   return {
-    name: user.fullName || "Code Runner",
+    name: firstName(user.fullName),
     level: user.level,
     plan: user.plan,
     targetCompany: user.targetCompany || "top-tier tech companies",
