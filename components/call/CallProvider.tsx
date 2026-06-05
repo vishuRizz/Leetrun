@@ -4,7 +4,6 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -23,13 +22,14 @@ export interface CallSession {
 interface CallContextValue {
   session: CallSession | null;
   minimized: boolean;
+  connected: boolean;
   /** Start (or re-focus) a lobby call. Safe to call when one is already open. */
   startCall: (session: CallSession) => void;
   /** Disconnect and tear down the active call. */
   endCall: () => void;
   minimize: () => void;
   maximize: () => void;
-  /** True when there is a live call for the given lobby id. */
+  /** True when there is a live call session for the given lobby id. */
   isActive: (roomId: string) => boolean;
 }
 
@@ -49,6 +49,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
 
   // Guards against a stale token response landing after the user ended the call
@@ -61,6 +62,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     setServerUrl(null);
     setLoading(false);
+    setConnected(false);
     setError("");
   }, []);
 
@@ -69,49 +71,69 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     reset();
   }, [reset]);
 
+  const connect = useCallback((next: CallSession) => {
+    const reqId = reqRef.current + 1;
+    reqRef.current = reqId;
+
+    setSession(next);
+    setMinimized(false);
+    setToken(null);
+    setServerUrl(null);
+    setConnected(false);
+    setError("");
+    setLoading(true);
+
+    (async () => {
+      try {
+        const res = await fetch("/api/livekit/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId: next.roomId }),
+        });
+        const data = await res.json();
+        if (reqRef.current !== reqId) return; // superseded
+        if (!res.ok) throw new Error(data.error || "Couldn't join the call.");
+        if (!data.token || !data.url) {
+          throw new Error("The call server returned an invalid token.");
+        }
+        setToken(data.token);
+        setServerUrl(data.url);
+      } catch (e: any) {
+        if (reqRef.current !== reqId) return;
+        setError(e?.message || "Couldn't join the call.");
+      } finally {
+        if (reqRef.current === reqId) setLoading(false);
+      }
+    })();
+  }, []);
+
   const startCall = useCallback(
     (next: CallSession) => {
-      // Re-focusing the call that's already open: just maximize it.
-      if (session && session.roomId === next.roomId && token) {
+      // Re-focusing a healthy call that's already open → just maximize it.
+      if (
+        session &&
+        session.roomId === next.roomId &&
+        token &&
+        serverUrl &&
+        !error
+      ) {
         setMinimized(false);
         return;
       }
-
-      const reqId = reqRef.current + 1;
-      reqRef.current = reqId;
-
-      setSession(next);
-      setMinimized(false);
-      setToken(null);
-      setServerUrl(null);
-      setError("");
-      setLoading(true);
-
-      (async () => {
-        try {
-          const res = await fetch("/api/livekit/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomId: next.roomId }),
-          });
-          const data = await res.json();
-          if (reqRef.current !== reqId) return; // superseded
-          if (!res.ok) throw new Error(data.error || "Couldn't join the call.");
-          setToken(data.token);
-          setServerUrl(data.url);
-        } catch (e: any) {
-          if (reqRef.current !== reqId) return;
-          setError(e?.message || "Couldn't join the call.");
-        } finally {
-          if (reqRef.current === reqId) setLoading(false);
-        }
-      })();
+      connect(next);
     },
-    [session, token]
+    [session, token, serverUrl, error, connect]
   );
 
   const minimize = useCallback(() => setMinimized(true), []);
-  const maximize = useCallback(() => setMinimized(false), []);
+  const maximize = useCallback(() => {
+    // If a previous attempt errored, retry the connection on maximize.
+    if (error && session) {
+      connect(session);
+      return;
+    }
+    setMinimized(false);
+  }, [error, session, connect]);
   const isActive = useCallback(
     (roomId: string) => !!session && session.roomId === roomId,
     [session]
@@ -119,17 +141,26 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <CallContext.Provider
-      value={{ session, minimized, startCall, endCall, minimize, maximize, isActive }}
+      value={{
+        session,
+        minimized,
+        connected,
+        startCall,
+        endCall,
+        minimize,
+        maximize,
+        isActive,
+      }}
     >
       {children}
 
-      {/* Connecting state (no LiveKit yet) — shown full-screen unless minimized. */}
+      {/* Connecting state (no LiveKit yet) — full-screen unless minimized. */}
       {session && loading && (
         <div
           className={
             minimized
-              ? "fixed bottom-4 right-4 z-[100] w-[300px] rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-4 flex items-center gap-3"
-              : "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center gap-3"
+              ? "fixed bottom-4 right-4 z-[120] w-[300px] rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-4 flex items-center gap-3"
+              : "fixed inset-0 z-[120] bg-black flex flex-col items-center justify-center gap-3"
           }
         >
           <Loader2 className="w-6 h-6 animate-spin text-indigo-400 shrink-0" />
@@ -139,13 +170,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* Token / permission error. */}
+      {/* Token / permission / connection error. */}
       {session && !loading && error && (
         <div
           className={
             minimized
-              ? "fixed bottom-4 right-4 z-[100] w-[300px] rounded-xl bg-zinc-950 border border-rose-900/50 shadow-2xl p-4 space-y-2"
-              : "fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center gap-3 px-6 text-center"
+              ? "fixed bottom-4 right-4 z-[120] w-[320px] rounded-xl bg-zinc-950 border border-rose-900/50 shadow-2xl p-4 space-y-3"
+              : "fixed inset-0 z-[120] bg-black flex flex-col items-center justify-center gap-3 px-6 text-center"
           }
         >
           <div className="flex items-center gap-2">
@@ -153,13 +184,22 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
             <p className="text-sm font-bold text-white">Can&apos;t join the call</p>
           </div>
           <p className="text-xs text-zinc-400 max-w-sm">{error}</p>
-          <button
-            onClick={endCall}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition"
-          >
-            <PhoneOff className="w-3.5 h-3.5" />
-            Dismiss
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => session && connect(session)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
+            >
+              <Loader2 className="w-3.5 h-3.5" />
+              Retry
+            </button>
+            <button
+              onClick={endCall}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition"
+            >
+              <PhoneOff className="w-3.5 h-3.5" />
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
 
@@ -172,8 +212,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
           lobbyName={session.lobbyName}
           minimized={minimized}
           onMinimize={minimize}
-          onMaximize={maximize}
+          onMaximize={() => setMinimized(false)}
           onEnd={endCall}
+          onConnected={() => setConnected(true)}
+          onError={(msg) => {
+            setConnected(false);
+            setError(msg || "The call disconnected unexpectedly.");
+          }}
         />
       )}
     </CallContext.Provider>

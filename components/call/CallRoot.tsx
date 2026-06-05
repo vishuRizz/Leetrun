@@ -32,6 +32,8 @@ interface CallRootProps {
   onMinimize: () => void;
   onMaximize: () => void;
   onEnd: () => void;
+  onConnected?: () => void;
+  onError?: (message: string) => void;
 }
 
 export default function CallRoot({
@@ -42,38 +44,56 @@ export default function CallRoot({
   onMinimize,
   onMaximize,
   onEnd,
+  onConnected,
+  onError,
 }: CallRootProps) {
+  // NOTE: positioning lives on this wrapper, NOT on <LiveKitRoom>. LiveKit
+  // applies `.lk-room-container { position: relative }` to its own element,
+  // which would override our `fixed` and drop the overlay into normal flow
+  // (making it invisible). So we wrap it and let LiveKitRoom just fill us.
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl={serverUrl}
-      connect
-      audio
-      video={false}
-      onDisconnected={onEnd}
-      data-lk-theme="default"
-      // Visually hidden vs full-screen, but ALWAYS mounted so the WebRTC
-      // connection (and audio) survives minimize/maximize and navigation.
+    <div
       className={
         minimized
-          ? "fixed bottom-4 right-4 z-[100] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl"
-          : "fixed inset-0 z-[100] bg-black flex flex-col"
+          ? "fixed bottom-4 right-4 z-[110] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl"
+          : "fixed inset-0 z-[110] bg-black"
       }
     >
-      {minimized ? (
-        <MiniCall
-          lobbyName={lobbyName}
-          onMaximize={onMaximize}
-          onEnd={onEnd}
-        />
-      ) : (
-        <MaxCall
-          lobbyName={lobbyName}
-          onMinimize={onMinimize}
-          onEnd={onEnd}
-        />
-      )}
-    </LiveKitRoom>
+      <LiveKitRoom
+        token={token}
+        serverUrl={serverUrl}
+        connect
+        // Start with mic/cam off so a denied/blocked device never stalls the
+        // connection — members enable them from the control bar.
+        audio={false}
+        video={false}
+        onConnected={onConnected}
+        onDisconnected={onEnd}
+        onError={(e) =>
+          onError?.(
+            e?.message
+              ? `Connection failed: ${e.message}`
+              : "Connection to the call failed."
+          )
+        }
+        data-lk-theme="default"
+        style={{ width: "100%", height: minimized ? "auto" : "100%" }}
+      >
+        {minimized ? (
+          <MiniCall
+            lobbyName={lobbyName}
+            onMaximize={onMaximize}
+            onEnd={onEnd}
+          />
+        ) : (
+          <MaxCall
+            lobbyName={lobbyName}
+            onMinimize={onMinimize}
+            onEnd={onEnd}
+          />
+        )}
+      </LiveKitRoom>
+    </div>
   );
 }
 

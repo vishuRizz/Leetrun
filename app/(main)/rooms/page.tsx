@@ -825,14 +825,17 @@ function RoomsPageInner() {
                       const liveJoinable = liveCall.count > 0 && !inCall;
                       return (
                         <button
-                          onClick={() =>
-                            roomDetails &&
-                            activeRoomId &&
-                            call.startCall({
-                              roomId: activeRoomId,
-                              lobbyName: roomDetails.name,
-                            })
-                          }
+                          onClick={() => {
+                            if (!roomDetails || !activeRoomId) return;
+                            // Already in this lobby's call → just bring the
+                            // window back up; otherwise start/join it.
+                            if (inCall) call.maximize();
+                            else
+                              call.startCall({
+                                roomId: activeRoomId,
+                                lobbyName: roomDetails.name,
+                              });
+                          }}
                           className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-bold transition ${
                             liveJoinable
                               ? "bg-emerald-500 hover:bg-emerald-400 animate-pulse ring-2 ring-emerald-400/70 shadow-[0_0_0_4px_rgba(16,185,129,0.25)]"
@@ -857,7 +860,9 @@ function RoomsPageInner() {
                             {liveJoinable
                               ? `Join call · ${liveCall.count}`
                               : inCall
-                              ? "Open call"
+                              ? call.connected
+                                ? "Open call"
+                                : "Connecting…"
                               : "Call"}
                           </span>
                         </button>
