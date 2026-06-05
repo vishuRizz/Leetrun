@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { SubscriptionPlan } from "@prisma/client";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +29,10 @@ export async function POST(request: Request) {
           data: { active: false, endDate: new Date() },
         }),
       ]);
+
+      await captureServerEvent(user.id, "subscription_cancelled", {
+        plan: SubscriptionPlan.FREE,
+      });
 
       return NextResponse.json({ success: true, plan: SubscriptionPlan.FREE });
     }
@@ -69,6 +74,12 @@ export async function POST(request: Request) {
         },
       }),
     ]);
+
+    await captureServerEvent(user.id, "subscription_upgraded", {
+      plan: SubscriptionPlan.PREMIUM,
+      paymentId: mockPaymentId,
+      priceUsd,
+    });
 
     return NextResponse.json({ success: true, plan: SubscriptionPlan.PREMIUM });
   } catch (error: any) {

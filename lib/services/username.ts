@@ -29,6 +29,8 @@ const RESERVED = new Set<string>([
   "forgot-password",
   "reset-password",
   "settings",
+  "invite",
+  "changelog",
   "billing",
   "contact",
   "privacy",

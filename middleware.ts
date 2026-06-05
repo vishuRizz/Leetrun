@@ -51,6 +51,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/onboarding") ||
     path.startsWith("/challenge") ||
     path.startsWith("/rooms") ||
+    path.startsWith("/invite") ||
     path.startsWith("/settings") ||
     path.startsWith("/pricing") ||
     path.startsWith("/chat") ||

@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { db } from "@/lib/db";
+import { cookies } from "next/headers";
 import { UserLevel, Difficulty } from "@prisma/client";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
+import { recordReferral } from "@/lib/services/referral";
+
+const REFERRAL_COOKIE = "leetrun_ref";
 
 export async function POST(request: Request) {
   try {
@@ -183,6 +188,24 @@ export async function POST(request: Request) {
     await supabaseAdmin.auth.admin.updateUserById(user.id, {
       user_metadata: { onboardingDone: true, mentorName },
     });
+
+    await captureServerEvent(user.id, "onboarding_completed", {
+      calibratedLevel,
+      targetCompany,
+    });
+
+    // Credit a referral if this user signed up via someone's invite link. The
+    // ref code was stashed in a cookie on the signup page. Best-effort.
+    try {
+      const jar = await cookies();
+      const refCode = jar.get(REFERRAL_COOKIE)?.value;
+      if (refCode) {
+        await recordReferral(user.id, refCode);
+        jar.delete(REFERRAL_COOKIE);
+      }
+    } catch (e) {
+      console.warn("Referral attribution skipped:", e);
+    }
 
     return NextResponse.json({ success: true, calibratedLevel });
   } catch (error: any) {

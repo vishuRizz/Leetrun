@@ -8,14 +8,18 @@ import {
   BarChart3,
   BookOpen,
   Bot,
+  Gift,
   GraduationCap,
   Home,
   Layers,
   LogIn,
   LogOut,
   Network,
+  MessageSquarePlus,
   Search,
+  Settings,
   Shield,
+  Sparkles,
   Trophy,
   User,
   Users,
@@ -25,6 +29,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isAdminEmail } from "@/lib/admin/config";
 import { clearClientCache } from "@/lib/cache/clientCache";
 import { OPEN_COMMAND_EVENT } from "./CommandPalette";
+import { OPEN_FEEDBACK_EVENT } from "./FeedbackWidget";
 
 interface JoinedRoom {
   id: string;
@@ -144,6 +149,8 @@ export function Sidebar() {
       items: [
         { name: "Profile", href: "/profile", icon: User },
         { name: "AI Coach", href: "/chat", icon: Bot },
+        { name: "Invite & Earn", href: "/invite", icon: Gift },
+        { name: "Settings", href: "/settings", icon: Settings },
       ],
     },
   ];
@@ -289,6 +296,28 @@ export function Sidebar() {
             </span>
           </Link>
         )}
+        <Link
+          href="/changelog"
+          title="What's new"
+          className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors font-medium"
+        >
+          <Sparkles className="w-5 h-5 shrink-0" />
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+            What&apos;s new
+          </span>
+        </Link>
+
+        <button
+          onClick={() => window.dispatchEvent(new Event(OPEN_FEEDBACK_EVENT))}
+          title="Send feedback"
+          className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors w-full text-left font-medium"
+        >
+          <MessageSquarePlus className="w-5 h-5 shrink-0" />
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+            Feedback
+          </span>
+        </button>
+
         <div
           className="flex items-center gap-3 px-2 py-2.5 rounded-lg shrink-0 text-muted-foreground"
           title="Toggle Theme"

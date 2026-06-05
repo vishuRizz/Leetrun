@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { FounderGiftModal } from "@/components/FounderGiftModal";
 import GuestProvider from "@/components/GuestProvider";
 import CommandPalette from "@/components/CommandPalette";
+import FeedbackWidget from "@/components/FeedbackWidget";
 import { getSheetSummaries } from "@/lib/sheets";
 
 // Minimal placeholder shown while the real Sidebar (which reads
@@ -40,6 +41,7 @@ export default function MainLayout({
       </div>
       {/* Renders only for users still eligible for the gift; otherwise null. */}
       <FounderGiftModal />
+      <FeedbackWidget />
     </div>
   );
 }

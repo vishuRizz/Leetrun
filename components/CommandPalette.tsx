@@ -11,20 +11,24 @@ import {
   Bot,
   Brain,
   CornerDownLeft,
+  Gift,
   GraduationCap,
   Home,
   Layers,
   LogIn,
   LogOut,
+  MessageSquarePlus,
   Moon,
   Network,
   Search,
+  Sparkles,
   Sun,
   Trophy,
   User,
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { OPEN_FEEDBACK_EVENT } from "./FeedbackWidget";
 
 export const OPEN_COMMAND_EVENT = "leetrun:open-command";
 
@@ -142,6 +146,8 @@ export default function CommandPalette({
       { id: "nav-notes", label: "System Design", icon: BookOpen, keywords: "notes learn", perform: () => go("/notes") },
       { id: "nav-profile", label: "Profile", icon: User, keywords: "account me settings", perform: () => go("/profile") },
       { id: "nav-chat", label: "AI Coach", icon: Bot, keywords: "mentor assistant", perform: () => go("/chat") },
+      { id: "nav-invite", label: "Invite & Earn", icon: Gift, keywords: "refer referral invite friend coins reward share", perform: () => go("/invite") },
+      { id: "nav-changelog", label: "What's new", icon: Sparkles, keywords: "changelog updates release notes latest", perform: () => go("/changelog") },
     ];
 
     const sheetItems: CmdItem[] = sheets.map((s) => ({
@@ -155,6 +161,16 @@ export default function CommandPalette({
 
     const isDark = theme === "dark";
     const actions: CmdItem[] = [
+      {
+        id: "act-feedback",
+        label: "Send feedback",
+        icon: MessageSquarePlus,
+        keywords: "feedback bug report idea suggestion support",
+        perform: () => {
+          close();
+          window.dispatchEvent(new Event(OPEN_FEEDBACK_EVENT));
+        },
+      },
       {
         id: "act-theme",
         label: isDark ? "Switch to light mode" : "Switch to dark mode",

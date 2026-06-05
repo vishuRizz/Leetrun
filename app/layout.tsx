@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingChatWidget } from "@/components/FloatingChatWidget";
+import PostHogProvider from "@/components/analytics/PostHogProvider";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -191,8 +192,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
-          <FloatingChatWidget />
+          <PostHogProvider>
+            {children}
+            <FloatingChatWidget />
+          </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>

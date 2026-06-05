@@ -37,6 +37,9 @@ const LandingFooter = () => {
               <li>
                 <a href="#FAQs" className="text-gray-400 hover:text-white transition-colors text-sm">FAQs</a>
               </li>
+              <li>
+                <Link href="/changelog" className="text-gray-400 hover:text-white transition-colors text-sm">What&apos;s New</Link>
+              </li>
             </ul>
           </div>
 

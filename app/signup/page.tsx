@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, ShieldAlert, ArrowRight, Loader2, Globe } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 
 function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
@@ -18,6 +19,15 @@ function SignupForm() {
   const [message, setMessage] = useState("");
 
   const supabase = createClient();
+
+  // Stash any referral code so it survives OTP verification / Google OAuth and
+  // can be credited once onboarding completes.
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref && /^[A-Za-z0-9]{4,12}$/.test(ref)) {
+      document.cookie = `leetrun_ref=${ref.toUpperCase()}; path=/; max-age=2592000; SameSite=Lax`;
+    }
+  }, [searchParams]);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resend } from "@/lib/email/resend";
 import { getInviteEmailHtml } from "@/lib/email/templates/invite";
+import { getOrCreateReferralCode, referralLink } from "@/lib/services/referral";
 
 export async function POST(request: Request) {
   try {
@@ -22,9 +23,10 @@ export async function POST(request: Request) {
     }
 
     const inviterName = user.user_metadata?.fullName || "A friend";
-    
-    // Use the deployed URL
-    const signupUrl = "https://leetrun.vercel.app/signup";
+
+    // Attribute the invite to the sender's referral code so both get rewarded.
+    const code = await getOrCreateReferralCode(user.id);
+    const signupUrl = referralLink(code);
 
     const htmlContent = getInviteEmailHtml(inviterName, signupUrl);
 

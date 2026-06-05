@@ -111,6 +111,12 @@ model User {
   notesProgress          NotesProgress[]
   notesReadingState      NotesReadingState?
   solveAttempts          SolveAttempt[]
+  feedback               Feedback[]
+
+  /// Stable, shareable referral code (generated lazily on first use).
+  referralCode           String?  @unique
+  referralsMade          Referral[] @relation("ReferralsMade")
+  referralReceived       Referral?  @relation("ReferralReceived")
 
   @@index([email])
 }
@@ -529,6 +535,44 @@ model UserEvent {
   eventType        String
   metadata         Json?
   createdAt        DateTime @default(now())
+}
+
+enum FeedbackType {
+  BUG
+  IDEA
+  OTHER
+}
+
+/// A successful "invite a friend" referral. The referee row is unique so a user
+/// can only ever be referred once. Both sides are credited coins on creation.
+model Referral {
+  id          String   @id @default(cuid())
+  referrerId  String
+  referrer    User     @relation("ReferralsMade", fields: [referrerId], references: [id], onDelete: Cascade)
+  refereeId   String   @unique
+  referee     User     @relation("ReferralReceived", fields: [refereeId], references: [id], onDelete: Cascade)
+  status      String   @default("COMPLETED")
+  rewardCoins Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([referrerId])
+}
+
+/// In-app feedback / bug reports submitted by users (or guests). Captures page
+/// + user-agent context to help reproduce bugs.
+model Feedback {
+  id        String       @id @default(cuid())
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type      FeedbackType @default(OTHER)
+  message   String       @db.Text
+  email     String?
+  pageUrl   String?
+  userAgent String?
+  status    String       @default("OPEN")
+  createdAt DateTime     @default(now())
+
+  @@index([createdAt])
 }
 
 enum OtpType {
