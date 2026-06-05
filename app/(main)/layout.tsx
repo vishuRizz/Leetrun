@@ -5,6 +5,7 @@ import GuestProvider from "@/components/GuestProvider";
 import CommandPalette from "@/components/CommandPalette";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import { CallProvider } from "@/components/call/CallProvider";
+import NotificationCenter from "@/components/NotificationCenter";
 import { getSheetSummaries } from "@/lib/sheets";
 
 // Minimal placeholder shown while the real Sidebar (which reads
@@ -44,6 +45,8 @@ export default function MainLayout({
         {/* Renders only for users still eligible for the gift; otherwise null. */}
         <FounderGiftModal />
         <FeedbackWidget />
+        {/* Global notification bell — lobby messages & live calls, with sound. */}
+        <NotificationCenter />
       </div>
     </CallProvider>
   );
