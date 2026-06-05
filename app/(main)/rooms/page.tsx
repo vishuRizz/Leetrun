@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -35,12 +34,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
-
-// LiveKit pulls in a sizeable client bundle (WebRTC + prebuilt UI), so load it
-// lazily and only on the client when a member actually opens the call.
-const LobbyCall = dynamic(() => import("@/components/LobbyCall"), {
-  ssr: false,
-});
+import { useCall } from "@/components/call/CallProvider";
 
 interface Room {
   id: string;
@@ -125,6 +119,7 @@ function RoomsPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const call = useCall();
 
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -179,8 +174,12 @@ function RoomsPageInner() {
   // Settings drawer (host controls + invite + members + leave)
   const [showSettings, setShowSettings] = useState(false);
 
-  // Live call (voice / video / chat) overlay for the active lobby.
-  const [showCall, setShowCall] = useState(false);
+  // Live-call presence for the active lobby: how many people are currently in
+  // the LiveKit call (polled), so members who haven't joined get a cue.
+  const [liveCall, setLiveCall] = useState<{
+    count: number;
+    participants: { identity: string; name: string }[];
+  }>({ count: 0, participants: [] });
 
   // Active questions tab - "todo" (default) or "done". Only one bucket is
   // visible at a time so the page stays focused.
@@ -250,11 +249,13 @@ function RoomsPageInner() {
 
   const fetchActiveRoomDetails = async (roomId: string) => {
     try {
-      const [detailsRes, challengesRes, leaderboardRes] = await Promise.all([
-        fetch(`/api/room/details?roomId=${roomId}`),
-        fetch(`/api/room/challenge?roomId=${roomId}`),
-        fetch(`/api/room/leaderboard?roomId=${roomId}`),
-      ]);
+      const [detailsRes, challengesRes, leaderboardRes, liveRes] =
+        await Promise.all([
+          fetch(`/api/room/details?roomId=${roomId}`),
+          fetch(`/api/room/challenge?roomId=${roomId}`),
+          fetch(`/api/room/leaderboard?roomId=${roomId}`),
+          fetch(`/api/livekit/active?roomId=${roomId}`),
+        ]);
 
       const detailsData = await detailsRes.json();
       if (detailsRes.ok) setRoomDetails(detailsData.room);
@@ -264,6 +265,14 @@ function RoomsPageInner() {
 
       const leaderboardData = await leaderboardRes.json();
       if (leaderboardRes.ok) setLeaderboard(leaderboardData.leaderboard || []);
+
+      const liveData = await liveRes.json();
+      if (liveRes.ok) {
+        setLiveCall({
+          count: liveData.count || 0,
+          participants: liveData.participants || [],
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -497,7 +506,7 @@ function RoomsPageInner() {
   useEffect(() => {
     if (!activeRoomId) {
       setShowSettings(false);
-      setShowCall(false);
+      setLiveCall({ count: 0, participants: [] });
     }
   }, [activeRoomId]);
 
@@ -808,14 +817,51 @@ function RoomsPageInner() {
                         </div>
                       </div>
                     )}
-                    <button
-                      onClick={() => setShowCall(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"
-                      title="Start or join the lobby call: voice, video & chat"
-                    >
-                      <Video className="w-4 h-4" />
-                      <span className="hidden sm:inline">Call</span>
-                    </button>
+                    {(() => {
+                      const inCall =
+                        !!activeRoomId && call.isActive(activeRoomId);
+                      // A call is live and I'm not in it → pull me in with a glow.
+                      const liveJoinable = liveCall.count > 0 && !inCall;
+                      return (
+                        <button
+                          onClick={() =>
+                            roomDetails &&
+                            activeRoomId &&
+                            call.startCall({
+                              roomId: activeRoomId,
+                              lobbyName: roomDetails.name,
+                            })
+                          }
+                          className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-bold transition ${
+                            liveJoinable
+                              ? "bg-emerald-500 hover:bg-emerald-400 animate-pulse ring-2 ring-emerald-400/70 shadow-[0_0_0_4px_rgba(16,185,129,0.25)]"
+                              : "bg-emerald-600 hover:bg-emerald-500"
+                          }`}
+                          title={
+                            liveJoinable
+                              ? `Live call in progress — ${liveCall.count} in the call. Click to join.`
+                              : inCall
+                              ? "Open the call you're in"
+                              : "Start or join the lobby call: voice, video & chat"
+                          }
+                        >
+                          {liveJoinable && (
+                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400" />
+                            </span>
+                          )}
+                          <Video className="w-4 h-4" />
+                          <span className="hidden sm:inline">
+                            {liveJoinable
+                              ? `Join call · ${liveCall.count}`
+                              : inCall
+                              ? "Open call"
+                              : "Call"}
+                          </span>
+                        </button>
+                      );
+                    })()}
                     <button
                       onClick={() => setShowSettings(true)}
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"
@@ -826,6 +872,46 @@ function RoomsPageInner() {
                     </button>
                   </div>
                 </div>
+
+                {/* Live call banner — shown to members who haven't joined yet. */}
+                {liveCall.count > 0 &&
+                  activeRoomId &&
+                  !call.isActive(activeRoomId) && (
+                    <button
+                      onClick={() =>
+                        roomDetails &&
+                        call.startCall({
+                          roomId: activeRoomId,
+                          lobbyName: roomDetails.name,
+                        })
+                      }
+                      className="w-full flex items-center justify-between gap-3 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/15 transition group/livecall animate-pulse"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="relative flex h-3 w-3 shrink-0">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                        </span>
+                        <div className="min-w-0 text-left">
+                          <p className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                            Live call in progress · {liveCall.count} in the call
+                          </p>
+                          <p className="text-[10.5px] text-muted-foreground truncate">
+                            {liveCall.participants
+                              .slice(0, 3)
+                              .map((p) => p.name)
+                              .join(", ")}
+                            {liveCall.count > 3 &&
+                              ` +${liveCall.count - 3} more`}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 group-hover/livecall:bg-emerald-500 text-white text-xs font-bold transition shrink-0">
+                        <Video className="w-3.5 h-3.5" />
+                        Join
+                      </span>
+                    </button>
+                  )}
 
                 {(() => {
                   if (roomChallenges.length === 0) {
@@ -1768,15 +1854,6 @@ function RoomsPageInner() {
             </div>
           </aside>
         </>
-      )}
-
-      {/* Live call overlay (voice / video / chat) for the active lobby. */}
-      {showCall && activeRoomId && roomDetails && (
-        <LobbyCall
-          roomId={activeRoomId}
-          lobbyName={roomDetails.name}
-          onClose={() => setShowCall(false)}
-        />
       )}
     </div>
   );
