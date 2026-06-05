@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -30,9 +31,16 @@ import {
   UserCircle2,
   MessageSquareText,
   Pencil,
+  Video,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
+
+// LiveKit pulls in a sizeable client bundle (WebRTC + prebuilt UI), so load it
+// lazily and only on the client when a member actually opens the call.
+const LobbyCall = dynamic(() => import("@/components/LobbyCall"), {
+  ssr: false,
+});
 
 interface Room {
   id: string;
@@ -170,6 +178,9 @@ function RoomsPageInner() {
 
   // Settings drawer (host controls + invite + members + leave)
   const [showSettings, setShowSettings] = useState(false);
+
+  // Live call (voice / video / chat) overlay for the active lobby.
+  const [showCall, setShowCall] = useState(false);
 
   // Active questions tab - "todo" (default) or "done". Only one bucket is
   // visible at a time so the page stays focused.
@@ -484,7 +495,10 @@ function RoomsPageInner() {
   // Close the settings drawer when there's no active lobby anymore
   // (e.g. user leaves the room while drawer is open).
   useEffect(() => {
-    if (!activeRoomId) setShowSettings(false);
+    if (!activeRoomId) {
+      setShowSettings(false);
+      setShowCall(false);
+    }
   }, [activeRoomId]);
 
   // Esc-key closes the settings drawer.
@@ -794,6 +808,14 @@ function RoomsPageInner() {
                         </div>
                       </div>
                     )}
+                    <button
+                      onClick={() => setShowCall(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"
+                      title="Start or join the lobby call: voice, video & chat"
+                    >
+                      <Video className="w-4 h-4" />
+                      <span className="hidden sm:inline">Call</span>
+                    </button>
                     <button
                       onClick={() => setShowSettings(true)}
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"
@@ -1746,6 +1768,15 @@ function RoomsPageInner() {
             </div>
           </aside>
         </>
+      )}
+
+      {/* Live call overlay (voice / video / chat) for the active lobby. */}
+      {showCall && activeRoomId && roomDetails && (
+        <LobbyCall
+          roomId={activeRoomId}
+          lobbyName={roomDetails.name}
+          onClose={() => setShowCall(false)}
+        />
       )}
     </div>
   );
