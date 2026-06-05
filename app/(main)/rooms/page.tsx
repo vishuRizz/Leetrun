@@ -163,6 +163,7 @@ function RoomsPageInner() {
   // Per-question comment popup: which card's comment is open, the in-progress
   // edit state, and a busy flag while saving.
   const [openCommentId, setOpenCommentId] = useState<string | null>(null);
+  const [hoverCommentId, setHoverCommentId] = useState<string | null>(null);
   const [commentEditing, setCommentEditing] = useState(false);
   const [commentDraft, setCommentDraft] = useState("");
   const [commentBusy, setCommentBusy] = useState(false);
@@ -990,6 +991,9 @@ function RoomsPageInner() {
 
                       const hasComment = !!(rc.comment && rc.comment.trim());
                       const commentOpen = openCommentId === rc.id;
+                      // The note popup shows when explicitly opened (click) OR
+                      // while the user hovers the circle/popup.
+                      const noteOpen = commentOpen || hoverCommentId === rc.id;
                       const startCommentEdit = () => {
                         setOpenCommentId(rc.id);
                         setCommentDraft(rc.comment || "");
@@ -1013,71 +1017,115 @@ function RoomsPageInner() {
 
                       return (
                         <div key={rc.id} className="relative">
-                          {/* Comment note popup, anchored to the LEFT of the card */}
-                          {commentOpen && (
-                            <div className="absolute top-2 right-full mr-3 w-64 z-30 animate-in fade-in slide-in-from-right-2 duration-150">
-                              <div className="relative bg-popover border border-border rounded-xl shadow-xl p-3">
-                                <div className="absolute top-4 -right-1.5 w-3 h-3 rotate-45 bg-popover border-r border-b border-border" />
-                                <div className="flex items-center justify-between gap-2 mb-1.5">
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
-                                    <MessageSquareText className="w-3 h-3" /> Note
-                                    {adderName && (
-                                      <span className="normal-case font-semibold text-foreground/80">
-                                        · {isAdder ? "you" : adderName}
-                                      </span>
-                                    )}
-                                  </span>
-                                  {isAdder && !commentEditing && (
-                                    <button
-                                      type="button"
-                                      onClick={startCommentEdit}
-                                      title={hasComment ? "Edit note" : "Add note"}
-                                      className="text-muted-foreground hover:text-indigo-500 transition"
-                                    >
-                                      <Pencil className="w-3 h-3" />
-                                    </button>
+                          {/* Always-visible note circle on the LEFT of the
+                              question. Hover or click it to reveal the note. */}
+                          {(hasComment || isAdder) && (
+                            <div
+                              className="absolute left-0 top-5 z-30"
+                              style={{ transform: "translateX(-100%)" }}
+                              onMouseEnter={() => setHoverCommentId(rc.id)}
+                              onMouseLeave={() => setHoverCommentId(null)}
+                            >
+                              <div className="relative pr-2.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCommentView();
+                                  }}
+                                  title={
+                                    hasComment
+                                      ? "View note"
+                                      : isAdder
+                                      ? "Add a note"
+                                      : "No note yet"
+                                  }
+                                  className={`relative flex items-center justify-center w-7 h-7 rounded-full border transition shadow-sm ${
+                                    hasComment
+                                      ? "bg-indigo-500 border-indigo-400 text-white hover:bg-indigo-400"
+                                      : "bg-card border-dashed border-border text-muted-foreground hover:text-indigo-500 hover:border-indigo-400"
+                                  } ${noteOpen ? "ring-2 ring-indigo-400/60" : ""}`}
+                                >
+                                  {hasComment ? (
+                                    <MessageSquareText className="w-3.5 h-3.5" />
+                                  ) : (
+                                    <Plus className="w-3.5 h-3.5" />
                                   )}
-                                </div>
-                                {commentEditing && isAdder ? (
-                                  <div className="space-y-2">
-                                    <textarea
-                                      value={commentDraft}
-                                      onChange={(e) => setCommentDraft(e.target.value)}
-                                      maxLength={500}
-                                      rows={4}
-                                      autoFocus
-                                      placeholder="Add a hint, approach, or why you picked this…"
-                                      className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs outline-none resize-none"
-                                    />
-                                    <div className="flex items-center justify-end gap-1.5">
-                                      <button
-                                        type="button"
-                                        onClick={closeComment}
-                                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-muted hover:bg-muted/70 border border-border transition"
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleSaveComment(rc.id)}
-                                        disabled={commentBusy}
-                                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50 inline-flex items-center gap-1"
-                                      >
-                                        {commentBusy && <Loader2 className="w-3 h-3 animate-spin" />}
-                                        Save
-                                      </button>
+                                  {hasComment && (
+                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-indigo-300 ring-2 ring-card" />
+                                  )}
+                                </button>
+
+                                {/* Note popup — opens to the LEFT of the circle.
+                                    `pr-2` is a transparent hover bridge so the
+                                    pointer can travel from circle to popup. */}
+                                {noteOpen && (
+                                  <div className="absolute top-0 right-full pr-2 z-30 animate-in fade-in slide-in-from-right-1 duration-150">
+                                    <div className="relative w-64 bg-popover border border-border rounded-xl shadow-xl p-3">
+                                      <div className="absolute top-2.5 -right-1.5 w-3 h-3 rotate-45 bg-popover border-r border-t border-border" />
+                                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                                          <MessageSquareText className="w-3 h-3" /> Note
+                                          {adderName && (
+                                            <span className="normal-case font-semibold text-foreground/80">
+                                              · {isAdder ? "you" : adderName}
+                                            </span>
+                                          )}
+                                        </span>
+                                        {isAdder && !commentEditing && (
+                                          <button
+                                            type="button"
+                                            onClick={startCommentEdit}
+                                            title={hasComment ? "Edit note" : "Add note"}
+                                            className="text-muted-foreground hover:text-indigo-500 transition"
+                                          >
+                                            <Pencil className="w-3 h-3" />
+                                          </button>
+                                        )}
+                                      </div>
+                                      {commentEditing && isAdder ? (
+                                        <div className="space-y-2">
+                                          <textarea
+                                            value={commentDraft}
+                                            onChange={(e) => setCommentDraft(e.target.value)}
+                                            maxLength={500}
+                                            rows={4}
+                                            autoFocus
+                                            placeholder="Add a hint, approach, or why you picked this…"
+                                            className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs outline-none resize-none"
+                                          />
+                                          <div className="flex items-center justify-end gap-1.5">
+                                            <button
+                                              type="button"
+                                              onClick={closeComment}
+                                              className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-muted hover:bg-muted/70 border border-border transition"
+                                            >
+                                              Cancel
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => handleSaveComment(rc.id)}
+                                              disabled={commentBusy}
+                                              className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white transition disabled:opacity-50 inline-flex items-center gap-1"
+                                            >
+                                              {commentBusy && <Loader2 className="w-3 h-3 animate-spin" />}
+                                              Save
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ) : hasComment ? (
+                                        <p className="text-xs text-foreground whitespace-pre-wrap break-words leading-relaxed">
+                                          {rc.comment}
+                                        </p>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground italic">
+                                          {isAdder
+                                            ? "Add a note for your lobby."
+                                            : "No note yet."}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
-                                ) : hasComment ? (
-                                  <p className="text-xs text-foreground whitespace-pre-wrap break-words leading-relaxed">
-                                    {rc.comment}
-                                  </p>
-                                ) : (
-                                  <p className="text-xs text-muted-foreground italic">
-                                    {isAdder
-                                      ? "Add a note for your lobby."
-                                      : "No note yet."}
-                                  </p>
                                 )}
                               </div>
                             </div>
@@ -1137,40 +1185,6 @@ function RoomsPageInner() {
                               <span className="text-xs font-bold text-indigo-400">
                                 +{rc.challenge.xpReward} XP
                               </span>
-                              {(hasComment || isAdder) && (
-                                <span
-                                  role="button"
-                                  tabIndex={0}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleCommentView();
-                                  }}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      toggleCommentView();
-                                    }
-                                  }}
-                                  title={
-                                    hasComment
-                                      ? "View note"
-                                      : "Add a note (only you can)"
-                                  }
-                                  className={`relative p-1.5 rounded-md transition ${
-                                    commentOpen
-                                      ? "text-indigo-500 bg-indigo-500/10"
-                                      : hasComment
-                                      ? "text-indigo-500 hover:bg-indigo-500/10"
-                                      : "text-muted-foreground hover:text-indigo-500 hover:bg-muted"
-                                  }`}
-                                >
-                                  <MessageSquareText className="w-3.5 h-3.5" />
-                                  {hasComment && (
-                                    <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                  )}
-                                </span>
-                              )}
                               {canDelete && (
                                 <span
                                   role="button"
