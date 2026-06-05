@@ -257,7 +257,10 @@ export default function LobbyChat({
         aria-modal="true"
         aria-label="Lobby chat"
       >
-        <header className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+        <header
+          className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0"
+          style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+        >
           <div className="min-w-0">
             <h2 className="font-black text-base text-foreground flex items-center gap-2">
               <MessagesSquare className="w-4 h-4 text-indigo-400" />
@@ -363,7 +366,10 @@ export default function LobbyChat({
           )}
         </div>
 
-        <div className="border-t border-border p-3 shrink-0 space-y-2">
+        <div
+          className="border-t border-border p-3 shrink-0 space-y-2"
+          style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        >
           {attachment && (
             <div className="flex items-center gap-2 rounded-lg bg-muted/60 border border-border px-2.5 py-1.5">
               {attachment.type.startsWith("image/") ? (

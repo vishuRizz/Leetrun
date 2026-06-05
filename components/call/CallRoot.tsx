@@ -58,8 +58,16 @@ export default function CallRoot({
     <div
       className={
         minimized
-          ? "fixed bottom-4 right-4 z-[110] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl"
+          ? "fixed z-[110] w-[300px] sm:w-[320px] max-w-[calc(100vw-1.5rem)] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl"
           : "fixed inset-0 z-[110] bg-black"
+      }
+      style={
+        minimized
+          ? {
+              bottom: "max(0.75rem, env(safe-area-inset-bottom))",
+              right: "max(0.75rem, env(safe-area-inset-right))",
+            }
+          : undefined
       }
     >
       <LiveKitRoom
@@ -138,7 +146,10 @@ function MaxCall({
   const participants = useParticipants();
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-4 py-2.5 bg-zinc-950 border-b border-zinc-800 shrink-0">
+      <header
+        className="flex items-center justify-between px-4 py-2.5 bg-zinc-950 border-b border-zinc-800 shrink-0"
+        style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}
+      >
         <div className="flex items-center gap-2 min-w-0">
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

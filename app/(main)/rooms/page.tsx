@@ -800,16 +800,16 @@ function RoomsPageInner() {
               <div className="bg-card border border-border rounded-2xl p-6 space-y-6">
                 
                 {/* Active challenge headers */}
-                <div className="flex items-center justify-between border-b border-border/60 pb-4 gap-3">
+                <div className="flex flex-wrap items-center justify-between border-b border-border/60 pb-4 gap-x-3 gap-y-3">
                   <div className="min-w-0">
                     <span className="text-xs text-indigo-400 font-bold uppercase tracking-wider">Active Challenges</span>
                     <h2 className="text-xl font-black mt-1 text-foreground truncate">Lobby Task Board</h2>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
                     {roomDetails && (
                       <div className="text-right">
-                        <div className="text-xs text-muted-foreground">Room Code</div>
+                        <div className="hidden sm:block text-xs text-muted-foreground">Room Code</div>
                         <div className="font-extrabold text-indigo-400 font-mono tracking-widest text-sm flex items-center gap-1.5 mt-0.5">
                           {roomDetails.roomCode}
                           <button

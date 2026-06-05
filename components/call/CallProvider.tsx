@@ -261,7 +261,10 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       {/* Incoming-call "ring" toast — bottom-left so it never collides with the
           mini player (bottom-right). Only shows for calls you're not in. */}
       {ringing && ringing.roomId !== session?.roomId && (
-        <div className="fixed bottom-4 left-4 z-[130] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl bg-zinc-950 border border-emerald-500/40 shadow-2xl p-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div
+          className="fixed left-4 z-[130] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl bg-zinc-950 border border-emerald-500/40 shadow-2xl p-4 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+        >
           <div className="flex items-start gap-3">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/40" />
@@ -310,8 +313,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         <div
           className={
             minimized
-              ? "fixed bottom-4 right-4 z-[120] w-[300px] rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-4 flex items-center gap-3"
-              : "fixed inset-0 z-[120] bg-black flex flex-col items-center justify-center gap-3"
+              ? "fixed bottom-4 right-3 z-[120] w-[300px] max-w-[calc(100vw-1.5rem)] rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-4 flex items-center gap-3"
+              : "fixed inset-0 z-[120] bg-black flex flex-col items-center justify-center gap-3 px-6 text-center"
+          }
+          style={
+            minimized
+              ? { bottom: "max(0.75rem, env(safe-area-inset-bottom))" }
+              : undefined
           }
         >
           <Loader2 className="w-6 h-6 animate-spin text-indigo-400 shrink-0" />
@@ -326,8 +334,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         <div
           className={
             minimized
-              ? "fixed bottom-4 right-4 z-[120] w-[320px] rounded-xl bg-zinc-950 border border-rose-900/50 shadow-2xl p-4 space-y-3"
+              ? "fixed bottom-4 right-3 z-[120] w-[320px] max-w-[calc(100vw-1.5rem)] rounded-xl bg-zinc-950 border border-rose-900/50 shadow-2xl p-4 space-y-3"
               : "fixed inset-0 z-[120] bg-black flex flex-col items-center justify-center gap-3 px-6 text-center"
+          }
+          style={
+            minimized
+              ? { bottom: "max(0.75rem, env(safe-area-inset-bottom))" }
+              : undefined
           }
         >
           <div className="flex items-center gap-2">
