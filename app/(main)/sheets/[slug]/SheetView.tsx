@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Layers,
@@ -85,6 +85,42 @@ export default function SheetView({
           : []
       )
   );
+
+  // Remember which "step" (section) the user was last working on - we record it
+  // whenever they open a problem's external link. On revisit we expand that step
+  // by default instead of always falling back to step 1.
+  const lastSectionKey = `leetrun:sheet-last-section:${sheet.slug}`;
+
+  const recordLastSection = (sectionId: string) => {
+    try {
+      localStorage.setItem(lastSectionKey, sectionId);
+    } catch {
+      // localStorage may be unavailable (private mode) - non-critical.
+    }
+  };
+
+  // Restore after mount (not in the initial state) to avoid hydration mismatch.
+  useEffect(() => {
+    let savedId: string | null = null;
+    try {
+      savedId = localStorage.getItem(lastSectionKey);
+    } catch {
+      return;
+    }
+    if (!savedId) return;
+    if (!sheet.sections.some((s) => s.id === savedId)) return;
+
+    if (hasSteps) {
+      const grp = groups.find((g) => g.sections.some((s) => s.id === savedId));
+      if (grp) {
+        setOpenGroups(new Set([grp.id]));
+        setOpenSections(new Set(grp.sections.map((s) => s.id)));
+      }
+    } else {
+      setOpenSections(new Set([savedId]));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sheet.slug]);
 
   const totalProblems = useMemo(
     () => sheet.sections.reduce((n, s) => n + s.problems.length, 0),
@@ -286,6 +322,7 @@ export default function SheetView({
                       href={url}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() => recordLastSection(section.id)}
                       className="p-1.5 rounded-md text-muted-foreground hover:text-indigo-500 hover:bg-muted transition shrink-0"
                       title="Open problem"
                     >
