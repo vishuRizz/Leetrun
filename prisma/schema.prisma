@@ -104,6 +104,7 @@ model User {
   
   roomChallengesProgress RoomChallengeProgress[]
   addedRoomChallenges    RoomChallenge[] @relation("RoomChallengeAdder")
+  roomMessages           RoomMessage[]
 
   sheetProgress          SheetProgress[]
   focusSheets            UserFocusSheet[]
@@ -447,6 +448,23 @@ model ChallengeRoom {
   members          RoomMember[]
   roomChallenges   RoomChallenge[]
   invites          RoomInvite[]
+  messages         RoomMessage[]
+}
+
+/// Always-on lobby chat thread. Live-call chat is also persisted here so the
+/// conversation survives after the call ends. Indexed for fast "recent" reads.
+model RoomMessage {
+  id        String        @id @default(cuid())
+  roomId    String
+  room      ChallengeRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String        @db.Text
+  /// Where the message originated: "lobby" or "call". Purely informational.
+  source    String        @default("lobby")
+  createdAt DateTime      @default(now())
+
+  @@index([roomId, createdAt])
 }
 
 model RoomMember {

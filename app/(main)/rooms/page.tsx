@@ -31,9 +31,11 @@ import {
   MessageSquareText,
   Pencil,
   Video,
+  MessagesSquare,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import UserAvatar from "@/components/UserAvatar";
+import LobbyChat from "@/components/LobbyChat";
 import { useCall } from "@/components/call/CallProvider";
 
 interface Room {
@@ -174,6 +176,9 @@ function RoomsPageInner() {
 
   // Settings drawer (host controls + invite + members + leave)
   const [showSettings, setShowSettings] = useState(false);
+
+  // Lobby chat drawer (always-on persistent thread)
+  const [showChat, setShowChat] = useState(false);
 
   // Live-call presence for the active lobby: how many people are currently in
   // the LiveKit call (polled), so members who haven't joined get a cue.
@@ -507,6 +512,7 @@ function RoomsPageInner() {
   useEffect(() => {
     if (!activeRoomId) {
       setShowSettings(false);
+      setShowChat(false);
       setLiveCall({ count: 0, participants: [] });
     }
   }, [activeRoomId]);
@@ -801,6 +807,14 @@ function RoomsPageInner() {
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      onClick={() => setShowChat(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"
+                      title="Open the lobby chat (persists across calls)"
+                    >
+                      <MessagesSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Chat</span>
+                    </button>
                     {roomDetails && (
                       <div className="text-right">
                         <div className="text-xs text-muted-foreground">Room Code</div>
@@ -838,7 +852,7 @@ function RoomsPageInner() {
                           }}
                           className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-bold transition ${
                             liveJoinable
-                              ? "bg-emerald-500 hover:bg-emerald-400 animate-pulse ring-2 ring-emerald-400/70 shadow-[0_0_0_4px_rgba(16,185,129,0.25)]"
+                              ? "bg-emerald-500 hover:bg-emerald-400 ring-2 ring-emerald-400/60"
                               : "bg-emerald-600 hover:bg-emerald-500"
                           }`}
                           title={
@@ -891,28 +905,30 @@ function RoomsPageInner() {
                           lobbyName: roomDetails.name,
                         })
                       }
-                      className="w-full flex items-center justify-between gap-3 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/40 hover:bg-emerald-500/15 transition group/livecall animate-pulse"
+                      className="w-full flex items-center justify-between gap-3 p-3 rounded-xl bg-emerald-500/[0.07] border border-emerald-500/30 hover:bg-emerald-500/[0.12] hover:border-emerald-500/50 transition group/livecall"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="relative flex h-3 w-3 shrink-0">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
+                          <span className="absolute inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                         </span>
                         <div className="min-w-0 text-left">
-                          <p className="text-xs font-black text-emerald-600 dark:text-emerald-400">
-                            Live call in progress · {liveCall.count} in the call
+                          <p className="text-sm font-bold text-foreground">
+                            Live call in progress
                           </p>
-                          <p className="text-[10.5px] text-muted-foreground truncate">
+                          <p className="text-[11px] text-muted-foreground truncate">
                             {liveCall.participants
                               .slice(0, 3)
                               .map((p) => p.name)
                               .join(", ")}
                             {liveCall.count > 3 &&
                               ` +${liveCall.count - 3} more`}
+                            {liveCall.participants.length === 0 &&
+                              `${liveCall.count} in the call`}
                           </p>
                         </div>
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 group-hover/livecall:bg-emerald-500 text-white text-xs font-bold transition shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 group-hover/livecall:bg-emerald-500 text-white text-xs font-bold transition shrink-0">
                         <Video className="w-3.5 h-3.5" />
                         Join
                       </span>
@@ -1036,6 +1052,7 @@ function RoomsPageInner() {
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    setHoverCommentId(rc.id);
                                     toggleCommentView();
                                   }}
                                   title={
@@ -1061,13 +1078,14 @@ function RoomsPageInner() {
                                   )}
                                 </button>
 
-                                {/* Note popup — opens to the LEFT of the circle.
-                                    `pr-2` is a transparent hover bridge so the
-                                    pointer can travel from circle to popup. */}
+                                {/* Note popup — opens to the RIGHT of the circle
+                                    (over the card) so it's never clipped by the
+                                    left edge. `pl-2` is a transparent hover
+                                    bridge so the pointer can travel across. */}
                                 {noteOpen && (
-                                  <div className="absolute top-0 right-full pr-2 z-30 animate-in fade-in slide-in-from-right-1 duration-150">
+                                  <div className="absolute top-0 left-full pl-2 z-30 animate-in fade-in slide-in-from-left-1 duration-150">
                                     <div className="relative w-64 bg-popover border border-border rounded-xl shadow-xl p-3">
-                                      <div className="absolute top-2.5 -right-1.5 w-3 h-3 rotate-45 bg-popover border-r border-t border-border" />
+                                      <div className="absolute top-2.5 -left-1.5 w-3 h-3 rotate-45 bg-popover border-l border-b border-border" />
                                       <div className="flex items-center justify-between gap-2 mb-1.5">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                                           <MessageSquareText className="w-3 h-3" /> Note
@@ -1873,6 +1891,16 @@ function RoomsPageInner() {
             </div>
           </aside>
         </>
+      )}
+
+      {/* Always-on lobby chat drawer */}
+      {showChat && activeRoomId && roomDetails && (
+        <LobbyChat
+          roomId={activeRoomId}
+          currentUserId={currentUser?.id ?? null}
+          lobbyName={roomDetails.name}
+          onClose={() => setShowChat(false)}
+        />
       )}
     </div>
   );

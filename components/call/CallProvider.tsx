@@ -4,11 +4,12 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import dynamic from "next/dynamic";
-import { Loader2, AlertCircle, PhoneOff } from "lucide-react";
+import { Loader2, AlertCircle, PhoneOff, PhoneCall, Video, X } from "lucide-react";
 
 // The LiveKit-heavy call surface is loaded lazily and client-only so it never
 // touches the server bundle and isn't shipped until a member starts a call.
@@ -125,6 +126,109 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     [session, token, serverUrl, error, connect]
   );
 
+  // ── "Ringing": detect calls starting in the user's other lobbies ──────────
+  const [ringing, setRinging] = useState<{
+    roomId: string;
+    lobbyName: string;
+    starter: string;
+  } | null>(null);
+  // Rooms we've already rung for, so each call only rings once until it ends.
+  const notifiedRef = useRef<Set<string>>(new Set());
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const sessionRoomRef = useRef<string | null>(null);
+  sessionRoomRef.current = session?.roomId ?? null;
+
+  const playRing = useCallback(() => {
+    try {
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = audioCtxRef.current ?? (audioCtxRef.current = new Ctx());
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
+      const now = ctx.currentTime;
+      // Two pleasant tones, repeated → a soft "ring-ring".
+      const pattern = [880, 1174.66, 880, 1174.66];
+      pattern.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        const t0 = now + i * 0.2 + (i >= 2 ? 0.15 : 0);
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(0.14, t0 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.2);
+      });
+    } catch {
+      /* audio not available / blocked — silent is fine */
+    }
+  }, []);
+
+  // Poll for incoming calls app-wide (the provider lives in the main layout).
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const tick = async () => {
+      try {
+        const res = await fetch("/api/livekit/ringing");
+        if (res.ok) {
+          const data = await res.json();
+          const calls: {
+            roomId: string;
+            lobbyName: string;
+            count: number;
+            starter?: string;
+            participants: { identity: string; name: string }[];
+          }[] = data.calls || [];
+
+          const activeIds = new Set(calls.map((c) => c.roomId));
+          // Forget calls that have ended so a fresh one can ring again.
+          for (const id of Array.from(notifiedRef.current)) {
+            if (!activeIds.has(id)) notifiedRef.current.delete(id);
+          }
+
+          for (const c of calls) {
+            if (c.roomId === sessionRoomRef.current) continue; // I'm in it
+            if (notifiedRef.current.has(c.roomId)) continue; // already rung
+            notifiedRef.current.add(c.roomId);
+            if (!cancelled) {
+              setRinging({
+                roomId: c.roomId,
+                lobbyName: c.lobbyName,
+                starter: c.participants[0]?.name || "Someone",
+              });
+              playRing();
+            }
+          }
+        }
+      } catch {
+        /* ignore polling errors */
+      } finally {
+        if (!cancelled) timer = setTimeout(tick, 15000);
+      }
+    };
+
+    // Small initial delay so it doesn't race page hydration.
+    timer = setTimeout(tick, 4000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [playRing]);
+
+  // Auto-dismiss the ringing toast after a while.
+  useEffect(() => {
+    if (!ringing) return;
+    const t = setTimeout(() => setRinging(null), 15000);
+    return () => clearTimeout(t);
+  }, [ringing]);
+
   const minimize = useCallback(() => setMinimized(true), []);
   const maximize = useCallback(() => {
     // If a previous attempt errored, retry the connection on maximize.
@@ -153,6 +257,53 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+
+      {/* Incoming-call "ring" toast — bottom-left so it never collides with the
+          mini player (bottom-right). Only shows for calls you're not in. */}
+      {ringing && ringing.roomId !== session?.roomId && (
+        <div className="fixed bottom-4 left-4 z-[130] w-[320px] max-w-[calc(100vw-2rem)] rounded-xl bg-zinc-950 border border-emerald-500/40 shadow-2xl p-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="flex items-start gap-3">
+            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/40" />
+              <PhoneCall className="relative w-4 h-4 text-emerald-400" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-white leading-tight">
+                {ringing.starter} started a call
+              </p>
+              <p className="text-xs text-zinc-400 truncate">
+                in {ringing.lobbyName}
+              </p>
+            </div>
+            <button
+              onClick={() => setRinging(null)}
+              className="p-1 rounded-md text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition shrink-0"
+              title="Dismiss"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <button
+              onClick={() => {
+                const r = ringing;
+                setRinging(null);
+                if (r) startCall({ roomId: r.roomId, lobbyName: r.lobbyName });
+              }}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"
+            >
+              <Video className="w-3.5 h-3.5" />
+              Join call
+            </button>
+            <button
+              onClick={() => setRinging(null)}
+              className="px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition"
+            >
+              Ignore
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Connecting state (no LiveKit yet) — full-screen unless minimized. */}
       {session && loading && (
@@ -209,6 +360,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         <CallRoot
           token={token}
           serverUrl={serverUrl}
+          roomId={session.roomId}
           lobbyName={session.lobbyName}
           minimized={minimized}
           onMinimize={minimize}

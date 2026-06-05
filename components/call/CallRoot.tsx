@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   LiveKitRoom,
   VideoConference,
   RoomAudioRenderer,
   ParticipantTile,
+  useChat,
   useLocalParticipant,
   useParticipants,
   useTracks,
@@ -27,6 +28,7 @@ import {
 interface CallRootProps {
   token: string;
   serverUrl: string;
+  roomId: string;
   lobbyName: string;
   minimized: boolean;
   onMinimize: () => void;
@@ -39,6 +41,7 @@ interface CallRootProps {
 export default function CallRoot({
   token,
   serverUrl,
+  roomId,
   lobbyName,
   minimized,
   onMinimize,
@@ -79,6 +82,9 @@ export default function CallRoot({
         data-lk-theme="default"
         style={{ width: "100%", height: minimized ? "auto" : "100%" }}
       >
+        {/* Persists messages typed in the call into the lobby's always-on
+            thread (sender-side only, so each message is saved exactly once). */}
+        <CallChatPersister roomId={roomId} />
         {minimized ? (
           <MiniCall
             lobbyName={lobbyName}
@@ -95,6 +101,28 @@ export default function CallRoot({
       </LiveKitRoom>
     </div>
   );
+}
+
+/* ── Saves locally-sent call chat into the persistent lobby thread ── */
+function CallChatPersister({ roomId }: { roomId: string }) {
+  const { chatMessages } = useChat();
+  const persisted = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    for (const m of chatMessages) {
+      // Only the author persists their own message → saved exactly once.
+      if (!m.from?.isLocal) continue;
+      if (persisted.current.has(m.id)) continue;
+      persisted.current.add(m.id);
+      fetch("/api/room/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId, content: m.message, source: "call" }),
+      }).catch(() => persisted.current.delete(m.id));
+    }
+  }, [chatMessages, roomId]);
+
+  return null;
 }
 
 /* ── Maximized: full-screen prebuilt conference (grid + chat + controls) ── */

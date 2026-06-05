@@ -418,6 +418,93 @@ export async function createHostQuestion(
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Lobby chat (always-on, persisted) — live-call chat feeds into the same thread
+// ─────────────────────────────────────────────────────────────────────────────
+
+const MAX_MESSAGE_LEN = 2000;
+const DEFAULT_MESSAGE_PAGE = 30;
+
+async function assertRoomMember(userId: string, roomId: string) {
+  const membership = await db.roomMember.findFirst({
+    where: { roomId, userId },
+    select: { id: true },
+  });
+  if (!membership) {
+    throw new Error("You must be a member of this lobby.");
+  }
+}
+
+const messageSelect = {
+  id: true,
+  content: true,
+  source: true,
+  createdAt: true,
+  userId: true,
+  user: {
+    select: { id: true, fullName: true, email: true, avatarUrl: true },
+  },
+} as const;
+
+/**
+ * Fetch recent lobby messages efficiently.
+ *  - No cursor → newest `limit` messages (returned oldest→newest for display).
+ *  - `after` (ISO timestamp) → only messages strictly newer than it, ascending.
+ * Backed by the `@@index([roomId, createdAt])` so both paths are index scans.
+ */
+export async function getRoomMessages(
+  userId: string,
+  roomId: string,
+  opts: { after?: string; limit?: number } = {}
+) {
+  await assertRoomMember(userId, roomId);
+  const limit = Math.min(Math.max(opts.limit ?? DEFAULT_MESSAGE_PAGE, 1), 100);
+
+  if (opts.after) {
+    const after = new Date(opts.after);
+    if (!isNaN(after.getTime())) {
+      const rows = await db.roomMessage.findMany({
+        where: { roomId, createdAt: { gt: after } },
+        orderBy: { createdAt: "asc" },
+        take: limit,
+        select: messageSelect,
+      });
+      return rows;
+    }
+  }
+
+  // Newest page: grab the tail, then flip to chronological order for the UI.
+  const rows = await db.roomMessage.findMany({
+    where: { roomId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: messageSelect,
+  });
+  return rows.reverse();
+}
+
+/** Persist a single lobby/call message. Membership-gated, length-capped. */
+export async function postRoomMessage(
+  userId: string,
+  roomId: string,
+  content: string,
+  source: "lobby" | "call" = "lobby"
+) {
+  await assertRoomMember(userId, roomId);
+  const trimmed = (content || "").trim();
+  if (!trimmed) throw new Error("Message can't be empty.");
+
+  return db.roomMessage.create({
+    data: {
+      roomId,
+      userId,
+      content: trimmed.slice(0, MAX_MESSAGE_LEN),
+      source,
+    },
+    select: messageSelect,
+  });
+}
+
 /**
  * Set (or replace/clear) the single comment on a question. Only the member who
  * added the question may do this. Passing an empty string clears the comment.
