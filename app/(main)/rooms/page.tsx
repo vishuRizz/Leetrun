@@ -807,14 +807,6 @@ function RoomsPageInner() {
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <button
-                      onClick={() => setShowChat(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"
-                      title="Open the lobby chat (persists across calls)"
-                    >
-                      <MessagesSquare className="w-4 h-4" />
-                      <span className="hidden sm:inline">Chat</span>
-                    </button>
                     {roomDetails && (
                       <div className="text-right">
                         <div className="text-xs text-muted-foreground">Room Code</div>
@@ -882,6 +874,14 @@ function RoomsPageInner() {
                         </button>
                       );
                     })()}
+                    <button
+                      onClick={() => setShowChat(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
+                      title="Open the lobby chat — a live thread that persists across calls and supports media"
+                    >
+                      <MessagesSquare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Chat</span>
+                    </button>
                     <button
                       onClick={() => setShowSettings(true)}
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 border border-border text-xs font-bold text-foreground transition"

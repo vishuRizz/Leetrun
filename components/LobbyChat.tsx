@@ -1,12 +1,24 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2, Send, X, MessagesSquare, Phone } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  X,
+  MessagesSquare,
+  Phone,
+  Paperclip,
+  FileText,
+  Download,
+} from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 
 interface ChatMessage {
   id: string;
   content: string;
+  mediaUrl: string | null;
+  mediaType: string | null;
+  mediaName: string | null;
   source: string;
   createdAt: string;
   userId: string;
@@ -17,6 +29,8 @@ interface ChatMessage {
     avatarUrl: string | null;
   };
 }
+
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 
 interface LobbyChatProps {
   roomId: string;
@@ -30,6 +44,58 @@ function timeLabel(iso: string) {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+function MessageMedia({
+  url,
+  type,
+  name,
+  isMe,
+}: {
+  url: string;
+  type: string | null;
+  name: string | null;
+  isMe: boolean;
+}) {
+  const kind = type || "";
+  if (kind.startsWith("image/")) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="block">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt={name || "image"}
+          className="rounded-xl max-w-[220px] max-h-[260px] object-cover border border-border"
+        />
+      </a>
+    );
+  }
+  if (kind.startsWith("video/")) {
+    return (
+      <video
+        src={url}
+        controls
+        className="rounded-xl max-w-[240px] max-h-[280px] border border-border bg-black"
+      />
+    );
+  }
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      download={name || true}
+      className={`inline-flex items-center gap-2 max-w-[230px] rounded-xl px-3 py-2 border transition ${
+        isMe
+          ? "bg-indigo-600 border-indigo-500 text-white hover:bg-indigo-500"
+          : "bg-muted border-border text-foreground hover:bg-muted/70"
+      }`}
+    >
+      <FileText className="w-4 h-4 shrink-0" />
+      <span className="text-xs truncate flex-1">{name || "Attachment"}</span>
+      <Download className="w-3.5 h-3.5 shrink-0 opacity-70" />
+    </a>
+  );
+}
+
 export default function LobbyChat({
   roomId,
   currentUserId,
@@ -40,6 +106,9 @@ export default function LobbyChat({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const seenIds = useRef<Set<string>>(new Set());
   const lastCreatedAt = useRef<string | null>(null);
@@ -119,24 +188,57 @@ export default function LobbyChat({
       el.scrollHeight - el.scrollTop - el.clientHeight < 60;
   };
 
+  const pickFile = (file: File | null) => {
+    setUploadError(null);
+    if (!file) {
+      setAttachment(null);
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setUploadError("File must be smaller than 15 MB.");
+      return;
+    }
+    setAttachment(file);
+  };
+
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
     const text = input.trim();
-    if (!text || sending) return;
+    if ((!text && !attachment) || sending) return;
     setSending(true);
-    setInput("");
+    setUploadError(null);
+    const file = attachment;
     atBottomRef.current = true;
     try {
-      const res = await fetch("/api/room/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomId, content: text, source: "lobby" }),
-      });
+      let res: Response;
+      if (file) {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("roomId", roomId);
+        fd.append("content", text);
+        fd.append("source", "lobby");
+        res = await fetch("/api/room/messages/media", {
+          method: "POST",
+          body: fd,
+        });
+      } else {
+        res = await fetch("/api/room/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId, content: text, source: "lobby" }),
+        });
+      }
       const data = await res.json();
-      if (res.ok && data.message) mergeMessages([data.message]);
-      else setInput(text); // restore on failure
+      if (res.ok && data.message) {
+        mergeMessages([data.message]);
+        setInput("");
+        setAttachment(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } else {
+        setUploadError(data.error || "Failed to send.");
+      }
     } catch {
-      setInput(text);
+      setUploadError("Failed to send. Try again.");
     } finally {
       setSending(false);
     }
@@ -227,15 +329,27 @@ export default function LobbyChat({
                           : m.user.fullName || m.user.email.split("@")[0]}
                       </span>
                     )}
-                    <div
-                      className={`rounded-2xl px-3 py-1.5 text-sm break-words whitespace-pre-wrap ${
-                        isMe
-                          ? "bg-indigo-600 text-white rounded-br-sm"
-                          : "bg-muted text-foreground rounded-bl-sm"
-                      }`}
-                    >
-                      {m.content}
-                    </div>
+                    {m.mediaUrl && (
+                      <MessageMedia
+                        url={m.mediaUrl}
+                        type={m.mediaType}
+                        name={m.mediaName}
+                        isMe={isMe}
+                      />
+                    )}
+                    {m.content && (
+                      <div
+                        className={`rounded-2xl px-3 py-1.5 text-sm break-words whitespace-pre-wrap ${
+                          m.mediaUrl ? "mt-1 " : ""
+                        }${
+                          isMe
+                            ? "bg-indigo-600 text-white rounded-br-sm"
+                            : "bg-muted text-foreground rounded-bl-sm"
+                        }`}
+                      >
+                        {m.content}
+                      </div>
+                    )}
                     <span className="text-[9px] text-muted-foreground mt-0.5 px-1 inline-flex items-center gap-1">
                       {m.source === "call" && (
                         <Phone className="w-2.5 h-2.5" />
@@ -249,30 +363,73 @@ export default function LobbyChat({
           )}
         </div>
 
-        <form
-          onSubmit={send}
-          className="border-t border-border p-3 flex items-center gap-2 shrink-0"
-        >
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Message the lobby…"
-            maxLength={2000}
-            className="flex-1 bg-background border border-border focus:border-indigo-500 rounded-full py-2 px-4 text-sm text-foreground placeholder:text-muted-foreground outline-none transition"
-          />
-          <button
-            type="submit"
-            disabled={sending || !input.trim()}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition shrink-0"
-            title="Send"
-          >
-            {sending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </button>
-        </form>
+        <div className="border-t border-border p-3 shrink-0 space-y-2">
+          {attachment && (
+            <div className="flex items-center gap-2 rounded-lg bg-muted/60 border border-border px-2.5 py-1.5">
+              {attachment.type.startsWith("image/") ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={URL.createObjectURL(attachment)}
+                  alt="preview"
+                  className="w-8 h-8 rounded object-cover"
+                />
+              ) : (
+                <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
+              )}
+              <span className="text-xs text-foreground truncate flex-1">
+                {attachment.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => pickFile(null)}
+                className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition shrink-0"
+                title="Remove attachment"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {uploadError && (
+            <p className="text-[11px] text-red-500 px-1">{uploadError}</p>
+          )}
+          <form onSubmit={send} className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*,application/pdf"
+              className="hidden"
+              onChange={(e) => pickFile(e.target.files?.[0] || null)}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={sending}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-muted hover:bg-muted/70 border border-border text-muted-foreground hover:text-foreground transition shrink-0 disabled:opacity-50"
+              title="Attach image, video or PDF"
+            >
+              <Paperclip className="w-4 h-4" />
+            </button>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Message the lobby…"
+              maxLength={2000}
+              className="flex-1 bg-background border border-border focus:border-indigo-500 rounded-full py-2 px-4 text-sm text-foreground placeholder:text-muted-foreground outline-none transition"
+            />
+            <button
+              type="submit"
+              disabled={sending || (!input.trim() && !attachment)}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white transition shrink-0"
+              title="Send"
+            >
+              {sending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </button>
+          </form>
+        </div>
       </aside>
     </>
   );

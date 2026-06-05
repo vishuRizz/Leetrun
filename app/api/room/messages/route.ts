@@ -53,12 +53,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Message can't be empty." }, { status: 400 });
     }
 
-    const message = await postRoomMessage(
-      user.id,
-      roomId,
+    const message = await postRoomMessage(user.id, roomId, {
       content,
-      source === "call" ? "call" : "lobby"
-    );
+      source: source === "call" ? "call" : "lobby",
+    });
     return NextResponse.json({ message });
   } catch (error: any) {
     console.error("Error in POST /api/room/messages:", error);

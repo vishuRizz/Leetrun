@@ -459,7 +459,11 @@ model RoomMessage {
   room      ChallengeRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
   userId    String
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content   String        @db.Text
+  content   String        @default("") @db.Text
+  /// Optional media attachment stored in the `room-media` Supabase bucket.
+  mediaUrl  String?
+  mediaType String? // MIME type, e.g. "image/png", "video/mp4"
+  mediaName String? // original filename for download links
   /// Where the message originated: "lobby" or "call". Purely informational.
   source    String        @default("lobby")
   createdAt DateTime      @default(now())

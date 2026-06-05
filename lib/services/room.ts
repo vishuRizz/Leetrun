@@ -425,7 +425,7 @@ export async function createHostQuestion(
 const MAX_MESSAGE_LEN = 2000;
 const DEFAULT_MESSAGE_PAGE = 30;
 
-async function assertRoomMember(userId: string, roomId: string) {
+export async function assertRoomMember(userId: string, roomId: string) {
   const membership = await db.roomMember.findFirst({
     where: { roomId, userId },
     select: { id: true },
@@ -438,6 +438,9 @@ async function assertRoomMember(userId: string, roomId: string) {
 const messageSelect = {
   id: true,
   content: true,
+  mediaUrl: true,
+  mediaType: true,
+  mediaName: true,
   source: true,
   createdAt: true,
   userId: true,
@@ -483,23 +486,36 @@ export async function getRoomMessages(
   return rows.reverse();
 }
 
-/** Persist a single lobby/call message. Membership-gated, length-capped. */
+/**
+ * Persist a single lobby/call message. Membership-gated, length-capped.
+ * A message must have text and/or a media attachment.
+ */
 export async function postRoomMessage(
   userId: string,
   roomId: string,
-  content: string,
-  source: "lobby" | "call" = "lobby"
+  opts: {
+    content?: string;
+    source?: "lobby" | "call";
+    mediaUrl?: string | null;
+    mediaType?: string | null;
+    mediaName?: string | null;
+  }
 ) {
   await assertRoomMember(userId, roomId);
-  const trimmed = (content || "").trim();
-  if (!trimmed) throw new Error("Message can't be empty.");
+  const trimmed = (opts.content || "").trim();
+  if (!trimmed && !opts.mediaUrl) {
+    throw new Error("Message can't be empty.");
+  }
 
   return db.roomMessage.create({
     data: {
       roomId,
       userId,
       content: trimmed.slice(0, MAX_MESSAGE_LEN),
-      source,
+      source: opts.source ?? "lobby",
+      mediaUrl: opts.mediaUrl ?? null,
+      mediaType: opts.mediaType ?? null,
+      mediaName: opts.mediaName ?? null,
     },
     select: messageSelect,
   });
