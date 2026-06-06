@@ -175,8 +175,9 @@ export function FloatingChatWidget() {
     }
   };
 
-  // Hide widget on dedicated chat page
-  if (pathname === "/chat") {
+  // Hide widget on the dedicated chat page and on the standalone /room video
+  // rooms (which are a separate, just-for-fun experience).
+  if (pathname === "/chat" || pathname === "/room" || pathname.startsWith("/room/")) {
     return null;
   }
 
