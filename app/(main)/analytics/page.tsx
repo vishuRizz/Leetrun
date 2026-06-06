@@ -263,73 +263,120 @@ export default function AnalyticsPage() {
         </div>
 
         {/* LeetCode card */}
-        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Code2 className="w-5 h-5 text-indigo-500" />
-                <h2 className="font-heading font-bold text-lg">LeetCode</h2>
+        <div className="relative bg-card border border-border rounded-2xl overflow-hidden">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative p-6">
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                  <Code2 className="w-4 h-4 text-indigo-500" />
+                </div>
+                <span className="font-heading font-bold text-lg">LeetCode</span>
               </div>
               {lc.connected ? (
-                <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
+                <a
+                  href={`https://leetcode.com/u/${lc.username}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition"
+                >
                   @{lc.username}
-                </span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               ) : (
-                <span className="text-xs text-muted-foreground">Not linked yet</span>
+                <span className="text-xs text-muted-foreground px-3 py-1.5 rounded-full border border-border bg-muted/40">
+                  Not linked yet
+                </span>
               )}
             </div>
 
-            <div className="flex items-baseline gap-3">
-              <span className="font-heading text-5xl font-black">
-                {compact(lc.totalSolved)}
-              </span>
-              <span className="text-sm text-muted-foreground">problems solved</span>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              {/* Left: big number + difficulty rings */}
+              <div className="flex items-center gap-6">
+                {/* Circular progress rings */}
+                <div className="relative shrink-0 w-28 h-28">
+                  <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                    {/* Track */}
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/40" />
+                    {/* Hard (outermost visual layer — drawn first so easy sits on top) */}
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#f43f5e" strokeWidth="8"
+                      strokeDasharray={`${(hardPct / 100) * 263.9} 263.9`}
+                      strokeLinecap="round" />
+                    {/* Medium */}
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#f59e0b" strokeWidth="8"
+                      strokeDasharray={`${((easyPct + mediumPct) / 100) * 263.9} 263.9`}
+                      strokeLinecap="round" />
+                    {/* Easy */}
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#10b981" strokeWidth="8"
+                      strokeDasharray={`${(easyPct / 100) * 263.9} 263.9`}
+                      strokeLinecap="round" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="font-heading text-2xl font-black leading-none">{compact(lc.totalSolved)}</span>
+                    <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold mt-0.5">solved</span>
+                  </div>
+                </div>
 
-            {/* Difficulty stacked bar */}
-            <div className="space-y-2">
-              <div className="h-3 rounded-full overflow-hidden flex bg-muted/50">
-                <div
-                  className="bg-emerald-500"
-                  style={{ width: `${easyPct}%` }}
-                  title={`Easy ${lc.easy}`}
-                />
-                <div
-                  className="bg-amber-500"
-                  style={{ width: `${mediumPct}%` }}
-                  title={`Medium ${lc.medium}`}
-                />
-                <div
-                  className="bg-rose-500"
-                  style={{ width: `${hardPct}%` }}
-                  title={`Hard ${lc.hard}`}
-                />
+                {/* Difficulty breakdown */}
+                <div className="space-y-2.5 flex-1">
+                  {[
+                    { label: "Easy", value: lc.easy, color: "text-emerald-500", bg: "bg-emerald-500", pct: easyPct },
+                    { label: "Medium", value: lc.medium, color: "text-amber-500", bg: "bg-amber-500", pct: mediumPct },
+                    { label: "Hard", value: lc.hard, color: "text-rose-500", bg: "bg-rose-500", pct: hardPct },
+                  ].map(({ label, value, color, bg, pct }) => (
+                    <div key={label} className="space-y-1">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className={`font-bold ${color}`}>{label}</span>
+                        <span className="font-mono font-semibold text-foreground">{value}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                        <div className={`h-full ${bg} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-xs font-mono">
-                <DifficultyChip color="emerald" label="Easy" value={lc.easy} />
-                <DifficultyChip color="amber" label="Medium" value={lc.medium} />
-                <DifficultyChip color="rose" label="Hard" value={lc.hard} />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              <MetricBox
-                label="Acceptance"
-                value={
-                  lc.acceptanceRate != null
-                    ? `${Math.round(lc.acceptanceRate)}%`
-                    : "-"
-                }
-              />
-              <MetricBox
-                label="Contest rating"
-                value={compact(lc.contestRating ?? null)}
-              />
-              <MetricBox
-                label="Global rank"
-                value={compact(lc.ranking ?? null)}
-              />
+              {/* Right: stat pills */}
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  {
+                    label: "Acceptance rate",
+                    value: lc.acceptanceRate != null ? `${Math.round(lc.acceptanceRate)}%` : "—",
+                    icon: <Target className="w-4 h-4" />,
+                    tint: "text-sky-500",
+                    bg: "bg-sky-500/10 border-sky-500/20",
+                  },
+                  {
+                    label: "Contest rating",
+                    value: compact(lc.contestRating ?? null),
+                    icon: <Trophy className="w-4 h-4" />,
+                    tint: "text-amber-500",
+                    bg: "bg-amber-500/10 border-amber-500/20",
+                  },
+                  {
+                    label: "Global rank",
+                    value: compact(lc.ranking ?? null),
+                    icon: <TrendingUp className="w-4 h-4" />,
+                    tint: "text-violet-500",
+                    bg: "bg-violet-500/10 border-violet-500/20",
+                  },
+                ].map(({ label, value, icon, tint, bg }) => (
+                  <div key={label} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${bg}`}>
+                    <div className={`flex items-center gap-2 text-xs font-semibold ${tint}`}>
+                      {icon}
+                      <span className="text-muted-foreground font-medium">{label}</span>
+                    </div>
+                    <span className={`font-mono font-black text-base ${tint}`}>{value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+        </div>
 
         {/* Full-year activity calendar (GitHub-style, like profile) */}
         {lc.submissionCalendar && (

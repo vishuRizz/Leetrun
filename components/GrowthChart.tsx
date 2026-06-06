@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { TrendingUp, TrendingDown, Sparkles } from "lucide-react";
 
 function dayKey(d: Date): string {
@@ -14,6 +14,66 @@ const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
+
+// Violin-like sound: sawtooth (bow harmonics) + slow bow attack, vibrato shimmer.
+// Pitch is mapped across a pentatonic scale based on relative bar height.
+const VIOLIN_NOTES = [196.0, 220.0, 246.94, 293.66, 329.63, 369.99, 415.3, 466.16, 523.25];
+
+function playViolinNote(
+  count: number,
+  max: number,
+  audioCtxRef: React.MutableRefObject<AudioContext | null>
+) {
+  if (count <= 0) return;
+  try {
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext();
+    const ctx = audioCtxRef.current;
+    const now = ctx.currentTime;
+
+    // Map count to a note index across the scale
+    const ratio = Math.min(count / max, 1);
+    const noteIdx = Math.round(ratio * (VIOLIN_NOTES.length - 1));
+    const freq = VIOLIN_NOTES[noteIdx];
+
+    // Main bow oscillator — sawtooth for violin-like harmonic richness
+    const osc = ctx.createOscillator();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(freq, now);
+
+    // Subtle vibrato via a slow LFO on frequency
+    const lfo = ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.setValueAtTime(5.5, now); // ~5.5 Hz vibrato
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.setValueAtTime(3.5, now); // vibrato depth in Hz
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    // Soft filter to round out the harsh sawtooth into a bow-like tone
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(1800, now);
+    filter.Q.setValueAtTime(0.8, now);
+
+    // Gain envelope: slow bow attack, sustain, gentle release
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.08);  // slow bow attack
+    gain.gain.linearRampToValueAtTime(0.13, now + 0.3);   // settle into sustain
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9); // release
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    lfo.start(now);
+    lfo.stop(now + 0.9);
+    osc.start(now);
+    osc.stop(now + 0.9);
+  } catch {
+    // Fail silently if AudioContext is unavailable
+  }
+}
 
 interface WeekBar {
   start: Date;
@@ -142,6 +202,7 @@ export default function GrowthChart({
   const { bars, max, joinIndex, beforeStats, afterStats, growthPct, labels } = data;
 
   const fmt = (n: number) => (n >= 10 ? Math.round(n).toString() : n.toFixed(1));
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   return (
     <div className="space-y-4">
@@ -161,6 +222,7 @@ export default function GrowthChart({
                     month: "short",
                     day: "numeric",
                   })}: ${b.total} submission${b.total === 1 ? "" : "s"}`}
+                  onMouseEnter={() => playViolinNote(b.total, max, audioCtxRef)}
                 >
                   {isJoin && (
                     <span className="absolute -top-0 left-1/2 -translate-x-1/2 w-px h-full bg-indigo-500/40" />
