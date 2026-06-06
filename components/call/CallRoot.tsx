@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   LiveKitRoom,
   VideoConference,
@@ -23,6 +23,7 @@ import {
   Video as VideoIcon,
   VideoOff,
   Users,
+  GripVertical,
 } from "lucide-react";
 
 interface CallRootProps {
@@ -38,6 +39,26 @@ interface CallRootProps {
   onError?: (message: string) => void;
 }
 
+type Corner = "tl" | "tr" | "bl" | "br";
+const CORNER_KEY = "leetrun:call-corner";
+
+function cornerStyle(corner: Corner): React.CSSProperties {
+  const top = "max(0.75rem, env(safe-area-inset-top))";
+  const bottom = "max(0.75rem, env(safe-area-inset-bottom))";
+  const left = "max(0.75rem, env(safe-area-inset-left))";
+  const right = "max(0.75rem, env(safe-area-inset-right))";
+  switch (corner) {
+    case "tl":
+      return { top, left };
+    case "tr":
+      return { top, right };
+    case "bl":
+      return { bottom, left };
+    default:
+      return { bottom, right };
+  }
+}
+
 export default function CallRoot({
   token,
   serverUrl,
@@ -50,12 +71,92 @@ export default function CallRoot({
   onConnected,
   onError,
 }: CallRootProps) {
+  // Which corner the minimized player snaps to (persisted, user-draggable).
+  const [corner, setCorner] = useState<Corner>("br");
+  // Live pixel position while a drag is in progress (null when docked).
+  const [dragXY, setDragXY] = useState<{ x: number; y: number } | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    dx: number;
+    dy: number;
+    moved: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CORNER_KEY) as Corner | null;
+      if (saved && ["tl", "tr", "bl", "br"].includes(saved)) setCorner(saved);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const onDragMove = useCallback((e: PointerEvent) => {
+    const el = wrapRef.current;
+    const d = dragRef.current;
+    if (!el || !d) return;
+    d.moved = true;
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    const x = Math.min(
+      Math.max(8, e.clientX - d.dx),
+      window.innerWidth - w - 8
+    );
+    const y = Math.min(
+      Math.max(8, e.clientY - d.dy),
+      window.innerHeight - h - 8
+    );
+    setDragXY({ x, y });
+  }, []);
+
+  const onDragEnd = useCallback(() => {
+    window.removeEventListener("pointermove", onDragMove);
+    window.removeEventListener("pointerup", onDragEnd);
+    const el = wrapRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const next: Corner = `${cy < window.innerHeight / 2 ? "t" : "b"}${
+        cx < window.innerWidth / 2 ? "l" : "r"
+      }` as Corner;
+      setCorner(next);
+      try {
+        localStorage.setItem(CORNER_KEY, next);
+      } catch {
+        /* ignore */
+      }
+    }
+    dragRef.current = null;
+    setDragXY(null);
+  }, [onDragMove]);
+
+  const onDragStart = useCallback(
+    (e: React.PointerEvent) => {
+      // Don't start a drag from the control buttons inside the header.
+      if ((e.target as HTMLElement).closest("button")) return;
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      dragRef.current = {
+        dx: e.clientX - r.left,
+        dy: e.clientY - r.top,
+        moved: false,
+      };
+      setDragXY({ x: r.left, y: r.top });
+      window.addEventListener("pointermove", onDragMove);
+      window.addEventListener("pointerup", onDragEnd);
+    },
+    [onDragMove, onDragEnd]
+  );
+
   // NOTE: positioning lives on this wrapper, NOT on <LiveKitRoom>. LiveKit
   // applies `.lk-room-container { position: relative }` to its own element,
   // which would override our `fixed` and drop the overlay into normal flow
   // (making it invisible). So we wrap it and let LiveKitRoom just fill us.
   return (
     <div
+      ref={wrapRef}
       className={
         minimized
           ? "fixed z-[110] w-[300px] sm:w-[320px] max-w-[calc(100vw-1.5rem)] rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl"
@@ -63,10 +164,9 @@ export default function CallRoot({
       }
       style={
         minimized
-          ? {
-              bottom: "max(0.75rem, env(safe-area-inset-bottom))",
-              right: "max(0.75rem, env(safe-area-inset-right))",
-            }
+          ? dragXY
+            ? { left: dragXY.x, top: dragXY.y }
+            : cornerStyle(corner)
           : undefined
       }
     >
@@ -98,6 +198,8 @@ export default function CallRoot({
             lobbyName={lobbyName}
             onMaximize={onMaximize}
             onEnd={onEnd}
+            onDragStart={onDragStart}
+            dragging={!!dragXY}
           />
         ) : (
           <MaxCall
@@ -193,10 +295,14 @@ function MiniCall({
   lobbyName,
   onMaximize,
   onEnd,
+  onDragStart,
+  dragging,
 }: {
   lobbyName: string;
   onMaximize: () => void;
   onEnd: () => void;
+  onDragStart?: (e: React.PointerEvent) => void;
+  dragging?: boolean;
 }) {
   const { localParticipant, isMicrophoneEnabled, isCameraEnabled } =
     useLocalParticipant();
@@ -218,9 +324,18 @@ function MiniCall({
       {/* Audio must render here since we're not mounting VideoConference. */}
       <RoomAudioRenderer />
 
-      {/* Header */}
-      <div className="flex items-center justify-between gap-2 px-3 py-2 bg-zinc-950 border-b border-zinc-800">
+      {/* Header doubles as the drag handle — grab it to move the player to any
+          corner; it snaps to the nearest one on release. */}
+      <div
+        onPointerDown={onDragStart}
+        style={{ touchAction: "none" }}
+        className={`flex items-center justify-between gap-2 px-3 py-2 bg-zinc-950 border-b border-zinc-800 select-none ${
+          dragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+        title="Drag to move • snaps to nearest corner"
+      >
         <div className="flex items-center gap-1.5 min-w-0">
+          <GripVertical className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
