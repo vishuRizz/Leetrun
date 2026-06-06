@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface DayCell {
   date: string; // YYYY-MM-DD, or "" for padding
@@ -10,8 +11,6 @@ interface DayCell {
 interface HoverState {
   date: string;
   count: number;
-  x: number;
-  y: number;
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -33,6 +32,58 @@ const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
+
+// Piano notes mapped to activity intensity levels (C major pentatonic scale).
+// count=0 → muted/no sound, 1 → C4, 2 → E4, 3 → G4, 4 → A4, 5 → C5, 6+ → E5
+const PIANO_FREQUENCIES = [0, 261.63, 329.63, 392.0, 440.0, 523.25, 659.25];
+
+function playPianoNote(count: number, audioCtxRef: React.MutableRefObject<AudioContext | null>) {
+  if (count <= 0) return;
+  const freq = PIANO_FREQUENCIES[Math.min(count, PIANO_FREQUENCIES.length - 1)];
+
+  try {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+    const ctx = audioCtxRef.current;
+
+    const now = ctx.currentTime;
+
+    // Oscillator mimicking a piano's fundamental tone
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(freq, now);
+
+    // A second harmonic to add richness
+    const osc2 = ctx.createOscillator();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(freq * 2, now);
+
+    // Gain envelope: short attack, quick decay to a sustain, then release
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.01);  // attack
+    gain.gain.exponentialRampToValueAtTime(0.1, now + 0.1); // decay
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7); // release
+
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(0.08, now + 0.01);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(ctx.destination);
+    gain2.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.75);
+    osc2.start(now);
+    osc2.stop(now + 0.4);
+  } catch {
+    // AudioContext may be unavailable in some environments — fail silently
+  }
+}
 
 /**
  * GitHub-style yearly contribution grid built from a LeetCode submission
@@ -124,7 +175,12 @@ export default function ContributionCalendar({
     };
   }, [calendar, weeks]);
 
-  const [hover, setHover] = useState<HoverState | null>(null);
+  const [hover, setHover] = useState<{ date: string; count: number } | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const heatColor = (count: number) => {
     if (count <= 0) return "bg-muted/50";
@@ -184,24 +240,25 @@ export default function ContributionCalendar({
                       cell.count
                     )} ${
                       cell.date
-                        ? "hover:ring-2 hover:ring-foreground/40 cursor-pointer"
+                        ? "hover:brightness-125 cursor-pointer"
                         : ""
                     }`}
-                    onMouseEnter={(e) =>
-                      cell.date &&
-                      setHover({
-                        date: cell.date,
-                        count: cell.count,
-                        x: e.clientX,
-                        y: e.clientY,
-                      })
-                    }
-                    onMouseMove={(e) =>
-                      cell.date &&
-                      setHover((h) =>
-                        h ? { ...h, x: e.clientX, y: e.clientY } : h
-                      )
-                    }
+                    onMouseEnter={(e) => {
+                      if (cell.date) {
+                        setHover({ date: cell.date, count: cell.count });
+                        if (tooltipRef.current) {
+                          tooltipRef.current.style.left = `${e.clientX}px`;
+                          tooltipRef.current.style.top = `${e.clientY - 8}px`;
+                        }
+                        playPianoNote(cell.count, audioCtxRef);
+                      }
+                    }}
+                    onMouseMove={(e) => {
+                      if (tooltipRef.current) {
+                        tooltipRef.current.style.left = `${e.clientX}px`;
+                        tooltipRef.current.style.top = `${e.clientY - 8}px`;
+                      }
+                    }}
                     onMouseLeave={() => setHover(null)}
                   />
                 ))}
@@ -221,19 +278,20 @@ export default function ContributionCalendar({
         <span>more</span>
       </div>
 
-      {/* Cursor-following tooltip with that day's activity. */}
-      {hover && (
+      {/* Cursor-following tooltip rendered in a portal — zero layout impact. */}
+      {mounted && hover && createPortal(
         <div
+          ref={tooltipRef}
           className="pointer-events-none fixed z-[200] -translate-x-1/2 -translate-y-full rounded-lg bg-zinc-900 text-white px-2.5 py-1.5 shadow-xl border border-zinc-700 whitespace-nowrap"
-          style={{ left: hover.x, top: hover.y - 8 }}
         >
           <div className="text-xs font-bold leading-tight">
-            {hover.count} question{hover.count === 1 ? "" : "s"}
+            {hover.count} submission{hover.count === 1 ? "" : "s"}
           </div>
           <div className="text-[10px] text-zinc-400 leading-tight">
             {prettyDate(hover.date)}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
