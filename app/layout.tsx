@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingChatWidget } from "@/components/FloatingChatWidget";
 import PostHogProvider from "@/components/analytics/PostHogProvider";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { siteConfig } from "@/lib/site";
 
 const inter = Inter({
@@ -197,6 +199,8 @@ export default function RootLayout({
             <FloatingChatWidget />
           </PostHogProvider>
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
