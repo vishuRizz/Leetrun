@@ -18,7 +18,7 @@ function newRoomId() {
 function parseCode(input: string): string | null {
   const v = input.trim();
   if (!v) return null;
-  const fromUrl = v.match(/\/room\/([a-z0-9-]+)/i);
+  const fromUrl = v.match(/\/fun-room\/([a-z0-9-]+)/i);
   const code = (fromUrl ? fromUrl[1] : v).toLowerCase();
   return /^[a-z0-9-]{4,64}$/.test(code) ? code : null;
 }
@@ -43,14 +43,14 @@ export default function RoomLanding() {
         } catch {
           /* ignore */
         }
-        router.push(`/room/${data.roomId}`);
+        router.push(`/fun-room/${data.roomId}`);
         return;
       }
     } catch {
       /* fall through to a keyless room */
     }
     // Fallback: still let them in (without owner controls) if the API failed.
-    router.push(`/room/${newRoomId()}`);
+    router.push(`/fun-room/${newRoomId()}`);
   };
 
   const join = (e: React.FormEvent) => {
@@ -60,7 +60,7 @@ export default function RoomLanding() {
       setErr("Enter a valid room code or link.");
       return;
     }
-    router.push(`/room/${id}`);
+    router.push(`/fun-room/${id}`);
   };
 
   return (

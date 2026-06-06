@@ -54,8 +54,8 @@ export default function FunRoom({ roomId }: { roomId: string }) {
   // Always share the clean room URL (never any local query/state).
   const shareLink =
     typeof window !== "undefined"
-      ? `${window.location.origin}/room/${roomId}`
-      : `/room/${roomId}`;
+      ? `${window.location.origin}/fun-room/${roomId}`
+      : `/fun-room/${roomId}`;
 
   const copy = useCallback(async () => {
     try {
@@ -100,7 +100,7 @@ export default function FunRoom({ roomId }: { roomId: string }) {
   const leave = useCallback(() => {
     setJoined(false);
     setToken(null);
-    router.push("/room");
+    router.push("/fun-room");
   }, [router]);
 
   const dissolve = useCallback(async () => {
@@ -178,11 +178,11 @@ export default function FunRoom({ roomId }: { roomId: string }) {
                 {isHost && (
                   <button
                     onClick={() => setConfirmDissolve(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600/90 hover:bg-amber-500 text-white text-xs font-bold transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-700 hover:bg-rose-600 text-white text-xs font-black transition shadow-lg shadow-rose-950/30"
                     title="End the room for everyone"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">End for all</span>
+                    <span>Dissolve</span>
                   </button>
                 )}
                 <button
@@ -303,7 +303,7 @@ export default function FunRoom({ roomId }: { roomId: string }) {
         )}
 
         <button
-          onClick={() => router.push("/room")}
+          onClick={() => router.push("/fun-room")}
           className="mt-5 mx-auto block text-xs text-white/70 hover:text-white transition"
         >
           ← Back
