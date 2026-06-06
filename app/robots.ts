@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
           "/onboarding",
           "/side-quests",
           "/rooms",
+          "/room",
           "/profile",
           "/login",
           "/signup",

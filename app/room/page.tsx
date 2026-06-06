@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Video, ArrowRight, Sparkles, Link2 } from "lucide-react";
+import { Video, ArrowRight, Sparkles, Link2, Loader2 } from "lucide-react";
+
+export const creatorKeyStorageKey = (roomId: string) =>
+  `leetrun:fun-creator:${roomId}`;
 
 function newRoomId() {
   const bytes = new Uint8Array(8);
@@ -24,8 +27,31 @@ export default function RoomLanding() {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [err, setErr] = useState("");
+  const [creating, setCreating] = useState(false);
 
-  const create = () => router.push(`/room/${newRoomId()}`);
+  const create = async () => {
+    if (creating) return;
+    setCreating(true);
+    try {
+      const res = await fetch("/api/fun-room/create", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.roomId) {
+        // Stash the private owner key so this device can dissolve the room.
+        try {
+          if (data.creatorKey)
+            localStorage.setItem(creatorKeyStorageKey(data.roomId), data.creatorKey);
+        } catch {
+          /* ignore */
+        }
+        router.push(`/room/${data.roomId}`);
+        return;
+      }
+    } catch {
+      /* fall through to a keyless room */
+    }
+    // Fallback: still let them in (without owner controls) if the API failed.
+    router.push(`/room/${newRoomId()}`);
+  };
 
   const join = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,11 +81,21 @@ export default function RoomLanding() {
 
         <button
           onClick={create}
-          className="mt-8 group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-violet-700 font-black text-lg px-7 py-4 shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition"
+          disabled={creating}
+          className="mt-8 group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-violet-700 font-black text-lg px-7 py-4 shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition disabled:opacity-70 disabled:hover:scale-100"
         >
-          <Video className="w-5 h-5" />
-          Create a room
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition" />
+          {creating ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Creating…
+            </>
+          ) : (
+            <>
+              <Video className="w-5 h-5" />
+              Create a room
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition" />
+            </>
+          )}
         </button>
 
         <div className="mt-10 rounded-2xl bg-white/10 backdrop-blur border border-white/20 p-5">

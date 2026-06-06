@@ -471,6 +471,15 @@ model RoomMessage {
   @@index([roomId, createdAt])
 }
 
+/// Standalone "just for fun" video rooms (separate from study lobbies). We only
+/// persist a creator secret so the room's owner can dissolve it for everyone.
+/// The key is held privately on the creator's device and never in the share URL.
+model FunRoom {
+  id         String   @id // short, URL-safe room code
+  creatorKey String
+  createdAt  DateTime @default(now())
+}
+
 model RoomMember {
   id               String @id @default(cuid())
   roomId           String
