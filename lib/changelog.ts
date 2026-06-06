@@ -29,7 +29,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-06-05",
     title: "Smarter mentor, real streaks & account controls",
     items: [
-      { tag: "new", text: "AI mentor now grounds answers in your real solve data, sheets, patterns, and System Design notes — and opens with a personalized recap." },
+      { tag: "new", text: "AI mentor now grounds answers in your real solve data, sheets, patterns, and System Design notes - and opens with a personalized recap." },
       { tag: "new", text: "Settings page: manage your profile, email/password, notifications, export your data, or delete your account." },
       { tag: "new", text: "Privacy Policy and Terms of Service pages." },
       { tag: "new", text: "Give feedback or report a bug from anywhere via the sidebar or ⌘K." },

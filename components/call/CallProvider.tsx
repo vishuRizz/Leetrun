@@ -154,7 +154,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
 
-      {/* Connecting state (no LiveKit yet) — full-screen unless minimized. */}
+      {/* Connecting state (no LiveKit yet) - full-screen unless minimized. */}
       {session && loading && (
         <div
           className={

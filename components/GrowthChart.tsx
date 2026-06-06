@@ -253,7 +253,7 @@ export default function GrowthChart({
                 <TrendingDown className="w-5 h-5" />
               )}
               {growthPct === null
-                ? "—"
+                ? "-"
                 : `${growthPct >= 0 ? "+" : ""}${Math.round(growthPct)}%`}
             </div>
             <div className="text-[11px] text-muted-foreground mt-0.5">
@@ -266,7 +266,7 @@ export default function GrowthChart({
           <Sparkles className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-bold text-foreground">
-              You&apos;ve been here a while — your whole year is on LeetRun.
+              You&apos;ve been here a while - your whole year is on LeetRun.
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
               You averaged{" "}

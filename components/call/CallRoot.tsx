@@ -75,7 +75,7 @@ export default function CallRoot({
         serverUrl={serverUrl}
         connect
         // Start with mic/cam off so a denied/blocked device never stalls the
-        // connection — members enable them from the control bar.
+        // connection - members enable them from the control bar.
         audio={false}
         video={false}
         onConnected={onConnected}
@@ -165,7 +165,7 @@ function MaxCall({
           <button
             onClick={onMinimize}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition"
-            title="Minimize — keep the call running while you browse"
+            title="Minimize - keep the call running while you browse"
           >
             <Minimize2 className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Minimize</span>

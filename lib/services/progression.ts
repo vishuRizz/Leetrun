@@ -147,7 +147,7 @@ export async function incrementStreak(userId: string) {
 
   const todayKey = appDayKey();
 
-  // Already counted today — nothing to do.
+  // Already counted today - nothing to do.
   if (user.lastStreakAt && appDayKey(user.lastStreakAt) === todayKey) {
     return user;
   }

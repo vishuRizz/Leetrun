@@ -134,7 +134,7 @@ export async function GET(request: Request) {
           })
         );
       } catch {
-        /* LiveKit unreachable — just skip calls this tick */
+        /* LiveKit unreachable - just skip calls this tick */
       }
     }
 

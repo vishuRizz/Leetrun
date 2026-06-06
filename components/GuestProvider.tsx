@@ -80,7 +80,7 @@ function GuestBanner({ onSignup }: { onSignup: () => void }) {
       <Sparkles className="w-4 h-4 shrink-0" />
       <p className="min-w-0 flex-1 font-medium truncate">
         You&apos;re exploring LeetRun as a{" "}
-        <span className="font-black">guest</span> — sign up to track your real
+        <span className="font-black">guest</span> - sign up to track your real
         progress.
       </p>
       <button

@@ -419,7 +419,7 @@ export async function createHostQuestion(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Lobby chat (always-on, persisted) — live-call chat feeds into the same thread
+// Lobby chat (always-on, persisted) - live-call chat feeds into the same thread
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MAX_MESSAGE_LEN = 2000;

@@ -139,7 +139,7 @@ const PricingPage = () => {
                 <div className="flex items-baseline justify-between mb-2">
                   <span className="text-2xl font-bold text-white">
                     {userCount === null
-                      ? '—'
+                      ? '-'
                       : promoFull
                       ? registered.toLocaleString()
                       : spotsLeft}

@@ -58,7 +58,7 @@ export default function InvitePage() {
     if (!data) return;
     const shareData = {
       title: "Join me on LeetRun",
-      text: `Crack placements with me on LeetRun — we both get ${data.rewardCoins} coins when you join!`,
+      text: `Crack placements with me on LeetRun - we both get ${data.rewardCoins} coins when you join!`,
       url: data.link,
     };
     if (navigator.share) {

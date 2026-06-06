@@ -172,7 +172,7 @@ export async function buildUserContext(userId: string): Promise<UserAIContext | 
 
   const activeChallenge = user.userChallenges[0]?.challenge;
   const activeQuest = activeChallenge
-    ? `"${activeChallenge.title}" — ${activeChallenge.problems
+    ? `"${activeChallenge.title}" - ${activeChallenge.problems
         .map((p) => `${p.problemName} (${p.difficulty}/${p.topic})`)
         .join(", ")}`
     : null;
@@ -249,9 +249,9 @@ export function renderContextBlock(ctx: UserAIContext): string {
   return [
     `Student: ${ctx.name} | Level: ${ctx.level} | Plan: ${ctx.plan} | Target: ${ctx.targetCompany}`,
     ctx.joinedDaysAgo != null ? `On LeetRun for ${ctx.joinedDaysAgo} days.` : "",
-    `Streak: ${ctx.currentStreak} days${ctx.streakStale ? " (STALE — they've slipped)" : ""}.`,
+    `Streak: ${ctx.currentStreak} days${ctx.streakStale ? " (STALE - they've slipped)" : ""}.`,
     `LeetCode: @${lc.username ?? "not connected"} (rank #${lc.ranking}, acceptance ${lc.acceptanceRate}).`,
-    `Solved: ${lc.total} total — Easy ${lc.easy}, Medium ${lc.medium}, Hard ${lc.hard}. Deep-synced full list: ${lc.deepSolvedCount} problems.`,
+    `Solved: ${lc.total} total - Easy ${lc.easy}, Medium ${lc.medium}, Hard ${lc.hard}. Deep-synced full list: ${lc.deepSolvedCount} problems.`,
     `Languages: ${lc.languages}.`,
     `Most recent solves: ${recent}.`,
     `Weakest topics: ${weak}.`,

@@ -150,7 +150,7 @@ export default function LobbyChat({
     };
   }, [roomId, mergeMessages]);
 
-  // Incremental polling — fetches only messages newer than the last one.
+  // Incremental polling - fetches only messages newer than the last one.
   useEffect(() => {
     let cancelled = false;
     const tick = async () => {
@@ -295,7 +295,7 @@ export default function LobbyChat({
                 No messages yet
               </p>
               <p className="text-xs text-muted-foreground">
-                Say hi — this thread stays even after calls end.
+                Say hi - this thread stays even after calls end.
               </p>
             </div>
           ) : (

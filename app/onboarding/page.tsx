@@ -394,7 +394,7 @@ export default function OnboardingPage() {
                     </div>
                     {referralFromLink ? (
                       <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1.5 font-medium flex items-center gap-1">
-                        <Gift className="w-3 h-3" /> Invite applied — you and your friend both earn coins!
+                        <Gift className="w-3 h-3" /> Invite applied - you and your friend both earn coins!
                       </p>
                     ) : (
                       <p className="text-[11px] text-muted-foreground mt-1.5">

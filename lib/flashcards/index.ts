@@ -59,7 +59,7 @@ export const FLASHCARDS: Flashcard[] = [
     id: "pt-all-paths",
     category: "Pattern Triggers",
     front: "Generate all combinations / permutations / subsets.",
-    back: "Backtracking (DFS + undo choice). Time is exponential — prune aggressively.",
+    back: "Backtracking (DFS + undo choice). Time is exponential - prune aggressively.",
   },
   {
     id: "pt-overlap",
@@ -115,7 +115,7 @@ export const FLASHCARDS: Flashcard[] = [
     id: "cx-bst",
     category: "Complexity",
     front: "Balanced BST (TreeMap): search / insert / delete?",
-    back: "O(log n). Keeps keys sorted — good for range queries & ordered iteration.",
+    back: "O(log n). Keeps keys sorted - good for range queries & ordered iteration.",
   },
   {
     id: "cx-heap",
@@ -151,20 +151,20 @@ export const FLASHCARDS: Flashcard[] = [
     id: "cx-dijkstra",
     category: "Complexity",
     front: "Dijkstra's shortest path (with a heap)?",
-    back: "O((V + E) log V). No negative edges — use Bellman-Ford for those.",
+    back: "O((V + E) log V). No negative edges - use Bellman-Ford for those.",
   },
   {
     id: "cx-recursion",
     category: "Complexity",
     front: "Space cost of recursion depth d?",
-    back: "O(d) on the call stack. Deep recursion can stack-overflow — consider iterative.",
+    back: "O(d) on the call stack. Deep recursion can stack-overflow - consider iterative.",
   },
 
   // ---- Data structures ----
   {
     id: "ds-array-vs-ll",
     category: "Data Structures",
-    front: "Array vs Linked List — when to pick which?",
+    front: "Array vs Linked List - when to pick which?",
     back: "Array: O(1) random access, cache-friendly. Linked list: O(1) insert/delete at known node, no random access.",
   },
   {
@@ -209,7 +209,7 @@ export const FLASHCARDS: Flashcard[] = [
     id: "pf-offbyone",
     category: "Pitfalls",
     front: "Binary search loop bounds.",
-    back: "Decide [lo, hi] vs [lo, hi) up front and keep it consistent — most bugs are off-by-one here.",
+    back: "Decide [lo, hi] vs [lo, hi) up front and keep it consistent - most bugs are off-by-one here.",
   },
   {
     id: "pf-visited",

@@ -52,7 +52,7 @@ function buildStaticChunks(): KnowledgeChunk[] {
     chunks.push({
       kind: "problem",
       title: p.title,
-      text: `${p.title} — ${p.difficulty} — in sheets: ${p.sheets.join(", ")}`,
+      text: `${p.title} - ${p.difficulty} - in sheets: ${p.sheets.join(", ")}`,
       url: p.leetcodeSlug ? `https://leetcode.com/problems/${p.leetcodeSlug}/` : undefined,
     });
   }

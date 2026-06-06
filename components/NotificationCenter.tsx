@@ -109,7 +109,7 @@ export default function NotificationCenter() {
     }
   }, []);
 
-  // Browsers block audio until a user gesture — unlock on first interaction.
+  // Browsers block audio until a user gesture - unlock on first interaction.
   useEffect(() => {
     const unlock = () => ensureCtx();
     window.addEventListener("pointerdown", unlock, { once: true });
@@ -272,7 +272,7 @@ export default function NotificationCenter() {
 
   return (
     <>
-      {/* Bell — sits below call overlays (z-110+) so a full-screen call covers it. */}
+      {/* Bell - sits below call overlays (z-110+) so a full-screen call covers it. */}
       <div className="fixed top-3 right-3 z-[60]">
         <button
           onClick={toggleOpen}
@@ -380,7 +380,7 @@ export default function NotificationCenter() {
         )}
       </div>
 
-      {/* Transient toasts — top-right, below the bell. */}
+      {/* Transient toasts - top-right, below the bell. */}
       <div className="fixed top-16 right-3 z-[60] flex flex-col gap-2 w-[320px] max-w-[calc(100vw-1.5rem)] pointer-events-none">
         {toasts.map((it) => (
           <div

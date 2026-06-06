@@ -35,7 +35,7 @@ export async function getProactiveGreeting(
 
   // 1) Looming interview takes top priority.
   if (ctx.daysToInterview != null && ctx.daysToInterview <= 30) {
-    const focus = topWeak ? ` Your weakest area right now is **${topWeak}** — let's hammer it.` : "";
+    const focus = topWeak ? ` Your weakest area right now is **${topWeak}** - let's hammer it.` : "";
     return {
       reply: `${ctx.daysToInterview} days to your interview, ${ctx.name}. Target is ${ctx.dailyTarget} problems/day.${focus}`,
       suggestions: [
@@ -51,7 +51,7 @@ export async function getProactiveGreeting(
     return {
       reply:
         ctx.leetcode.total > 0
-          ? `${ctx.name}, your streak has gone cold. You're at ${ctx.leetcode.total} solved — don't let momentum die. One problem right now.`
+          ? `${ctx.name}, your streak has gone cold. You're at ${ctx.leetcode.total} solved - don't let momentum die. One problem right now.`
           : `${ctx.name}, time to start. Let's get your first solve on the board today.`,
       suggestions: [
         topWeak ? `Recommend an easy ${topWeak} problem` : "Recommend an easy problem",
@@ -79,7 +79,7 @@ export async function getProactiveGreeting(
   return {
     reply: `Welcome back, ${ctx.name}! ${recapBits.join(", ")}.${
       topWeak ? ` Biggest gap: **${topWeak}**. Want to close it?` : " What are we working on?"
-    } — ${m}`,
+    } - ${m}`,
     suggestions: [
       topWeak ? `Recommend ${topWeak} problems` : "Recommend a problem",
       "Check my weak topics",

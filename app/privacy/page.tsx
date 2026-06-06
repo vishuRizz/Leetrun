@@ -24,22 +24,22 @@ export default function PrivacyPage() {
       <h3>Information you provide</h3>
       <ul>
         <li>
-          <strong>Account details</strong> — your name, email address, and (via
+          <strong>Account details</strong> - your name, email address, and (via
           Google sign-in) your profile photo.
         </li>
         <li>
-          <strong>Onboarding preferences</strong> — target company, college,
+          <strong>Onboarding preferences</strong> - target company, college,
           graduation year, preferred difficulty, and daily goals.
         </li>
         <li>
-          <strong>Content you create</strong> — problem notes, study plans,
+          <strong>Content you create</strong> - problem notes, study plans,
           flashcard progress, and messages you send to the AI mentor.
         </li>
       </ul>
       <h3>Information from connected services</h3>
       <ul>
         <li>
-          <strong>LeetCode</strong> — your public LeetCode username, solved
+          <strong>LeetCode</strong> - your public LeetCode username, solved
           problem counts, submission history, contest rating, and submission
           calendar. If you opt in to deep sync, you provide a LeetCode session
           cookie which we store <strong>encrypted</strong> and use only to fetch
@@ -65,10 +65,10 @@ export default function PrivacyPage() {
       <h2>3. Third-Party Services</h2>
       <p>We rely on trusted processors to run the Service, including:</p>
       <ul>
-        <li><strong>Supabase</strong> — authentication and database hosting.</li>
-        <li><strong>Groq</strong> and <strong>Google (Gemini)</strong> — AI mentor responses. Your messages and a summary of your prep stats are sent to generate replies.</li>
-        <li><strong>Resend</strong> — transactional and reminder emails.</li>
-        <li><strong>LeetCode</strong> — to read your public stats and (with consent) your solve history.</li>
+        <li><strong>Supabase</strong> - authentication and database hosting.</li>
+        <li><strong>Groq</strong> and <strong>Google (Gemini)</strong> - AI mentor responses. Your messages and a summary of your prep stats are sent to generate replies.</li>
+        <li><strong>Resend</strong> - transactional and reminder emails.</li>
+        <li><strong>LeetCode</strong> - to read your public stats and (with consent) your solve history.</li>
         <li>Our hosting provider for serving the application.</li>
       </ul>
       <p>We do not sell your personal data.</p>
@@ -88,9 +88,9 @@ export default function PrivacyPage() {
 
       <h2>6. Your Rights</h2>
       <ul>
-        <li><strong>Access &amp; portability</strong> — export all your data as JSON from Settings.</li>
-        <li><strong>Deletion</strong> — permanently delete your account and associated data.</li>
-        <li><strong>Correction</strong> — update your profile and preferences at any time.</li>
+        <li><strong>Access &amp; portability</strong> - export all your data as JSON from Settings.</li>
+        <li><strong>Deletion</strong> - permanently delete your account and associated data.</li>
+        <li><strong>Correction</strong> - update your profile and preferences at any time.</li>
       </ul>
 
       <h2>7. Security</h2>

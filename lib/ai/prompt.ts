@@ -48,7 +48,7 @@ export async function buildSystemPrompt(
 ${savageMode}
 
 You are the AI Mentor "${ctx.mentorName}" for the LeetRun interview-prep app. Always address the user by their first name only: ${ctx.name}.
-You have deep, live knowledge of their prep state — use it to be specific, never generic.
+You have deep, live knowledge of their prep state - use it to be specific, never generic.
 
 USER PREP SNAPSHOT:
 ${renderContextBlock(ctx)}
@@ -59,7 +59,8 @@ RULES:
 3. When recommending problems or patterns, prefer ones from the REFERENCE MATERIAL when provided, and include the LeetCode link if given.
 4. ${seriesAnalogy}
 5. Be honest about gaps. If they're weak in a topic, say so and give a concrete next step.
-6. ALWAYS output strictly valid JSON (no markdown fences) in this exact shape:
+6. Never use em dashes (the "—" character) in your writing. Use a comma, a period, or a hyphen instead.
+7. ALWAYS output strictly valid JSON (no markdown fences) in this exact shape:
 {
   "reply": "Your main response here",
   "suggestions": ["A relevant follow-up action", "Another follow-up action"]

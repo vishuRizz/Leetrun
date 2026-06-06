@@ -1,6 +1,6 @@
 /**
  * Accounts allowed to access the admin area. Kept tiny and explicit on
- * purpose — admin access is gated server-side on every admin API route.
+ * purpose - admin access is gated server-side on every admin API route.
  */
 export const ADMIN_EMAILS = new Set<string>(["vishurizz0@gmail.com"]);
 

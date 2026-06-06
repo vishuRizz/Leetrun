@@ -1,10 +1,25 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
 interface DayCell {
   date: string; // YYYY-MM-DD, or "" for padding
   count: number;
+}
+
+interface HoverState {
+  date: string;
+  count: number;
+  x: number;
+  y: number;
+}
+
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function prettyDate(key: string): string {
+  const d = new Date(key + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return key;
+  return `${WEEKDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
 }
 
 function dayKey(d: Date): string {
@@ -109,6 +124,8 @@ export default function ContributionCalendar({
     };
   }, [calendar, weeks]);
 
+  const [hover, setHover] = useState<HoverState | null>(null);
+
   const heatColor = (count: number) => {
     if (count <= 0) return "bg-muted/50";
     if (count < 2) return "bg-indigo-300/70 dark:bg-indigo-900/80";
@@ -163,14 +180,29 @@ export default function ContributionCalendar({
                 {col.map((cell, di) => (
                   <div
                     key={`${ci}-${di}`}
-                    className={`w-3 h-3 rounded-[3px] ${heatColor(cell.count)}`}
-                    title={
+                    className={`w-3 h-3 rounded-[3px] transition-shadow ${heatColor(
+                      cell.count
+                    )} ${
                       cell.date
-                        ? `${cell.date}: ${cell.count} submission${
-                            cell.count === 1 ? "" : "s"
-                          }`
+                        ? "hover:ring-2 hover:ring-foreground/40 cursor-pointer"
                         : ""
+                    }`}
+                    onMouseEnter={(e) =>
+                      cell.date &&
+                      setHover({
+                        date: cell.date,
+                        count: cell.count,
+                        x: e.clientX,
+                        y: e.clientY,
+                      })
                     }
+                    onMouseMove={(e) =>
+                      cell.date &&
+                      setHover((h) =>
+                        h ? { ...h, x: e.clientX, y: e.clientY } : h
+                      )
+                    }
+                    onMouseLeave={() => setHover(null)}
                   />
                 ))}
               </div>
@@ -188,6 +220,21 @@ export default function ContributionCalendar({
         <div className="w-2.5 h-2.5 rounded-[2px] bg-indigo-600 dark:bg-indigo-300" />
         <span>more</span>
       </div>
+
+      {/* Cursor-following tooltip with that day's activity. */}
+      {hover && (
+        <div
+          className="pointer-events-none fixed z-[200] -translate-x-1/2 -translate-y-full rounded-lg bg-zinc-900 text-white px-2.5 py-1.5 shadow-xl border border-zinc-700 whitespace-nowrap"
+          style={{ left: hover.x, top: hover.y - 8 }}
+        >
+          <div className="text-xs font-bold leading-tight">
+            {hover.count} question{hover.count === 1 ? "" : "s"}
+          </div>
+          <div className="text-[10px] text-zinc-400 leading-tight">
+            {prettyDate(hover.date)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

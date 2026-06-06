@@ -45,7 +45,7 @@ export default function MainLayout({
         {/* Renders only for users still eligible for the gift; otherwise null. */}
         <FounderGiftModal />
         <FeedbackWidget />
-        {/* Global notification bell — lobby messages & live calls, with sound. */}
+        {/* Global notification bell - lobby messages & live calls, with sound. */}
         <NotificationCenter />
       </div>
     </CallProvider>

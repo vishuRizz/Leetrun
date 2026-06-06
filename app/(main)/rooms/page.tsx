@@ -849,7 +849,7 @@ function RoomsPageInner() {
                           }`}
                           title={
                             liveJoinable
-                              ? `Live call in progress — ${liveCall.count} in the call. Click to join.`
+                              ? `Live call in progress - ${liveCall.count} in the call. Click to join.`
                               : inCall
                               ? "Open the call you're in"
                               : "Start or join the lobby call: voice, video & chat"
@@ -877,7 +877,7 @@ function RoomsPageInner() {
                     <button
                       onClick={() => setShowChat(true)}
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
-                      title="Open the lobby chat — a live thread that persists across calls and supports media"
+                      title="Open the lobby chat - a live thread that persists across calls and supports media"
                     >
                       <MessagesSquare className="w-4 h-4" />
                       <span className="hidden sm:inline">Chat</span>
@@ -893,7 +893,7 @@ function RoomsPageInner() {
                   </div>
                 </div>
 
-                {/* Live call banner — shown to members who haven't joined yet. */}
+                {/* Live call banner - shown to members who haven't joined yet. */}
                 {liveCall.count > 0 &&
                   activeRoomId &&
                   !call.isActive(activeRoomId) && (
@@ -1078,7 +1078,7 @@ function RoomsPageInner() {
                                   )}
                                 </button>
 
-                                {/* Note popup — opens to the RIGHT of the circle
+                                {/* Note popup - opens to the RIGHT of the circle
                                     (over the card) so it's never clipped by the
                                     left edge. `pl-2` is a transparent hover
                                     bridge so the pointer can travel across. */}
@@ -1554,7 +1554,7 @@ function RoomsPageInner() {
                       onChange={(e) => setQuestionComment(e.target.value)}
                       maxLength={500}
                       rows={2}
-                      placeholder="Add a note for the lobby (optional) — a hint, approach, or why you picked it"
+                      placeholder="Add a note for the lobby (optional) - a hint, approach, or why you picked it"
                       className="w-full bg-background border border-border focus:border-indigo-500 rounded-lg p-2 text-xs text-foreground outline-none transition resize-none"
                     />
                     {questionError && (

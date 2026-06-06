@@ -3,7 +3,7 @@
  *
  * Quests rotate and streaks count by calendar day. Server time on most hosts
  * (e.g. Vercel) is UTC, so a naive `new Date().setHours(0,0,0,0)` puts the day
- * boundary at 00:00 UTC — which is 05:30 in India. Our audience is largely IST,
+ * boundary at 00:00 UTC - which is 05:30 in India. Our audience is largely IST,
  * so we anchor the "day" to a configurable timezone offset (defaults to IST,
  * +330 minutes) and override it with APP_TZ_OFFSET_MINUTES if needed.
  */
