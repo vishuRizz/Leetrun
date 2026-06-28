@@ -272,8 +272,8 @@ export default function NotificationCenter() {
 
   return (
     <>
-      {/* Bell - sits below call overlays (z-110+) so a full-screen call covers it. */}
-      <div className="fixed top-3 right-3 z-[60]">
+      {/* Bell - positioned by TopRightActionsProvider; below call overlays (z-110+). */}
+      <div className="relative">
         <button
           onClick={toggleOpen}
           aria-label="Notifications"

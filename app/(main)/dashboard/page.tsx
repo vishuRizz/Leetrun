@@ -21,6 +21,7 @@ import { InviteFriendModal } from "@/components/InviteFriendModal";
 import ContinueReadingCard from "@/components/notes/ContinueReadingCard";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { TopRightAction } from "@/components/TopRightActions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import RevisionPanel from "./RevisionPanel";
 import { useGuest } from "@/components/GuestProvider";
@@ -356,7 +357,21 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-150">
-      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+      <TopRightAction id="leetcode-sync">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleManualSync}
+          disabled={syncing}
+          title="Sync LeetCode"
+          className="h-10 w-10 rounded-full shadow-lg bg-card"
+        >
+          <RotateCw
+            className={`w-4 h-4 ${syncing ? "animate-spin text-primary" : ""}`}
+          />
+        </Button>
+      </TopRightAction>
+      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 pr-28 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="font-black text-xl tracking-wider text-foreground">
             Dashboard
@@ -386,17 +401,6 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-3">
             <InviteFriendModal />
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleManualSync}
-              disabled={syncing}
-              title="Sync LeetCode"
-            >
-              <RotateCw
-                className={`w-4 h-4 ${syncing ? "animate-spin text-primary" : ""}`}
-              />
-            </Button>
           </div>
         </div>
       </nav>
@@ -784,7 +788,7 @@ export default function Dashboard() {
 function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 pr-28 flex items-center justify-between">
         <div className="h-6 w-32 bg-muted/60 rounded animate-pulse" />
         <div className="hidden md:flex items-center gap-3">
           <div className="h-8 w-24 bg-muted/60 rounded-full animate-pulse" />

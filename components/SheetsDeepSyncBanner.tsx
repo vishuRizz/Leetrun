@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Sparkles, Cookie, ChevronRight, RefreshCw, CheckCircle2 } from "lucide-react";
 import DeepLeetcodeSyncModal from "@/components/DeepLeetcodeSyncModal";
+import { TopRightAction } from "@/components/TopRightActions";
 
 interface Props {
   /** Called after a successful deep sync (e.g. refresh page data). */
@@ -44,22 +45,24 @@ export default function SheetsDeepSyncBanner({ onSynced }: Props) {
   return (
     <>
       {alreadySynced ? (
-        <div className="flex items-center justify-end gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+        <>
+          <TopRightAction id="sheets-deep-sync-refresh">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-flex items-center gap-1.5 shrink-0 h-10 px-3 rounded-full border border-border bg-card shadow-lg hover:border-indigo-500/50 hover:bg-muted text-foreground text-[11px] font-bold transition"
+              title="Refresh deep sync from LeetCode"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Refresh sync</span>
+            </button>
+          </TopRightAction>
+          <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5" />
             {status?.deepSyncCount} solves synced
             {status?.deepSyncedAt ? ` · ${timeAgo(status.deepSyncedAt)}` : ""}
-          </span>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-1.5 shrink-0 border border-border hover:border-indigo-500/50 hover:bg-muted text-foreground px-3 py-1.5 rounded-lg text-[11px] font-bold transition"
-            title="Refresh deep sync from LeetCode"
-          >
-            <RefreshCw className="w-3 h-3" />
-            Refresh sync
-          </button>
-        </div>
+          </div>
+        </>
       ) : (
         <div className="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-violet-500/5 to-transparent p-5 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1 min-w-0">

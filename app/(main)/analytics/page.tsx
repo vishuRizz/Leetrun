@@ -29,6 +29,7 @@ import GrowthChart from "@/components/GrowthChart";
 import AutoLeetcodeSync, {
   LEETCODE_SYNCED_EVENT,
 } from "@/components/AutoLeetcodeSync";
+import { TopRightAction } from "@/components/TopRightActions";
 
 interface AnalyticsResponse {
   user: {
@@ -199,8 +200,20 @@ export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {!guest && <AutoLeetcodeSync />}
+      <TopRightAction id="analytics-refresh">
+        <button
+          onClick={() => (guest ? promptSignup("live analytics") : load(true))}
+          disabled={refreshing}
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-card border border-border shadow-lg text-foreground hover:bg-muted transition"
+          title="Refresh LeetCode data"
+        >
+          <RotateCw
+            className={`w-4 h-4 ${refreshing ? "animate-spin text-indigo-500" : ""}`}
+          />
+        </button>
+      </TopRightAction>
       {/* Header */}
-      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+      <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4 pr-28 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BarChart3 className="w-5 h-5 text-indigo-500" />
           <h1 className="font-heading font-black text-xl tracking-tight">
@@ -216,16 +229,6 @@ export default function AnalyticsPage() {
           <span className="hidden sm:inline font-mono">
             LeetCode synced {formatRelative(lc.syncedAt)}
           </span>
-          <button
-            onClick={() => (guest ? promptSignup("live analytics") : load(true))}
-            disabled={refreshing}
-            className="p-2 rounded-lg border border-border hover:bg-muted text-foreground transition"
-            title="Refresh"
-          >
-            <RotateCw
-              className={`w-4 h-4 ${refreshing ? "animate-spin text-indigo-500" : ""}`}
-            />
-          </button>
         </div>
       </nav>
 
